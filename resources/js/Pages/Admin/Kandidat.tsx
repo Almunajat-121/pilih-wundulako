@@ -67,20 +67,20 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                             <option value="">Semua Wilayah</option>
                             {filters.jenis === 'RT' ? (
                                 rw_list.map(rw => (
-                                    <optgroup key={`rw-opt-${rw.id}`} label={`RW ${rw.nama}`}>
+                                    <optgroup key={`rw-opt-${rw.id}`} label={`${rw.nama}`}>
                                         {rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama}</option>)}
                                     </optgroup>
                                 ))
                             ) : filters.jenis === 'RW' ? (
-                                rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>RW {rw.nama}</option>)
+                                rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)
                             ) : (
                                 <>
                                     <optgroup label="RW">
-                                        {rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>RW {rw.nama}</option>)}
+                                        {rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)}
                                     </optgroup>
                                     <optgroup label="RT">
                                         {rw_list.map(rw => (
-                                            rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>RT {rt.nama} (RW {rw.nama})</option>)
+                                            rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama} ({rw.nama})</option>)
                                         ))}
                                     </optgroup>
                                 </>
@@ -178,16 +178,18 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah</label>
                                 {data.jenis === 'RT' ? (
-                                    <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
-                                        <option value="">Pilih RT</option>
-                                        {rw_list.map(rw => (
-                                            <optgroup key={`rw-opt-${rw.id}`} label={`RW ${rw.nama}`}>
-                                                {rw.rt?.map((rt: any) => (
-                                                    <option key={rt.id} value={rt.id}>{rt.nama}</option>
-                                                ))}
-                                            </optgroup>
-                                        ))}
-                                    </select>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <select value={data.rw_id} onChange={e => { setData('rw_id', e.target.value); setData('rt_id', ''); }} className="w-full border-gray-300 rounded-md shadow-sm" required>
+                                            <option value="">Pilih RW</option>
+                                            {rw_list.map(rw => <option key={rw.id} value={rw.id}>{rw.nama}</option>)}
+                                        </select>
+                                        <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required disabled={!data.rw_id}>
+                                            <option value="">Pilih RT</option>
+                                            {rw_list.find(rw => rw.id.toString() === data.rw_id)?.rt?.map((rt: any) => (
+                                                <option key={rt.id} value={rt.id}>{rt.nama}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 ) : (
                                     <select value={data.rw_id} onChange={e => setData('rw_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
                                         <option value="">Pilih RW</option>

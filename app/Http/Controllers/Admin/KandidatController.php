@@ -36,8 +36,8 @@ class KandidatController extends Controller
             'nama' => 'required|string|max:150',
             'nomor_urut' => 'required|integer',
             'jenis' => 'required|in:RT,RW',
-            'rt_id' => 'required_if:jenis,RT|nullable|exists:rts,id',
-            'rw_id' => 'required_if:jenis,RW|nullable|exists:rws,id',
+            'rt_id' => 'required_if:jenis,RT|nullable|exists:rt,id',
+            'rw_id' => 'nullable|exists:rw,id', // Make rw_id always validatable if present, since we now send it for RT as well
             'foto' => 'nullable|string',
             'visi_misi' => 'nullable|string'
         ]);
