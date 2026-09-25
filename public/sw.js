@@ -29,10 +29,13 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Network-first caching strategy: coba ambil dari server dulu, jika gagal (offline/lemot), ambil dari cache
+// Network-first caching strategy
 self.addEventListener('fetch', (event) => {
     // Hanya tangani GET requests
     if (event.request.method !== 'GET') return;
+
+    // Abaikan request dari chrome-extension atau skema non-http
+    if (!event.request.url.startsWith('http')) return;
 
     // Jangan cache request ke Inertia data (yang header X-Inertia = true)
     if (event.request.headers.has('X-Inertia')) return;
@@ -41,7 +44,7 @@ self.addEventListener('fetch', (event) => {
         fetch(event.request)
             .then((response) => {
                 // Jika response sukses, simpan di cache
-                if (response.status === 200) {
+                if (response && response.status === 200 && response.type === 'basic') {
                     const responseClone = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(event.request, responseClone);
@@ -50,8 +53,17 @@ self.addEventListener('fetch', (event) => {
                 return response;
             })
             .catch(() => {
-                // Jika offline, kembalikan dari cache
-                return caches.match(event.request);
+                // Jika offline, kembalikan dari cache, atau kembalikan response error jika tidak ada di cache
+                return caches.match(event.request).then((cachedResponse) => {
+                    if (cachedResponse) {
+                        return cachedResponse;
+                    }
+                    // Jika tidak ada di cache sama sekali, kita harus mengembalikan sebuah Response valid
+                    return new Response('Network error happened', {
+                        status: 408,
+                        headers: { 'Content-Type': 'text/plain' },
+                    });
+                });
             })
     );
 });
