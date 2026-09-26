@@ -16,43 +16,60 @@ export default function Login() {
 
     return (
         <AuthLayout>
-            {flash?.error && (
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                    <p>{flash.error}</p>
+            <div className="login-card">
+                <div className="login-head">
+                    <div className="login-mark">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l4.5 4.5L20 6"/></svg>
+                    </div>
+                    <p className="login-brand">PilihPilih</p>
+                    <p className="login-tag">Sistem Pemilihan RT/RW Digital<br />Kelurahan Wundulako</p>
                 </div>
-            )}
-            
-            <form onSubmit={submit} className="space-y-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Username</label>
-                    <input
-                        type="text"
-                        value={data.username}
-                        onChange={(e) => setData('username', e.target.value)}
-                        className={`mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border ${errors.username ? 'border-red-500' : 'border-gray-300'}`}
-                    />
-                    {errors.username && <p className="mt-1 text-sm text-red-600">{errors.username}</p>}
+                
+                <div className="login-body">
+                    {flash?.error && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-lg mb-6 text-sm text-center">
+                            {flash.error}
+                        </div>
+                    )}
+                    
+                    <form onSubmit={submit}>
+                        <div className="login-field">
+                            <label>Username</label>
+                            <input
+                                type="text"
+                                placeholder="Masukkan username"
+                                value={data.username}
+                                onChange={(e) => setData('username', e.target.value)}
+                            />
+                            {errors.username && <p className="mt-1 text-xs text-red-600">{errors.username}</p>}
+                        </div>
+                        
+                        <div className="login-field">
+                            <label>Kata sandi</label>
+                            <input
+                                type="password"
+                                placeholder="••••••••"
+                                value={data.password}
+                                onChange={(e) => setData('password', e.target.value)}
+                            />
+                            {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
+                        </div>
+                        
+                        <label className="login-remember">
+                            <input type="checkbox" />
+                            Ingat saya
+                        </label>
+                        
+                        <button type="submit" className="login-submit" disabled={processing}>
+                            {processing ? 'Memproses...' : 'Masuk'}
+                        </button>
+                    </form>
+                    
+                    <div className="login-foot">
+                        <a href="/publik">Lihat live count publik &rarr;</a>
+                    </div>
                 </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        value={data.password}
-                        onChange={(e) => setData('password', e.target.value)}
-                        className={`mt-1 block w-full rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
-                    />
-                    {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
-                </div>
-
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
-                >
-                    {processing ? 'Memproses...' : 'Login'}
-                </button>
-            </form>
+            </div>
         </AuthLayout>
     );
 }

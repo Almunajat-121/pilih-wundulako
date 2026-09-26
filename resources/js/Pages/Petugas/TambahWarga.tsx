@@ -79,106 +79,104 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
         return () => stopCamera();
     }, []);
 
-    return (
-        <PetugasLayout title="Tambah Warga Baru">
-            <div className="mb-4">
-                <Link href={`/petugas/wilayah/${rt.id}`} className="text-gray-500 hover:text-gray-700 text-sm">
-                    ⬅️ Kembali
-                </Link>
+    const header = (
+        <header className="m-header">
+            <Link href={`/petugas/wilayah/${rt.id}`} className="m-back">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </Link>
+            <div>
+                <p className="m-title">Tambah Warga Baru</p>
+                <p className="m-sub">Bukan DPT / tambahan</p>
             </div>
+        </header>
+    );
 
-            <form onSubmit={submit} className="space-y-6">
-                <div className="bg-white p-5 rounded-xl shadow-sm border space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah RT/RW</label>
-                        <input
-                            type="text"
-                            value={`${rt.nama} — ${rt.rw?.nama}`}
-                            readOnly
-                            className="w-full bg-gray-100 rounded-lg border-gray-300 p-3 text-sm text-gray-600 border"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap (Sesuai KTP)</label>
-                        <input
-                            type="text"
-                            value={data.nama}
-                            onChange={e => setData('nama', e.target.value)}
-                            placeholder="Masukkan nama warga..."
-                            className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 text-sm border ${errors.nama ? 'border-red-500' : 'border-gray-300'}`}
-                            required
-                        />
-                        {errors.nama && <p className="mt-1 text-sm text-red-600">{errors.nama}</p>}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Lengkap</label>
-                        <textarea
-                            value={data.alamat}
-                            onChange={e => setData('alamat', e.target.value)}
-                            placeholder="Detail alamat domisili saat ini..."
-                            rows={3}
-                            className={`w-full rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 text-sm border ${errors.alamat ? 'border-red-500' : 'border-gray-300'}`}
-                            required
-                        ></textarea>
-                        {errors.alamat && <p className="mt-1 text-sm text-red-600">{errors.alamat}</p>}
-                    </div>
+    return (
+        <PetugasLayout title="Tambah Warga Baru" customHeader={header}>
+            <div className="flex flex-col gap-4 pt-2 pb-24">
+                <div className="callout callout-brass">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+                    <span>Hanya gunakan form ini jika warga tidak terdaftar dalam DPT namun memiliki KTP desa ini. Foto KTP wajib dilampirkan.</span>
                 </div>
 
-                <div className="bg-white p-5 rounded-xl shadow-sm border">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Foto KTP/KK (Opsional)</h3>
-                    
-                    <div className="rounded-lg overflow-hidden bg-gray-100 flex flex-col items-center justify-center min-h-[200px] border-2 border-dashed border-gray-300 relative">
+                <form id="tambah-warga-form" onSubmit={submit} className="flex flex-col gap-4">
+                    <div className="field-group">
+                        <div>
+                            <label className="field-label">Nama lengkap (sesuai KTP)</label>
+                            <input 
+                                type="text" 
+                                className="m-input" 
+                                placeholder="Nama lengkap"
+                                value={data.nama}
+                                onChange={e => setData('nama', e.target.value)}
+                                required
+                            />
+                            {errors.nama && <p className="mt-1 text-[11px] text-red-600 font-semibold">{errors.nama}</p>}
+                        </div>
+                        <div>
+                            <label className="field-label">Alamat domisili saat ini</label>
+                            <input 
+                                type="text" 
+                                className="m-input" 
+                                placeholder="Alamat lengkap"
+                                value={data.alamat}
+                                onChange={e => setData('alamat', e.target.value)}
+                                required
+                            />
+                            {errors.alamat && <p className="mt-1 text-[11px] text-red-600 font-semibold">{errors.alamat}</p>}
+                        </div>
+                        <div>
+                            <label className="field-label">Wilayah RT</label>
+                            <input type="text" className="m-input" value={`${rt.nama} / ${rt.rw?.nama}`} disabled />
+                        </div>
+                    </div>
+
+                    <div className="field-group">
+                        <label className="field-label" style={{ marginBottom: 0 }}>Foto KTP asli</label>
+                        
                         {!cameraActive && !photoPreview && (
-                            <div className="text-center p-6">
-                                <span className="text-4xl block mb-2">📸</span>
-                                <p className="text-sm text-gray-500 mb-4">Verifikasi identitas warga</p>
-                                <button
-                                    type="button"
-                                    onClick={startCamera}
-                                    className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors"
-                                >
-                                    Buka Kamera
-                                </button>
+                            <div className="upload-zone" onClick={startCamera}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 8a2 2 0 0 1 2-2h1.2a1 1 0 0 0 .9-.55l.6-1.2A1 1 0 0 1 9.6 3.7h4.8a1 1 0 0 1 .9.55l.6 1.2a1 1 0 0 0 .9.55H18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="3.4"/></svg>
+                                <strong>Ambil foto langsung dari kamera</strong>
+                                <small>Wajib dari kamera HP saat ini &mdash; unggah dari galeri tidak diperbolehkan</small>
                             </div>
                         )}
 
                         {cameraActive && (
-                            <div className="w-full relative flex justify-center bg-black">
+                            <div className="w-full relative flex justify-center bg-[#1B2333] rounded-xl overflow-hidden shadow-inner">
                                 <video 
                                     ref={videoRef} 
-                                    className="w-full max-h-[400px] object-contain" 
+                                    className="w-full h-auto max-h-[350px] object-cover" 
                                     playsInline 
                                     muted 
                                 ></video>
-                                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4">
+                                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 px-4">
                                     <button
                                         type="button"
                                         onClick={stopCamera}
-                                        className="px-4 py-2 bg-red-600/80 text-white rounded-lg text-sm font-medium backdrop-blur-sm"
+                                        className="chip bg-white/20 text-white border-white/30 backdrop-blur-md"
                                     >
                                         Batal
                                     </button>
                                     <button
                                         type="button"
                                         onClick={capturePhoto}
-                                        className="px-6 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-lg"
+                                        className="chip bg-[var(--brass)] text-white border-[var(--brass)] shadow-lg"
                                     >
-                                        Ambil Foto
+                                        📸 Jepret Foto
                                     </button>
                                 </div>
                             </div>
                         )}
 
                         {photoPreview && (
-                            <div className="w-full relative flex justify-center bg-black">
-                                <img src={photoPreview} alt="Preview" className="w-full max-h-[400px] object-contain" />
+                            <div className="w-full relative flex justify-center bg-[#1B2333] rounded-xl overflow-hidden shadow-inner p-2 border-2 border-[var(--brass)]">
+                                <img src={photoPreview} alt="Preview" className="w-full h-auto max-h-[350px] object-cover rounded-lg" />
                                 <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                                     <button
                                         type="button"
                                         onClick={retake}
-                                        className="px-4 py-2 bg-gray-900/70 text-white rounded-lg text-sm font-medium backdrop-blur-sm"
+                                        className="chip bg-white/20 text-white border-white/30 backdrop-blur-md"
                                     >
                                         Ulangi Foto
                                     </button>
@@ -187,18 +185,18 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
                         )}
                         
                         <canvas ref={canvasRef} className="hidden"></canvas>
+                        {errors.foto && <p className="mt-1 text-[11px] text-red-600 font-semibold">{errors.foto}</p>}
                     </div>
-                    {errors.foto && <p className="mt-2 text-sm text-red-600">{errors.foto}</p>}
-                </div>
+                </form>
+            </div>
 
-                <button
-                    type="submit"
-                    disabled={processing}
-                    className="w-full py-4 px-4 bg-blue-600 text-white rounded-xl font-bold text-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
-                    {processing ? 'Menyimpan...' : 'Simpan & Lanjutkan ke Voting'}
-                </button>
-            </form>
+            <div className="fixed-frame z-40">
+                <div className="submit-bar">
+                    <button type="submit" form="tambah-warga-form" className="btn-block" disabled={processing}>
+                        {processing ? 'Menyimpan...' : 'Simpan warga baru'}
+                    </button>
+                </div>
+            </div>
         </PetugasLayout>
     );
 }

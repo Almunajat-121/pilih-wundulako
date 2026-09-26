@@ -54,17 +54,17 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
     };
 
     return (
-        <AdminLayout title="Kelola Kandidat">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <select value={filters.jenis || ''} onChange={e => handleFilter('jenis', e.target.value)} className="border-gray-300 rounded-md text-sm">
-                            <option value="">Semua Jenis</option>
+        <AdminLayout title="Data Kandidat">
+            <div className="card">
+                <div className="toolbar">
+                    <div className="toolbar-filters">
+                        <select value={filters.jenis || ''} onChange={e => handleFilter('jenis', e.target.value)} className="select">
+                            <option value="">Semua tingkat</option>
                             <option value="RT">Ketua RT</option>
                             <option value="RW">Ketua RW</option>
                         </select>
-                        <select value={filters.wilayah || ''} onChange={e => handleFilter('wilayah', e.target.value)} className="border-gray-300 rounded-md text-sm flex-1">
-                            <option value="">Semua Wilayah</option>
+                        <select value={filters.wilayah || ''} onChange={e => handleFilter('wilayah', e.target.value)} className="select">
+                            <option value="">Semua wilayah</option>
                             {filters.jenis === 'RT' ? (
                                 rw_list.map(rw => (
                                     <optgroup key={`rw-opt-${rw.id}`} label={`${rw.nama}`}>
@@ -87,58 +87,68 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                             )}
                         </select>
                     </div>
-                    <button onClick={() => setShowModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm whitespace-nowrap">Tambah Kandidat</button>
+                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Tambah Kandidat</button>
                 </div>
-                
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div style={{ overflowX: 'auto' }}>
+                    <table>
                         <thead>
-                            <tr className="bg-white border-b text-sm text-gray-500">
-                                <th className="p-3 font-medium">Foto</th>
-                                <th className="p-3 font-medium">No. Urut</th>
-                                <th className="p-3 font-medium">Nama</th>
-                                <th className="p-3 font-medium">Jenis / Wilayah</th>
-                                <th className="p-3 font-medium">Visi Misi</th>
-                                <th className="p-3 font-medium text-center">Aksi</th>
+                            <tr>
+                                <th>Kandidat</th>
+                                <th style={{ textAlign: 'center' }}>No. Urut</th>
+                                <th>Pemilihan</th>
+                                <th>Visi & Misi</th>
+                                <th style={{ textAlign: 'right' }}>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                             {kandidat.data.map(item => (
-                                <tr key={item.id} className="hover:bg-gray-50 text-sm">
-                                    <td className="p-3">
-                                        {item.foto_url ? (
-                                            <img src={item.foto_url} alt={item.nama} className="w-10 h-10 rounded-full object-cover border border-gray-200" />
-                                        ) : (
-                                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">?</div>
-                                        )}
+                                <tr key={item.id}>
+                                    <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                            {item.foto_url ? (
+                                                <img src={item.foto_url} alt={item.nama} className="avatar" style={{ objectFit: 'cover' }} />
+                                            ) : (
+                                                <div className="avatar">
+                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                                </div>
+                                            )}
+                                            <span style={{ fontWeight: 600, fontSize: '14.5px' }}>{item.nama}</span>
+                                        </div>
                                     </td>
-                                    <td className="p-3 font-semibold text-center">{item.nomor_urut}</td>
-                                    <td className="p-3 font-medium text-gray-800">{item.nama}</td>
-                                    <td className="p-3">
-                                        <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${item.jenis === 'RT' ? 'bg-blue-100 text-blue-800' : 'bg-indigo-100 text-indigo-800'}`}>
-                                            {item.jenis} - {item.jenis === 'RT' ? item.rt?.nama : item.rw?.nama}
-                                        </span>
+                                    <td style={{ textAlign: 'center' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <span className="ballot-num">{item.nomor_urut}</span>
+                                        </div>
                                     </td>
-                                    <td className="p-3 text-gray-500 truncate max-w-[200px]">{item.visi_misi || '-'}</td>
-                                    <td className="p-3 text-center">
-                                        <button onClick={() => confirmDelete(item.id)} className="text-red-500 hover:text-red-700 p-1">Hapus</button>
+                                    <td>
+                                        <div>
+                                            <span style={{ fontWeight: 600 }}>Ketua {item.jenis}</span>
+                                        </div>
+                                        <div style={{ color: 'var(--text-soft)', fontSize: '12px', marginTop: 2 }}>{item.jenis === 'RT' ? item.rt?.nama : item.rw?.nama}</div>
+                                    </td>
+                                    <td>
+                                        <div style={{ color: 'var(--text-soft)', fontSize: '12.5px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                            {item.visi_misi || <span style={{ fontStyle: 'italic' }}>Tidak ada</span>}
+                                        </div>
+                                    </td>
+                                    <td style={{ textAlign: 'right' }}>
+                                        <button className="btn-link" style={{ marginRight: 10 }}>Edit</button>
+                                        <button className="btn-link danger" onClick={() => confirmDelete(item.id)}>Hapus</button>
                                     </td>
                                 </tr>
                             ))}
                             {kandidat.data.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-500">Data tidak ditemukan.</td>
+                                    <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-                
-                {/* Pagination */}
                 {kandidat.last_page > 1 && (
-                    <div className="p-4 border-t border-gray-100 flex justify-center gap-1">
+                    <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                         {kandidat.links.map((link, idx) => (
-                            <Link key={idx} href={link.url || '#'} className={`px-3 py-1 text-sm rounded ${link.active ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'} ${!link.url && 'opacity-50 cursor-not-allowed'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+                            <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
                         ))}
                     </div>
                 )}

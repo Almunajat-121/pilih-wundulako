@@ -22,7 +22,7 @@ export default function Wilayah({ rw_list }: WilayahProps) {
 
     const handleAddRw = (e: React.FormEvent) => {
         e.preventDefault();
-        postRw('/admin/wilayah/rw', {
+        postRw('/admin/rw', {
             onSuccess: () => resetRw(),
         });
     };
@@ -30,7 +30,7 @@ export default function Wilayah({ rw_list }: WilayahProps) {
     const handleAddRt = (e: React.FormEvent, rwId: number) => {
         e.preventDefault();
         rtData.rw_id = rwId.toString();
-        postRt('/admin/wilayah/rt', {
+        postRt('/admin/rt', {
             onSuccess: () => resetRt(),
         });
     };
@@ -41,63 +41,78 @@ export default function Wilayah({ rw_list }: WilayahProps) {
 
     const handleDelete = () => {
         if (!deletingId) return;
-        router.delete(`/admin/wilayah/${deletingId.type}/${deletingId.id}`, {
+        router.delete(`/admin/${deletingId.type}/${deletingId.id}`, {
             onSuccess: () => setDeletingId(null),
         });
     };
 
     return (
         <AdminLayout title="Kelola Wilayah">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800">Daftar RW</h3>
+            <div className="card" style={{ maxWidth: '760px' }}>
+                <div className="card-head">
+                    <h3>Daftar RW</h3>
                 </div>
-                <div className="p-4">
-                    <form onSubmit={handleAddRw} className="flex gap-2 mb-4">
-                        <input type="text" value={rwData.nama} onChange={e => setRwData('nama', e.target.value)} placeholder="Nama RW (Contoh: RW 01)" className="flex-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required />
-                        <button type="submit" disabled={rwProcessing} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 disabled:opacity-50">Tambah RW</button>
+                <div style={{ padding: '18px 20px' }}>
+                    <form onSubmit={handleAddRw} style={{ display: 'flex', gap: '8px', marginBottom: '18px' }}>
+                        <input type="text" value={rwData.nama} onChange={e => setRwData('nama', e.target.value)} placeholder="Nama RW, contoh: RW 03" className="input" style={{ flex: 1 }} required />
+                        <button className="btn btn-primary" type="submit" disabled={rwProcessing}>Tambah RW</button>
                     </form>
-                    {rwErrors.nama && <div className="text-red-500 text-sm mb-4">{rwErrors.nama}</div>}
+                    {rwErrors.nama && <div style={{ color: 'var(--maroon)', fontSize: '12.5px', marginBottom: '14px' }}>{rwErrors.nama}</div>}
 
-                    <div className="space-y-2">
-                        {rw_list.map(rw => (
-                            <div key={rw.id} className="border border-gray-200 rounded-md overflow-hidden">
-                                <div className="bg-gray-50 px-4 py-3 flex justify-between items-center cursor-pointer hover:bg-gray-100" onClick={() => setExpandedRw(expandedRw === rw.id ? null : rw.id)}>
-                                    <div className="font-medium text-gray-800">{rw.nama}</div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-sm text-gray-500">{rw.rt?.length || 0} RT</span>
-                                        <button onClick={(e) => { e.stopPropagation(); confirmDelete('rw', rw.id); }} className="text-red-500 hover:text-red-700 text-sm">Hapus</button>
-                                        <span className="text-gray-400">{expandedRw === rw.id ? '▼' : '▶'}</span>
-                                    </div>
-                                </div>
-                                {expandedRw === rw.id && (
-                                    <div className="p-4 bg-white border-t border-gray-200">
-                                        <form onSubmit={(e) => handleAddRt(e, rw.id)} className="flex gap-2 mb-4">
-                                            <input type="text" value={rtData.rw_id === rw.id.toString() ? rtData.nama : ''} onChange={e => {
-                                                setRtData('rw_id', rw.id.toString());
-                                                setRtData('nama', e.target.value);
-                                            }} placeholder="Nama RT (Contoh: RT 01)" className="flex-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" required />
-                                            <button type="submit" disabled={rtProcessing} className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:opacity-50 text-sm">Tambah RT</button>
-                                        </form>
-                                        {rtErrors.nama && rtData.rw_id === rw.id.toString() && <div className="text-red-500 text-sm mb-4">{rtErrors.nama}</div>}
-                                        
-                                        <div className="space-y-1">
-                                            {rw.rt?.map(rt => (
-                                                <div key={rt.id} className="flex justify-between items-center p-2 hover:bg-gray-50 rounded">
-                                                    <span className="text-sm font-medium text-gray-700">{rt.nama}</span>
-                                                    <button onClick={() => confirmDelete('rt', rt.id)} className="text-red-500 hover:text-red-700 text-xs">Hapus</button>
-                                                </div>
-                                            ))}
-                                            {(!rw.rt || rw.rt.length === 0) && (
-                                                <div className="text-sm text-gray-500 italic p-2">Belum ada RT di wilayah ini.</div>
-                                            )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        {rw_list.map(rw => {
+                            const isExpanded = expandedRw === rw.id;
+                            const rwNum = rw.nama.replace(/\D/g, '') || '-';
+                            return (
+                                <div key={rw.id} className={`accordion-item ${!isExpanded ? 'is-collapsed' : ''}`}>
+                                    <div className="accordion-head" onClick={() => setExpandedRw(isExpanded ? null : rw.id)}>
+                                        <div className="rw-left">
+                                            <span className="rw-num">{rwNum}</span>
+                                            <div>
+                                                <div className="rw-name">{rw.nama}</div>
+                                                <div className="rw-meta">{rw.rt?.length || 0} RT</div>
+                                            </div>
+                                        </div>
+                                        <div className="rw-right">
+                                            <button onClick={(e) => { e.stopPropagation(); confirmDelete('rw', rw.id); }} className="btn-link danger" style={{ marginRight: '10px' }}>Hapus RW</button>
+                                            <svg className="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
                                         </div>
                                     </div>
-                                )}
-                            </div>
-                        ))}
+                                    {isExpanded && (
+                                        <div style={{ padding: '16px 18px', background: '#fff' }}>
+                                            <form onSubmit={(e) => handleAddRt(e, rw.id)} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                                                <input type="text" value={rtData.rw_id === rw.id.toString() ? rtData.nama : ''} onChange={e => {
+                                                    setRtData('rw_id', rw.id.toString());
+                                                    setRtData('nama', e.target.value);
+                                                }} placeholder="Nama RT, contoh: RT 03" className="input" style={{ flex: 1 }} required />
+                                                <button className="btn btn-accent" type="submit" disabled={rtProcessing}>Tambah RT</button>
+                                            </form>
+                                            {rtErrors.nama && rtData.rw_id === rw.id.toString() && <div style={{ color: 'var(--maroon)', fontSize: '12.5px', marginBottom: '14px' }}>{rtErrors.nama}</div>}
+                                            
+                                            {rw.rt && rw.rt.length > 0 ? (
+                                                <div style={{ border: '1px solid var(--line)', borderRadius: '8px', overflow: 'hidden' }}>
+                                                    {rw.rt.map((rt, idx) => (
+                                                        <div key={rt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: idx !== rw.rt.length - 1 ? '1px solid var(--line)' : 'none' }}>
+                                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                                <span className="rw-num" style={{ background: 'var(--slate-soft)', color: 'var(--slate)', width: '24px', height: '24px', fontSize: '11.5px' }}>
+                                                                    {rt.nama.replace(/\D/g, '') || '-'}
+                                                                </span>
+                                                                <span style={{ fontWeight: 500, fontSize: '13.5px' }}>{rt.nama}</span>
+                                                            </div>
+                                                            <button onClick={() => confirmDelete('rt', rt.id)} className="btn-link danger">Hapus</button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div style={{ fontSize: '13px', color: 'var(--text-soft)', fontStyle: 'italic', padding: '10px 0' }}>Belum ada RT di wilayah ini.</div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                         {rw_list.length === 0 && (
-                            <div className="text-center py-6 text-gray-500">Belum ada data wilayah.</div>
+                            <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--text-soft)' }}>Belum ada data wilayah.</div>
                         )}
                     </div>
                 </div>

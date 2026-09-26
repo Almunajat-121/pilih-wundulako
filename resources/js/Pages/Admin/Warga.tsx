@@ -36,64 +36,77 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
     };
 
     return (
-        <AdminLayout title="Data Warga">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <form onSubmit={handleSearch} className="flex gap-2 w-full sm:w-64">
-                        <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari nama atau NIK..." className="w-full border-gray-300 rounded-md text-sm shadow-sm" />
-                        <button type="submit" className="bg-gray-100 px-3 py-2 rounded border border-gray-300 text-sm">Cari</button>
+        <AdminLayout title="Data Warga (DPT)">
+            <div className="card">
+                <div className="toolbar">
+                    <form onSubmit={handleSearch} className="search-wrap" style={{ display: 'flex', gap: '8px' }}>
+                        <div style={{ position: 'relative' }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari nama atau NIK..." className="input" />
+                        </div>
+                        <button type="submit" className="btn btn-outline" style={{ display: 'none' }}>Cari</button>
                     </form>
                     
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <select value={filters.rt_id || ''} onChange={e => handleFilter('rt_id', e.target.value)} className="border-gray-300 rounded-md text-sm">
-                            <option value="">Semua Wilayah</option>
-                            {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} ({rt.rw?.nama})</option>)}
-                        </select>
-                        <select value={filters.status || ''} onChange={e => handleFilter('status', e.target.value)} className="border-gray-300 rounded-md text-sm">
+                    <div className="toolbar-filters">
+                        <select value={filters.status || ''} onChange={e => handleFilter('status', e.target.value)} className="select">
                             <option value="">Semua Status</option>
-                            <option value="sudah_memilih">Sudah Memilih (Semua)</option>
+                            <option value="sudah_memilih">Sudah Memilih</option>
                             <option value="belum_dikunjungi">Belum Dikunjungi</option>
-                            <option value="bermasalah">Bermasalah (&gt;= 3x Kunjungan)</option>
+                            <option value="bermasalah">Bermasalah</option>
                         </select>
+                        <select value={filters.rt_id || ''} onChange={e => handleFilter('rt_id', e.target.value)} className="select">
+                            <option value="">Semua Wilayah</option>
+                            {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
+                        </select>
+                        <button className="btn btn-outline" onClick={() => alert('Fitur Import DPT akan segera hadir.')}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+                            Import DPT
+                        </button>
+                        <button className="btn btn-primary" onClick={() => alert('Gunakan aplikasi Petugas untuk mendata warga secara langsung.')}>+ Tambah</button>
                     </div>
                 </div>
                 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div style={{ overflowX: 'auto' }}>
+                    <table>
                         <thead>
-                            <tr className="bg-white border-b text-sm text-gray-500">
-                                <th className="p-3 font-medium">Nama</th>
-                                <th className="p-3 font-medium">Wilayah</th>
-                                <th className="p-3 font-medium">Status RT</th>
-                                <th className="p-3 font-medium">Status RW</th>
-                                <th className="p-3 font-medium text-center">Kunjungan</th>
-                                <th className="p-3 font-medium text-center">Aksi</th>
+                            <tr>
+                                <th>Nama lengkap</th>
+                                <th>Alamat / Wilayah</th>
+                                <th>Status Pemilihan</th>
+                                <th>Kunjungan</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
-                            {warga.data.map(item => (
-                                <tr key={item.id} className={`hover:bg-gray-50 text-sm ${item.jumlah_kunjungan >= 3 && item.status_vote_rt !== 'sudah_memilih' ? 'bg-red-50' : ''}`}>
-                                    <td className="p-3">
-                                        <div className="font-medium text-gray-800">{item.nama}</div>
-                                        <div className="text-xs text-gray-500 truncate max-w-[200px]">{item.alamat}</div>
-                                    </td>
-                                    <td className="p-3">
-                                        <div className="text-gray-800">{item.rt?.nama}</div>
-                                        <div className="text-xs text-gray-500">{item.rt?.rw?.nama}</div>
-                                    </td>
-                                    <td className="p-3">{getStatusBadge(item.status_vote_rt)}</td>
-                                    <td className="p-3">{getStatusBadge(item.status_vote_rw)}</td>
-                                    <td className="p-3 text-center">
-                                        <span className={`font-semibold ${item.jumlah_kunjungan >= 3 ? 'text-red-600' : 'text-gray-700'}`}>{item.jumlah_kunjungan}x</span>
-                                    </td>
-                                    <td className="p-3 text-center">
-                                        <Link href={`/admin/warga/${item.id}`} className="text-blue-600 hover:text-blue-800 text-xs underline">Detail</Link>
-                                    </td>
-                                </tr>
-                            ))}
+                        <tbody>
+                            {warga.data.map(item => {
+                                const isFlagged = item.jumlah_kunjungan >= 3 && item.status_vote_rt !== 'sudah_memilih';
+                                return (
+                                    <tr key={item.id} className={isFlagged ? 'row-flag' : ''}>
+                                        <td>
+                                            <div style={{ fontWeight: 600 }}>{item.nama}</div>
+                                            {item.tanggal_lahir && <div className="mono" style={{ color: 'var(--text-soft)', fontSize: '11.5px', marginTop: 2 }}>Lahir: {item.tanggal_lahir}</div>}
+                                        </td>
+                                        <td>
+                                            <div>{item.rt?.nama} / {item.rt?.rw?.nama}</div>
+                                            <div style={{ color: 'var(--text-soft)', fontSize: '12px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '200px' }}>{item.alamat}</div>
+                                        </td>
+                                        <td>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                                                {getStatusBadge(item.status_vote_rt)}
+                                            </div>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <span style={{ fontWeight: 600, color: isFlagged ? 'var(--maroon)' : 'inherit' }}>{item.jumlah_kunjungan}x</span>
+                                        </td>
+                                        <td>
+                                            <button onClick={(e) => { e.preventDefault(); alert('Fitur detail warga akan hadir di pembaruan selanjutnya.'); }} className="btn-link">Edit</button>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
                             {warga.data.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-500">Data tidak ditemukan.</td>
+                                    <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -101,9 +114,9 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                 </div>
                 
                 {warga.last_page > 1 && (
-                    <div className="p-4 border-t border-gray-100 flex justify-center gap-1">
+                    <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
                         {warga.links.map((link, idx) => (
-                            <Link key={idx} href={link.url || '#'} className={`px-3 py-1 text-sm rounded ${link.active ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'} ${!link.url && 'opacity-50 cursor-not-allowed'}`} dangerouslySetInnerHTML={{ __html: link.label }} />
+                            <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
                         ))}
                     </div>
                 )}

@@ -35,7 +35,7 @@ export default function Pengguna({ users, rt_list }: PenggunaProps) {
     };
 
     const handleToggleStatus = (id: number) => {
-        router.put(`/admin/pengguna/${id}/toggle-status`);
+        router.put(`/admin/pengguna/${id}/toggle-active`);
     };
 
     const handleUnlock = (id: number) => {
@@ -79,64 +79,79 @@ export default function Pengguna({ users, rt_list }: PenggunaProps) {
     });
 
     return (
-        <AdminLayout title="Kelola Pengguna">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h3 className="font-semibold text-gray-800">Daftar Pengguna</h3>
-                    <button onClick={() => setShowAddModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">Tambah Pengguna</button>
+        <AdminLayout title="Pengguna & Petugas">
+            <div className="card">
+                <div className="toolbar">
+                    <div className="search-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                        <input type="text" placeholder="Cari nama atau username..." className="input" />
+                    </div>
+                    <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>+ Tambah Pengguna</button>
                 </div>
                 
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div style={{ overflowX: 'auto' }}>
+                    <table>
                         <thead>
-                            <tr className="bg-white border-b text-sm text-gray-500">
-                                <th className="p-3 font-medium">Nama</th>
-                                <th className="p-3 font-medium">Username</th>
-                                <th className="p-3 font-medium">Role</th>
-                                <th className="p-3 font-medium">Status</th>
-                                <th className="p-3 font-medium">Wilayah Tugas</th>
-                                <th className="p-3 font-medium text-center">Aksi</th>
+                            <tr>
+                                <th>Nama</th>
+                                <th>Username</th>
+                                <th>Peran</th>
+                                <th>Tugas wilayah</th>
+                                <th>Status</th>
+                                <th style={{ textAlign: 'right' }}>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                             {users.map(user => (
-                                <tr key={user.id} className="hover:bg-gray-50 text-sm">
-                                    <td className="p-3 font-medium text-gray-800">{user.nama}</td>
-                                    <td className="p-3 text-gray-600">{user.username}</td>
-                                    <td className="p-3">
-                                        <span className={`px-2 py-1 rounded text-xs font-medium ${user.role === 'admin' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
-                                            {user.role}
+                                <tr key={user.id}>
+                                    <td style={{ fontWeight: 600 }}>{user.nama}</td>
+                                    <td className="mono" style={{ color: 'var(--text-soft)' }}>{user.username}</td>
+                                    <td>
+                                        <span className={`badge ${user.role === 'admin' ? 'badge-ink' : 'badge-slate'}`}>
+                                            {user.role === 'admin' ? 'Admin' : 'Petugas'}
                                         </span>
                                     </td>
-                                    <td className="p-3">
-                                        {user.locked_until && new Date(user.locked_until) > new Date() ? (
-                                            <span className="px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800">Terkunci</span>
-                                        ) : user.is_active ? (
-                                            <span className="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">Aktif</span>
+                                    <td>
+                                        {user.role === 'admin' ? (
+                                            <span style={{ color: 'var(--text-soft)', fontSize: '13px' }}>Semua wilayah</span>
                                         ) : (
-                                            <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">Nonaktif</span>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                                {user.wilayah?.map(rt => (
+                                                    <span key={rt.id} className="tag">{rt.nama} ({rt.rw?.nama})</span>
+                                                ))}
+                                                {(!user.wilayah || user.wilayah.length === 0) && (
+                                                    <span style={{ color: 'var(--text-soft)', fontSize: '12.5px', fontStyle: 'italic' }}>Belum ada tugas</span>
+                                                )}
+                                            </div>
                                         )}
                                     </td>
-                                    <td className="p-3 text-gray-500 max-w-xs truncate">
-                                        {user.role === 'admin' ? 'Semua Wilayah' : (
-                                            user.wilayah?.map(rt => rt.nama).join(', ') || 'Belum ada tugas'
+                                    <td>
+                                        {user.locked_until && new Date(user.locked_until) > new Date() ? (
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--maroon)', fontWeight: 600, fontSize: '12.5px' }}>
+                                                <span className="dot dot-off"></span>Terkunci
+                                            </span>
+                                        ) : user.is_active ? (
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--moss)', fontWeight: 600, fontSize: '12.5px' }}>
+                                                <span className="dot"></span>Aktif
+                                            </span>
+                                        ) : (
+                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-soft)', fontWeight: 600, fontSize: '12.5px' }}>
+                                                <span className="dot" style={{ background: 'var(--slate)' }}></span>Nonaktif
+                                            </span>
                                         )}
                                     </td>
-                                    <td className="p-3 text-center space-x-2">
+                                    <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                                         {user.role === 'petugas' && (
-                                            <button onClick={() => openAssignModal(user)} className="text-blue-600 hover:text-blue-800 p-1 text-xs underline">Tugas</button>
+                                            <button onClick={() => openAssignModal(user)} className="btn-link" style={{ marginRight: '8px' }}>Tugas RT</button>
                                         )}
-                                        <button onClick={() => handleToggleStatus(user.id)} className="text-gray-600 hover:text-gray-800 p-1 text-xs underline">{user.is_active ? 'Nonaktifkan' : 'Aktifkan'}</button>
-                                        {user.locked_until && new Date(user.locked_until) > new Date() && (
-                                            <button onClick={() => handleUnlock(user.id)} className="text-green-600 hover:text-green-800 p-1 text-xs underline">Buka Kunci</button>
-                                        )}
-                                        <button onClick={() => handleResetPassword(user.id)} className="text-red-600 hover:text-red-800 p-1 text-xs underline">Reset PW</button>
+                                        <button onClick={() => handleToggleStatus(user.id)} className="btn-link danger" style={{ marginRight: '8px' }}>{user.is_active ? 'Blokir' : 'Aktifkan'}</button>
+                                        <button onClick={() => handleResetPassword(user.id)} className="btn-link danger">Reset PW</button>
                                     </td>
                                 </tr>
                             ))}
                             {users.length === 0 && (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-500">Data tidak ditemukan.</td>
+                                    <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
                                 </tr>
                             )}
                         </tbody>

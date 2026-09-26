@@ -34,120 +34,108 @@ export default function Dashboard({ stats, progres_per_rw, kandidat_rt, kandidat
 
     return (
         <AdminLayout title="Dashboard">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-                    <div className="text-gray-500 text-sm font-medium mb-1">Total Warga</div>
-                    <div className="text-3xl font-bold text-gray-800">{stats.total_warga}</div>
+            <div className="grid-stats">
+                <div className="stat" style={{ '--bar': 'var(--ink)' } as React.CSSProperties}>
+                    <p className="stat-label">Total warga DPT</p>
+                    <p className="stat-value num">{stats.total_warga}</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-                    <div className="text-gray-500 text-sm font-medium mb-1">Sudah Memilih RT</div>
-                    <div className="text-3xl font-bold text-blue-600">{stats.sudah_memilih_rt}</div>
+                <div className="stat" style={{ '--bar': 'var(--moss)' } as React.CSSProperties}>
+                    <p className="stat-label">Sudah memilih (RW)</p>
+                    <p className="stat-value num" style={{ color: 'var(--moss)' }}>{stats.sudah_memilih_rw}</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-                    <div className="text-gray-500 text-sm font-medium mb-1">Sudah Memilih RW</div>
-                    <div className="text-3xl font-bold text-indigo-600">{stats.sudah_memilih_rw}</div>
+                <div className="stat" style={{ '--bar': 'var(--brass)' } as React.CSSProperties}>
+                    <p className="stat-label">Belum dikunjungi</p>
+                    <p className="stat-value num" style={{ color: 'var(--brass)' }}>{stats.belum_dikunjungi}</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-center">
-                    <div className="text-gray-500 text-sm font-medium mb-1">Belum Dikunjungi</div>
-                    <div className="text-3xl font-bold text-yellow-600">{stats.belum_dikunjungi}</div>
+                <div className="stat" style={{ '--bar': 'var(--maroon)' } as React.CSSProperties}>
+                    <p className="stat-label">Tidak ditemukan / menolak</p>
+                    <p className="stat-value num" style={{ color: 'var(--maroon)' }}>{stats.tidak_ditemukan + stats.menolak}</p>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-8">
-                <div className="p-4 border-b border-gray-100 bg-gray-50">
-                    <h3 className="font-semibold text-gray-700">Progres per RW</h3>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+            <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '20px', alignItems: 'start' }}>
+                <div className="card">
+                    <div className="card-head">
+                        <h3>Progres per wilayah</h3>
+                        <span style={{ fontSize: '12px', color: 'var(--text-soft)' }}>Diperbarui otomatis tiap kunjungan tersimpan</span>
+                    </div>
+                    <table>
                         <thead>
-                            <tr className="bg-white border-b text-sm text-gray-500">
-                                <th className="p-3 font-medium">RW</th>
-                                <th className="p-3 font-medium text-center">Total Warga</th>
-                                <th className="p-3 font-medium text-center">Progres RT</th>
-                                <th className="p-3 font-medium text-center">Progres RW</th>
+                            <tr>
+                                <th>Wilayah</th>
+                                <th>Total DPT</th>
+                                <th>Suara masuk (RW)</th>
+                                <th>Progres</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                             {progres_per_rw.map((rw, idx) => (
-                                <tr key={idx} className="hover:bg-gray-50 transition-colors">
-                                    <td className="p-3 font-medium text-gray-800">{rw.rw_nama}</td>
-                                    <td className="p-3 text-center">{rw.total}</td>
-                                    <td className="p-3">
-                                        <div className="flex items-center gap-2 justify-center">
-                                            <span className="text-sm">{rw.persen_rt.toFixed(1)}%</span>
-                                            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                                <div className="h-full bg-blue-500 rounded-full" style={{ width: `${rw.persen_rt}%` }}></div>
+                                <tr key={idx}>
+                                    <td style={{ fontWeight: 600 }}>{rw.rw_nama}</td>
+                                    <td className="num">{rw.total}</td>
+                                    <td className="num" style={{ color: 'var(--moss)', fontWeight: 600 }}>{rw.sudah_rw}</td>
+                                    <td>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                            <div className="progress" style={{ maxWidth: '150px' }}>
+                                                <span style={{ width: `${rw.persen_rw}%` }}></span>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="p-3">
-                                        <div className="flex items-center gap-2 justify-center">
-                                            <span className="text-sm">{rw.persen_rw.toFixed(1)}%</span>
-                                            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                                <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${rw.persen_rw}%` }}></div>
-                                            </div>
+                                            <span className="num" style={{ fontSize: '12.5px', color: 'var(--text-soft)' }}>{rw.persen_rw.toFixed(1)}%</span>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
                             {progres_per_rw.length === 0 && (
                                 <tr>
-                                    <td colSpan={4} className="p-4 text-center text-gray-500 text-sm">Tidak ada data RW</td>
+                                    <td colSpan={4} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '20px' }}>Tidak ada data wilayah</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                        <h3 className="font-semibold text-gray-700">Perolehan Suara Ketua RT</h3>
-                    </div>
-                    <div className="p-4 space-y-4">
-                        {kandidat_rt.map((kandidat) => (
-                            <div key={kandidat.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="font-medium text-gray-800">{kandidat.nama} <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded ml-2">{kandidat.rt?.nama}</span></span>
-                                    <span className="text-sm font-semibold">{kandidat.jumlah_suara} suara</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-blue-600 rounded-full" style={{ width: `${kandidat.persentase || 0}%` }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div className="card">
+                        <div className="card-head">
+                            <h3>Perolehan suara &mdash; Ketua RW Teratas</h3>
+                        </div>
+                        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {kandidat_rw.slice(0, 3).map((kandidat, idx) => (
+                                <div key={kandidat.id}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                                        <span style={{ fontWeight: 500 }}>{kandidat.nomor_urut}&nbsp;&nbsp;{kandidat.nama} <span className="tag" style={{ marginLeft: 8 }}>{kandidat.rw?.nama}</span></span>
+                                        <span className="num" style={{ fontWeight: 600 }}>{kandidat.jumlah_suara}</span>
                                     </div>
-                                    <span className="text-sm text-gray-600 w-12 text-right">{kandidat.persentase?.toFixed(1) || 0}%</span>
-                                </div>
-                            </div>
-                        ))}
-                        {kandidat_rt.length === 0 && (
-                            <p className="text-center text-gray-500 text-sm py-4">Belum ada data kandidat RT.</p>
-                        )}
-                    </div>
-                </div>
-                
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div className="p-4 border-b border-gray-100 bg-gray-50">
-                        <h3 className="font-semibold text-gray-700">Perolehan Suara Ketua RW</h3>
-                    </div>
-                    <div className="p-4 space-y-4">
-                        {kandidat_rw.map((kandidat) => (
-                            <div key={kandidat.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                                <div className="flex justify-between items-center mb-2">
-                                    <span className="font-medium text-gray-800">{kandidat.nama} <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded ml-2">{kandidat.rw?.nama}</span></span>
-                                    <span className="text-sm font-semibold">{kandidat.jumlah_suara} suara</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                                        <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${kandidat.persentase || 0}%` }}></div>
+                                    <div className="progress">
+                                        <span style={{ width: `${kandidat.persentase || 0}%`, background: idx === 0 ? 'var(--ink)' : 'var(--brass)' }}></span>
                                     </div>
-                                    <span className="text-sm text-gray-600 w-12 text-right">{kandidat.persentase?.toFixed(1) || 0}%</span>
                                 </div>
-                            </div>
-                        ))}
-                        {kandidat_rw.length === 0 && (
-                            <p className="text-center text-gray-500 text-sm py-4">Belum ada data kandidat RW.</p>
-                        )}
+                            ))}
+                            {kandidat_rw.length === 0 && (
+                                <p style={{ fontSize: '13px', color: 'var(--text-soft)', margin: 0, textAlign: 'center' }}>Belum ada data kandidat</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="card">
+                        <div className="card-head">
+                            <h3>Perolehan suara &mdash; Ketua RT Teratas</h3>
+                        </div>
+                        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {kandidat_rt.slice(0, 3).map((kandidat, idx) => (
+                                <div key={kandidat.id}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                                        <span style={{ fontWeight: 500 }}>{kandidat.nomor_urut}&nbsp;&nbsp;{kandidat.nama} <span className="tag" style={{ marginLeft: 8 }}>{kandidat.rt?.nama}</span></span>
+                                        <span className="num" style={{ fontWeight: 600 }}>{kandidat.jumlah_suara}</span>
+                                    </div>
+                                    <div className="progress">
+                                        <span style={{ width: `${kandidat.persentase || 0}%`, background: idx === 0 ? 'var(--moss)' : 'var(--slate)' }}></span>
+                                    </div>
+                                </div>
+                            ))}
+                            {kandidat_rt.length === 0 && (
+                                <p style={{ fontSize: '13px', color: 'var(--text-soft)', margin: 0, textAlign: 'center' }}>Belum ada data kandidat</p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

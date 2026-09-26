@@ -12,68 +12,89 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const navItems = [
-        { name: 'Dashboard', href: '/admin/dashboard', icon: '📊' },
-        { name: 'Wilayah', href: '/admin/rw', icon: '📍' },
-        { name: 'Kandidat', href: '/admin/kandidat', icon: '👥' },
-        { name: 'Pengguna', href: '/admin/pengguna', icon: '⚙️' },
-        { name: 'Data Warga', href: '/admin/warga', icon: '📋' },
-        { name: 'Audit Log', href: '/admin/audit', icon: '🛡️' },
-        { name: 'Pengaturan Voting', href: '/admin/voting-config', icon: '🔧' },
-        { name: 'Laporan', href: '/admin/laporan', icon: '📥' },
+        { 
+            name: 'Dashboard', href: '/admin/dashboard', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        },
+        { 
+            name: 'Kelola Wilayah', href: '/admin/rw', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        },
+        { 
+            name: 'Data Kandidat', href: '/admin/kandidat', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5"/></svg>
+        },
+        { 
+            name: 'Pengguna & Petugas', href: '/admin/pengguna', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M15 20c0-2.6 1.5-4.6 3.5-4.9"/></svg>
+        },
+        { 
+            name: 'Data Warga', href: '/admin/warga', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M6 16.5c0-1.5 1-2.5 2-2.5s2 1 2 2.5"/><path d="M14 10h5M14 14h3"/></svg>
+        },
+        { 
+            name: 'Audit & Log Suara', href: '/admin/audit', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/></svg>
+        },
+        { 
+            name: 'Pengaturan Voting', href: '/admin/voting-config', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        },
+        { 
+            name: 'Laporan', href: '/admin/laporan', 
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+        },
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
-            {title && <Head title={title} />}
+        <div className="admin-layout">
+            {title && <Head title={`${title} - Admin`} />}
             <Toast />
             
-            {/* Mobile overlay */}
-            {sidebarOpen && (
-                <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setSidebarOpen(false)}></div>
-            )}
-
-            {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 bg-gray-900 text-white w-64 flex flex-col z-30 transform transition-transform duration-300 md:relative md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <div className="p-4 border-b border-gray-800 flex items-center justify-between">
-                    <h2 className="text-xl font-bold text-blue-400">PilihPilih Admin</h2>
-                    <button className="md:hidden text-gray-400 hover:text-white" onClick={() => setSidebarOpen(false)}>✕</button>
+            <div className="sidebar">
+                <div className="brand">
+                    <div className="brand-mark">
+                        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l4.5 4.5L20 6"/></svg>
+                    </div>
+                    <div>
+                        <div className="brand-name">PilihPilih</div>
+                        <div className="brand-sub">Kelurahan Wundulako</div>
+                    </div>
                 </div>
-                <nav className="flex-1 overflow-y-auto p-4 space-y-2">
+                
+                <nav className="nav">
                     {navItems.map((item) => {
                         const isActive = typeof window !== 'undefined' && window.location.pathname.startsWith(item.href);
                         return (
-                            <Link key={item.name} href={item.href} className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-colors ${isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white'}`}>
-                                <span>{item.icon}</span>
-                                <span>{item.name}</span>
+                            <Link key={item.name} href={item.href} className={`nav-item ${isActive ? 'active' : ''}`}>
+                                {item.icon}
+                                {item.name}
                             </Link>
                         );
                     })}
                 </nav>
-                <div className="p-4 border-t border-gray-800 bg-gray-900">
-                    <p className="text-sm font-medium text-gray-400">Login sebagai</p>
-                    <p className="text-sm text-gray-200 capitalize">{auth?.user?.role || 'Admin'}</p>
+                
+                <div className="sidebar-foot">
+                    <div className="voting-chip"><span className="dot"></span> Sistem Administrator</div>
                 </div>
-            </aside>
+            </div>
 
-            {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
-                <header className="bg-white border-b px-4 py-3 flex items-center justify-between z-10 shadow-sm md:justify-end">
-                    <div className="flex items-center gap-3 md:hidden">
-                        <button onClick={() => setSidebarOpen(true)} className="text-gray-600 text-xl">☰</button>
-                        <span className="font-bold text-blue-700">PilihPilih</span>
+            <div className="main">
+                <header className="topbar">
+                    <div>
+                        <h2 className="page-title">{title}</h2>
+                        <p className="page-sub">Sistem Manajemen Pemilihan RT/RW Wundulako</p>
                     </div>
-                    
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm font-medium text-gray-700 hidden md:inline-block">Admin: {auth?.user?.nama}</span>
-                        <Link href="/logout" method="post" as="button" className="text-sm text-red-600 font-semibold hover:text-red-800">
-                            Logout
+                    <div className="topbar-right">
+                        <span className="user-name">Halo, {auth?.user?.nama || 'Administrator'}</span>
+                        <Link href="/logout" method="post" as="button" className="logout-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+                            Keluar
                         </Link>
                     </div>
                 </header>
-
-                <main className="flex-1 p-6 overflow-y-auto">
-                    {title && <h1 className="text-2xl font-bold text-gray-800 mb-6">{title}</h1>}
-                    
+                
+                <main className="content">
                     {children}
                 </main>
             </div>

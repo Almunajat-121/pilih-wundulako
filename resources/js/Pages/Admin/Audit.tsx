@@ -27,88 +27,119 @@ export default function Audit({ votes, status_logs, tab, filters }: AuditProps) 
     };
 
     return (
-        <AdminLayout title="Audit Log">
-            <div className="mb-6 flex gap-2">
-                <Link href="/admin/audit?tab=votes" className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${tab === 'votes' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
-                    Log Suara
-                </Link>
-                <Link href="/admin/audit?tab=status_logs" className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${tab === 'status_logs' ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}>
-                    Log Status Warga
-                </Link>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
+        <AdminLayout title="Audit & Log Suara">
+            <div className="card">
+                <div className="tabs">
+                    <Link href="/admin/audit/votes" className={`tab ${tab === 'votes' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Suara</Link>
+                    <Link href="/admin/audit/status-logs" className={`tab ${tab === 'status_logs' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Perubahan Status</Link>
+                </div>
+                
+                <div style={{ overflowX: 'auto' }}>
                     {tab === 'votes' && votes && (
-                        <table className="w-full text-left border-collapse">
+                        <table>
                             <thead>
-                                <tr className="bg-gray-50 border-b text-sm text-gray-500">
-                                    <th className="p-3 font-medium">Waktu</th>
-                                    <th className="p-3 font-medium">Petugas</th>
-                                    <th className="p-3 font-medium">Warga</th>
-                                    <th className="p-3 font-medium">Kandidat Pilihan</th>
-                                    <th className="p-3 font-medium">Jenis</th>
-                                    <th className="p-3 font-medium">Status</th>
-                                    <th className="p-3 font-medium text-center">Aksi</th>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Petugas</th>
+                                    <th>Pemilih (Warga)</th>
+                                    <th>Pilihan & Tingkat</th>
+                                    <th>Status suara</th>
+                                    <th style={{ textAlign: 'right' }}>Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody>
                                 {votes.data.map(vote => (
-                                    <tr key={vote.id} className="hover:bg-gray-50 text-sm">
-                                        <td className="p-3 whitespace-nowrap">{new Date(vote.created_at).toLocaleString()}</td>
-                                        <td className="p-3 font-medium">{vote.petugas?.nama}</td>
-                                        <td className="p-3">{vote.warga?.nama}</td>
-                                        <td className="p-3">{vote.kandidat?.nama}</td>
-                                        <td className="p-3">{vote.jenis}</td>
-                                        <td className="p-3">
+                                    <tr key={vote.id} className={vote.status !== 'valid' ? 'row-flag' : ''}>
+                                        <td className="mono" style={{ color: 'var(--text-soft)', fontSize: '12.5px' }}>
+                                            {new Date(vote.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
+                                        </td>
+                                        <td style={{ fontWeight: 600 }}>{vote.petugas?.nama}</td>
+                                        <td>{vote.warga?.nama}</td>
+                                        <td>
+                                            <div style={{ fontWeight: 500 }}>{vote.kandidat?.nama}</div>
+                                            <div style={{ fontSize: '11.5px', color: 'var(--text-soft)', marginTop: 2 }}>Pemilihan {vote.jenis}</div>
+                                        </td>
+                                        <td>
                                             {vote.status === 'valid' ? (
-                                                <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Valid</span>
+                                                <span className="badge badge-moss">Sah</span>
                                             ) : (
-                                                <span className="px-2 py-1 bg-red-100 text-red-800 rounded text-xs" title={vote.alasan_void || ''}>Void</span>
+                                                <span className="badge badge-maroon">Dibatalkan</span>
                                             )}
                                         </td>
-                                        <td className="p-3 text-center">
-                                            {vote.status === 'valid' && (
-                                                <button onClick={() => setVoidModal(vote.id)} className="text-red-600 hover:text-red-800 text-xs font-semibold px-2 py-1 border border-red-200 rounded">VOID</button>
+                                        <td style={{ textAlign: 'right' }}>
+                                            {vote.status === 'valid' ? (
+                                                <button onClick={() => setVoidModal(vote.id)} className="btn btn-danger btn-sm">Batalkan suara (void)</button>
+                                            ) : (
+                                                <div style={{ fontSize: '11.5px', color: 'var(--text-soft)', fontStyle: 'italic', textAlign: 'right' }}>
+                                                    {vote.alasan_void}
+                                                </div>
                                             )}
                                         </td>
                                     </tr>
                                 ))}
+                                {votes.data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     )}
                     
                     {tab === 'status_logs' && status_logs && (
-                        <table className="w-full text-left border-collapse">
+                        <table>
                             <thead>
-                                <tr className="bg-gray-50 border-b text-sm text-gray-500">
-                                    <th className="p-3 font-medium">Waktu</th>
-                                    <th className="p-3 font-medium">Aktor</th>
-                                    <th className="p-3 font-medium">Warga</th>
-                                    <th className="p-3 font-medium">Jenis</th>
-                                    <th className="p-3 font-medium">Perubahan Status</th>
-                                    <th className="p-3 font-medium">Alasan</th>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Aktor</th>
+                                    <th>Warga</th>
+                                    <th>Jenis</th>
+                                    <th>Perubahan Status</th>
+                                    <th>Alasan</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody>
                                 {status_logs.data.map(log => (
-                                    <tr key={log.id} className="hover:bg-gray-50 text-sm">
-                                        <td className="p-3 whitespace-nowrap">{new Date(log.created_at).toLocaleString()}</td>
-                                        <td className="p-3 font-medium">{log.aktor?.nama || 'Sistem'}</td>
-                                        <td className="p-3">{log.warga?.nama}</td>
-                                        <td className="p-3">{log.jenis}</td>
-                                        <td className="p-3">
-                                            <span className="text-gray-500">{log.status_lama}</span> 
-                                            <span className="mx-2">→</span> 
-                                            <span className="font-semibold text-gray-800">{log.status_baru}</span>
+                                    <tr key={log.id}>
+                                        <td className="mono" style={{ color: 'var(--text-soft)', fontSize: '12.5px' }}>
+                                            {new Date(log.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
                                         </td>
-                                        <td className="p-3 text-gray-600">{log.alasan || '-'}</td>
+                                        <td style={{ fontWeight: 600 }}>{log.aktor?.nama || 'Sistem'}</td>
+                                        <td>{log.warga?.nama}</td>
+                                        <td>{log.jenis}</td>
+                                        <td>
+                                            <span style={{ color: 'var(--text-soft)' }}>{log.status_lama}</span> 
+                                            <span style={{ margin: '0 8px', color: 'var(--line-2)' }}>→</span> 
+                                            <span style={{ fontWeight: 600 }}>{log.status_baru}</span>
+                                        </td>
+                                        <td style={{ color: 'var(--text-soft)', fontSize: '12.5px' }}>{log.alasan || '-'}</td>
                                     </tr>
                                 ))}
+                                {status_logs.data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     )}
                 </div>
+                
+                {tab === 'votes' && votes && votes.last_page > 1 && (
+                    <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                        {votes.links.map((link, idx) => (
+                            <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
+                        ))}
+                    </div>
+                )}
+                
+                {tab === 'status_logs' && status_logs && status_logs.last_page > 1 && (
+                    <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                        {status_logs.links.map((link, idx) => (
+                            <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
+                        ))}
+                    </div>
+                )}
             </div>
 
             {voidModal && (

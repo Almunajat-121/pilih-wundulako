@@ -60,81 +60,116 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
 
     return (
         <PublicLayout>
-            <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 text-center">
-                <p className="text-sm text-blue-800 mb-1">Total suara masuk:</p>
-                <p className="text-2xl font-bold text-blue-900">{Math.max(data.total_sudah_memilih_rt, data.total_sudah_memilih_rw)} <span className="text-lg font-normal">dari {data.total_warga} warga</span></p>
-                <div className="w-full max-w-md mx-auto bg-blue-200 h-2 rounded-full mt-3 overflow-hidden">
-                    <div className="bg-blue-600 h-full rounded-full transition-all duration-1000" style={{ width: `${Math.min(100, (Math.max(data.total_sudah_memilih_rt, data.total_sudah_memilih_rw) / Math.max(1, data.total_warga)) * 100)}%` }}></div>
+            <div className="public-hero">
+                <div className="public-brand">
+                    <div className="public-mark">
+                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l4.5 4.5L20 6"/></svg>
+                    </div>
+                    <span style={{ fontFamily: "'Fraunces', serif", fontSize: '20px', fontWeight: 600 }}>PilihPilih</span>
+                </div>
+                <h1 className="public-title">Live Count Pemilihan RT/RW</h1>
+                <p className="public-sub">Kelurahan Wundulako &middot; hasil suara sah, diperbarui otomatis</p>
+                <div className="live-pill">
+                    <span className="live-dot"></span> Voting sedang berjalan &middot; diperbarui {new Date(data.terakhir_diperbarui).toLocaleTimeString('id-ID')} WITA
                 </div>
             </div>
 
-            <div className="flex overflow-x-auto gap-2 mb-6 pb-2 no-scrollbar">
+            <div className="stat-strip">
+                <div className="stat-box">
+                    <p className="stat-box-label">Total suara masuk</p>
+                    <p className="stat-box-value num">{Math.max(data.total_sudah_memilih_rt, data.total_sudah_memilih_rw)}</p>
+                </div>
+                <div className="stat-box">
+                    <p className="stat-box-label">Dari total DPT</p>
+                    <p className="stat-box-value num">{data.total_warga}</p>
+                </div>
+                <div className="stat-box">
+                    <p className="stat-box-label">Progres kelurahan</p>
+                    <p className="stat-box-value num" style={{ color: 'var(--brass)' }}>
+                        {data.total_warga > 0 ? Math.round((Math.max(data.total_sudah_memilih_rt, data.total_sudah_memilih_rw) / data.total_warga) * 100) : 0}%
+                    </p>
+                </div>
+            </div>
+
+            <div className="tabs-pill no-scrollbar">
                 {rwList.map(rw => (
                     <button 
                         key={rw} 
                         onClick={() => setFilterRw(rw)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${filterRw === rw ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'}`}
+                        className={`tab-pill ${filterRw === rw ? 'active' : ''}`}
                     >
                         {rw}
                     </button>
                 ))}
             </div>
 
-            <div className="space-y-8">
-                {/* Ketua RW Section */}
-                <section>
-                    <h2 className="text-xl font-bold text-gray-800 border-b-2 border-indigo-500 pb-2 mb-4 inline-block">Hasil Pemilihan Ketua RW</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {Object.entries(groupedRw).map(([wilayah, kandidats]) => (
-                            <div key={wilayah} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <h3 className="font-bold text-gray-700 mb-4 bg-indigo-50 px-3 py-1 rounded inline-block text-sm">{wilayah}</h3>
-                                <div className="space-y-4">
-                                    {kandidats.sort((a,b) => b.jumlah_suara - a.jumlah_suara).map(k => (
-                                        <div key={k.id}>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="font-medium text-gray-800">{k.nomor_urut}. {k.nama}</span>
-                                                <span className="font-bold">{k.jumlah_suara} ({k.persentase.toFixed(1)}%)</span>
-                                            </div>
-                                            <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                                                <div className="bg-indigo-500 h-full rounded-full transition-all duration-1000" style={{ width: `${k.persentase}%` }}></div>
-                                            </div>
+            {/* Ketua RW Section */}
+            {Object.entries(groupedRw).map(([wilayah, kandidats]) => {
+                const totalSuaraWilayah = kandidats.reduce((sum, k) => sum + k.jumlah_suara, 0);
+                return (
+                    <div key={`rw-${wilayah}`} className="result-card">
+                        <div className="result-head">
+                            <h2>Pemilihan Ketua {wilayah}</h2>
+                            <span>{totalSuaraWilayah} suara sah</span>
+                        </div>
+                        {kandidats.sort((a,b) => b.jumlah_suara - a.jumlah_suara).map((k, index) => (
+                            <div key={k.id} className="result-row">
+                                <div className="result-row-top">
+                                    <div className="result-left">
+                                        <div className="result-num">{k.nomor_urut}</div>
+                                        <div>
+                                            <p className="result-name">{k.nama}</p>
+                                            <p className="result-votes num">{k.jumlah_suara} suara</p>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <div className="result-pct" style={index > 0 ? { color: 'var(--text-soft)' } : {}}>
+                                        {k.persentase.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div className="result-bar-bg">
+                                    <div className="result-bar-fill" style={{ width: `${k.persentase}%` }}></div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </section>
+                );
+            })}
 
-                {/* Ketua RT Section */}
-                <section>
-                    <h2 className="text-xl font-bold text-gray-800 border-b-2 border-blue-500 pb-2 mb-4 inline-block mt-4">Hasil Pemilihan Ketua RT</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {Object.entries(groupedRt).map(([wilayah, kandidats]) => (
-                            <div key={wilayah} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                                <h3 className="font-bold text-gray-700 mb-4 bg-blue-50 px-3 py-1 rounded inline-block text-sm">{wilayah}</h3>
-                                <div className="space-y-4">
-                                    {kandidats.sort((a,b) => b.jumlah_suara - a.jumlah_suara).map(k => (
-                                        <div key={k.id}>
-                                            <div className="flex justify-between text-sm mb-1">
-                                                <span className="font-medium text-gray-800">{k.nomor_urut}. {k.nama}</span>
-                                                <span className="font-bold">{k.jumlah_suara} ({k.persentase.toFixed(1)}%)</span>
-                                            </div>
-                                            <div className="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
-                                                <div className="bg-blue-500 h-full rounded-full transition-all duration-1000" style={{ width: `${k.persentase}%` }}></div>
-                                            </div>
+            {/* Ketua RT Section */}
+            {Object.entries(groupedRt).map(([wilayah, kandidats]) => {
+                const totalSuaraWilayah = kandidats.reduce((sum, k) => sum + k.jumlah_suara, 0);
+                return (
+                    <div key={`rt-${wilayah}`} className="result-card">
+                        <div className="result-head">
+                            <h2>Pemilihan Ketua {wilayah}</h2>
+                            <span>{totalSuaraWilayah} suara sah</span>
+                        </div>
+                        {kandidats.sort((a,b) => b.jumlah_suara - a.jumlah_suara).map((k, index) => (
+                            <div key={k.id} className="result-row">
+                                <div className="result-row-top">
+                                    <div className="result-left">
+                                        <div className="result-num">{k.nomor_urut}</div>
+                                        <div>
+                                            <p className="result-name">{k.nama}</p>
+                                            <p className="result-votes num">{k.jumlah_suara} suara</p>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <div className="result-pct" style={index > 0 ? { color: 'var(--text-soft)' } : {}}>
+                                        {k.persentase.toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div className="result-bar-bg">
+                                    <div className="result-bar-fill" style={{ width: `${k.persentase}%` }}></div>
                                 </div>
                             </div>
                         ))}
                     </div>
-                </section>
-            </div>
+                );
+            })}
 
-            <div className="mt-8 text-center text-sm text-gray-400">
-                Terakhir diperbarui: {new Date(data.terakhir_diperbarui).toLocaleString()}
-            </div>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-soft)', marginTop: '8px' }}>
+                Data agregat saja &middot; identitas pemilih tidak ditampilkan ke publik
+            </p>
         </PublicLayout>
     );
 }

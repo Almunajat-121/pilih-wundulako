@@ -11,88 +11,94 @@ interface ConfigProps extends PageProps {
 export default function VotingConfigPage({ config, rt_list }: ConfigProps) {
     const handleToggleGlobal = () => {
         if (confirm(`Yakin ingin ${config.voting_aktif_global ? 'menutup' : 'membuka'} voting untuk seluruh kelurahan?`)) {
-            router.put('/admin/pengaturan/global', { voting_aktif_global: !config.voting_aktif_global });
+            router.put('/admin/voting-config/global', { voting_aktif_global: !config.voting_aktif_global });
         }
     };
 
     const handleToggleLiveCount = () => {
         if (confirm(`Yakin ingin ${config.tampilkan_live_count ? 'menyembunyikan' : 'menampilkan'} live count ke publik?`)) {
-            router.put('/admin/pengaturan/live-count', { tampilkan_live_count: !config.tampilkan_live_count });
+            router.put('/admin/voting-config/live-count', { tampilkan_live_count: !config.tampilkan_live_count });
         }
     };
 
     const handleToggleRt = (id: number, current: boolean) => {
-        router.put(`/admin/pengaturan/rt/${id}`, { voting_aktif: !current });
+        router.put(`/admin/voting-config/rt/${id}`, { voting_aktif: !current });
     };
 
     return (
         <AdminLayout title="Pengaturan Voting">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-800 mb-2">Voting Seluruh Kelurahan</h3>
-                        <p className="text-sm text-gray-500 mb-6">Mengontrol status voting secara global. Jika dimatikan, semua RT otomatis tidak dapat melakukan voting terlepas dari pengaturan per-RT.</p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '24px', marginBottom: '28px' }}>
+                <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '24px', flex: 1 }}>
+                        <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Voting Seluruh Kelurahan</h3>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-soft)', lineHeight: 1.5 }}>
+                            Mengontrol status voting secara global. Jika dimatikan, semua RT otomatis tidak dapat melakukan voting terlepas dari pengaturan per-RT.
+                        </p>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-3 h-3 rounded-full ${config.voting_aktif_global ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                            <span className="font-semibold">{config.voting_aktif_global ? 'Voting Aktif' : 'Voting Ditutup'}</span>
-                        </div>
-                        <button onClick={handleToggleGlobal} className={`px-4 py-2 rounded-md text-white font-medium text-sm transition-colors ${config.voting_aktif_global ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}>
-                            {config.voting_aktif_global ? 'Tutup Voting' : 'Buka Voting'}
+                    <div style={{ padding: '16px 24px', background: 'var(--paper)', borderTop: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: 600, color: config.voting_aktif_global ? 'var(--moss)' : 'var(--maroon)' }}>
+                            <span className={`dot ${config.voting_aktif_global ? '' : 'dot-off'}`}></span>
+                            {config.voting_aktif_global ? 'Voting Berjalan' : 'Voting Dihentikan'}
+                        </span>
+                        <button onClick={handleToggleGlobal} className={config.voting_aktif_global ? 'btn btn-danger' : 'btn btn-primary'}>
+                            {config.voting_aktif_global ? 'Hentikan Global' : 'Mulai Global'}
                         </button>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col justify-between">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-800 mb-2">Tampilkan Live Count ke Publik</h3>
-                        <p className="text-sm text-gray-500 mb-6">Jika diaktifkan, warga dapat melihat perolehan suara secara langsung melalui halaman publik. Disarankan diaktifkan setelah voting selesai.</p>
+                <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ padding: '24px', flex: 1 }}>
+                        <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Tampilkan Live Count ke Publik</h3>
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-soft)', lineHeight: 1.5 }}>
+                            Jika diaktifkan, warga dapat melihat perolehan suara secara langsung melalui halaman publik. Disarankan diaktifkan setelah voting selesai.
+                        </p>
                     </div>
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border">
-                        <div className="flex items-center gap-3">
-                            <div className={`w-3 h-3 rounded-full ${config.tampilkan_live_count ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                            <span className="font-semibold">{config.tampilkan_live_count ? 'Ditampilkan' : 'Disembunyikan'}</span>
-                        </div>
-                        <button onClick={handleToggleLiveCount} className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${config.tampilkan_live_count ? 'bg-gray-200 text-gray-800 hover:bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700'}`}>
-                            {config.tampilkan_live_count ? 'Sembunyikan' : 'Tampilkan'}
+                    <div style={{ padding: '16px 24px', background: 'var(--paper)', borderTop: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', fontWeight: 600, color: config.tampilkan_live_count ? 'var(--moss)' : 'var(--slate)' }}>
+                            <span className="dot" style={{ background: config.tampilkan_live_count ? 'var(--moss)' : 'var(--slate)' }}></span>
+                            {config.tampilkan_live_count ? 'Ditampilkan' : 'Disembunyikan'}
+                        </span>
+                        <button onClick={handleToggleLiveCount} className={config.tampilkan_live_count ? 'btn btn-outline' : 'btn btn-primary'}>
+                            {config.tampilkan_live_count ? 'Sembunyikan' : 'Tampilkan Publik'}
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <div className="p-4 border-b border-gray-100 bg-gray-50">
-                    <h3 className="font-semibold text-gray-800">Pengaturan per RT</h3>
+            <div className="card">
+                <div className="card-head">
+                    <h3>Pengaturan per RT</h3>
                 </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
+                <div style={{ overflowX: 'auto' }}>
+                    <table>
                         <thead>
-                            <tr className="bg-white border-b text-sm text-gray-500">
-                                <th className="p-3 font-medium">Wilayah RT</th>
-                                <th className="p-3 font-medium">Wilayah RW</th>
-                                <th className="p-3 font-medium text-center">Status Voting</th>
-                                <th className="p-3 font-medium text-center">Aksi</th>
+                            <tr>
+                                <th>Wilayah RT</th>
+                                <th>Wilayah RW</th>
+                                <th style={{ textAlign: 'center' }}>Status Voting</th>
+                                <th style={{ textAlign: 'center' }}>Aksi</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody>
                             {rt_list.map(rt => (
-                                <tr key={rt.id} className="hover:bg-gray-50">
-                                    <td className="p-3 font-medium text-gray-800">{rt.nama}</td>
-                                    <td className="p-3 text-gray-600">{rt.rw?.nama}</td>
-                                    <td className="p-3 text-center">
-                                        <div className="flex justify-center items-center gap-2">
-                                            <div className={`w-2.5 h-2.5 rounded-full ${rt.voting_aktif ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                            <span className={`text-sm font-medium ${rt.voting_aktif ? 'text-green-700' : 'text-red-700'}`}>{rt.voting_aktif ? 'Aktif' : 'Ditutup'}</span>
-                                        </div>
+                                <tr key={rt.id} className={!rt.voting_aktif ? 'row-flag' : ''}>
+                                    <td style={{ fontWeight: 600 }}>{rt.nama}</td>
+                                    <td style={{ color: 'var(--text-soft)' }}>{rt.rw?.nama}</td>
+                                    <td style={{ textAlign: 'center' }}>
+                                        {rt.voting_aktif ? (
+                                            <span className="badge badge-moss">Aktif</span>
+                                        ) : (
+                                            <span className="badge badge-maroon">Ditutup</span>
+                                        )}
                                     </td>
-                                    <td className="p-3 text-center">
+                                    <td style={{ textAlign: 'center' }}>
                                         <button 
                                             onClick={() => handleToggleRt(rt.id, rt.voting_aktif)} 
                                             disabled={!config.voting_aktif_global}
-                                            className={`px-3 py-1 rounded text-xs font-semibold border ${rt.voting_aktif ? 'bg-white text-red-600 border-red-200 hover:bg-red-50' : 'bg-white text-green-600 border-green-200 hover:bg-green-50'} disabled:opacity-50 disabled:cursor-not-allowed`}
+                                            className={rt.voting_aktif ? "btn-link danger" : "btn-link"}
+                                            style={{ opacity: !config.voting_aktif_global ? 0.5 : 1, cursor: !config.voting_aktif_global ? 'not-allowed' : 'pointer' }}
                                         >
-                                            {rt.voting_aktif ? 'Tutup' : 'Buka'}
+                                            {rt.voting_aktif ? 'Tutup Voting' : 'Buka Voting'}
                                         </button>
                                     </td>
                                 </tr>

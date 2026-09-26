@@ -22,8 +22,8 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
     return (
         <PetugasLayout title="Update Status Kehadiran">
             <div className="mb-4">
-                <Link href={`/petugas/warga/${warga.id}`} className="text-blue-600 flex items-center gap-1 text-sm font-medium">
-                    <span>←</span> Kembali ke Detail Warga
+                <Link href={`/petugas/wilayah/${warga.rt_id}`} className="text-blue-600 flex items-center gap-1 text-sm font-medium">
+                    <span>&larr;</span> Kembali ke Daftar Warga
                 </Link>
             </div>
 
