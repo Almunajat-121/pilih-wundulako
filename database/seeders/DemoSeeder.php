@@ -16,74 +16,66 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
-        \ = Rw::firstOrCreate(['nama' => 'RW 01']);
-        \ = Rt::firstOrCreate(['rw_id' => \->id, 'nama' => 'RT 01']);
-        \ = Rt::firstOrCreate(['rw_id' => \->id, 'nama' => 'RT 02']);
+        $rw = Rw::firstOrCreate(['nama' => 'RW 01']);
+        $rt = Rt::firstOrCreate(['rw_id' => $rw->id, 'nama' => 'RT 01']);
+        $rt2 = Rt::firstOrCreate(['rw_id' => $rw->id, 'nama' => 'RT 02']);
 
-        \ = User::firstOrCreate(['username' => 'petugas_demo'], [
+        $petugas = User::firstOrCreate(['username' => 'petugas_demo'], [
             'nama' => 'Petugas Demo (RT 01)',
             'password' => Hash::make('password123'),
             'role' => 'petugas',
             'is_active' => true
         ]);
-        UserWilayah::firstOrCreate(['user_id' => \->id, 'rt_id' => \->id]);
+        UserWilayah::firstOrCreate(['user_id' => $petugas->id, 'rt_id' => $rt->id]);
 
-        \ = Kandidat::firstOrCreate(['rw_id' => \->id, 'nomor_urut' => 1, 'jenis' => 'RW'], ['nama' => 'Bapak Budi Santoso', 'visi_misi' => 'RW Aman, Tentram, dan Maju bersama warga.']);
-        \ = Kandidat::firstOrCreate(['rw_id' => \->id, 'nomor_urut' => 2, 'jenis' => 'RW'], ['nama' => 'Ibu Siti Aminah', 'visi_misi' => 'RW Bersih, Hijau, dan Sejahtera.']);
+        $kanRw1 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 1, 'jenis' => 'RW'], ['nama' => 'Bapak Budi Santoso', 'visi_misi' => 'RW Aman, Tentram, dan Maju bersama warga.']);
+        $kanRw2 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 2, 'jenis' => 'RW'], ['nama' => 'Ibu Siti Aminah', 'visi_misi' => 'RW Bersih, Hijau, dan Sejahtera.']);
 
-        \ = Kandidat::firstOrCreate(['rt_id' => \->id, 'nomor_urut' => 1, 'jenis' => 'RT'], ['nama' => 'Agus Yudhoyono', 'visi_misi' => 'Jalanan RT mulus tanpa lubang.']);
-        \ = Kandidat::firstOrCreate(['rt_id' => \->id, 'nomor_urut' => 2, 'jenis' => 'RT'], ['nama' => 'Faisal Basri', 'visi_misi' => 'Keamanan RT 24 Jam Nonstop.']);
+        $kanRt1 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 1, 'jenis' => 'RT'], ['nama' => 'Agus Yudhoyono', 'visi_misi' => 'Jalanan RT mulus tanpa lubang.']);
+        $kanRt2 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 2, 'jenis' => 'RT'], ['nama' => 'Faisal Basri', 'visi_misi' => 'Keamanan RT 24 Jam Nonstop.']);
 
-        \ = ['Andi', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fitri', 'Gita', 'Hadi', 'Iwan', 'Joko', 'Kiki', 'Lestari', 'Mira', 'Nina', 'Oki', 'Putri', 'Qori', 'Rina', 'Siti', 'Tono'];
-        for (\ = 1; \ <= 20; \++) {
-            \ = '740114' . str_pad(\, 10, '0', STR_PAD_LEFT);
-            Warga::firstOrCreate(['nik' => \], [
-                'rt_id' => \->id,
-                'nama' => \[\-1] . ' Wundulako',
-                'alamat' => 'Jl. Wundulako Blok A No. ' . \,
+        $names = ['Andi', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fitri', 'Gita', 'Hadi', 'Iwan', 'Joko', 'Kiki', 'Lestari', 'Mira', 'Nina', 'Oki', 'Putri', 'Qori', 'Rina', 'Siti', 'Tono'];
+        for ($i = 1; $i <= 20; $i++) {
+            Warga::firstOrCreate(['nama' => $names[$i-1] . ' Wundulako', 'rt_id' => $rt->id], [
+                'alamat' => 'Jl. Wundulako Blok A No. ' . $i,
                 'status_vote_rt' => 'belum_dikunjungi',
                 'status_vote_rw' => 'belum_dikunjungi',
-                'jenis_pemilih' => 'dpt'
             ]);
         }
 
-        \ = ['Umar', 'Vina', 'Wawan', 'Xaverius', 'Yani', 'Zainal', 'Rizky', 'Fajar', 'Dian', 'Tuti'];
-        for (\ = 21; \ <= 30; \++) {
-            \ = '740114' . str_pad(\, 10, '0', STR_PAD_LEFT);
-            Warga::firstOrCreate(['nik' => \], [
-                'rt_id' => \->id,
-                'nama' => \[\-21] . ' Wundulako',
-                'alamat' => 'Jl. Wundulako Blok B No. ' . \,
+        $names2 = ['Umar', 'Vina', 'Wawan', 'Xaverius', 'Yani', 'Zainal', 'Rizky', 'Fajar', 'Dian', 'Tuti'];
+        for ($i = 21; $i <= 30; $i++) {
+            Warga::firstOrCreate(['nama' => $names2[$i-21] . ' Wundulako', 'rt_id' => $rt2->id], [
+                'alamat' => 'Jl. Wundulako Blok B No. ' . $i,
                 'status_vote_rt' => 'belum_dikunjungi',
                 'status_vote_rw' => 'belum_dikunjungi',
-                'jenis_pemilih' => 'dpt'
             ]);
         }
 
-        \ = Warga::where('rt_id', \->id)->where('status_vote_rt', 'belum_dikunjungi')->take(8)->get();
-        foreach (\ as \ => \) {
-            \ = \ % 2 == 0 ? \ : \;
+        $wargas = Warga::where('rt_id', $rt->id)->where('status_vote_rt', 'belum_dikunjungi')->take(8)->get();
+        foreach ($wargas as $index => $warga) {
+            $kRw = $index % 2 == 0 ? $kanRw1 : $kanRw2;
             Vote::create([
-                'warga_id' => \->id,
-                'kandidat_id' => \->id,
-                'user_id' => \->id,
+                'warga_id' => $warga->id,
+                'kandidat_id' => $kRw->id,
+                'user_id' => $petugas->id,
                 'jenis' => 'RW',
                 'status' => 'valid'
             ]);
-            \->status_vote_rw = 'sudah_memilih';
+            $warga->status_vote_rw = 'sudah_memilih';
             
-            \ = \ % 3 == 0 ? \ : \;
+            $kRt = $index % 3 == 0 ? $kanRt1 : $kanRt2;
             Vote::create([
-                'warga_id' => \->id,
-                'kandidat_id' => \->id,
-                'user_id' => \->id,
+                'warga_id' => $warga->id,
+                'kandidat_id' => $kRt->id,
+                'user_id' => $petugas->id,
                 'jenis' => 'RT',
                 'status' => 'valid'
             ]);
-            \->status_vote_rt = 'sudah_memilih';
+            $warga->status_vote_rt = 'sudah_memilih';
             
-            \->jumlah_kunjungan = 1;
-            \->save();
+            $warga->jumlah_kunjungan = 1;
+            $warga->save();
         }
     }
 }
