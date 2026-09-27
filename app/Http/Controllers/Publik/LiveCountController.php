@@ -44,7 +44,7 @@ class LiveCountController extends Controller
                     'nama' => $k->nama,
                     'nomor_urut' => $k->nomor_urut,
                     'jenis' => $k->jenis,
-                    'wilayah_nama' => $k->jenis === 'RT' ? 'RT ' . ($k->rt->nama ?? '') . ' / RW ' . ($k->rt->rw->nama ?? '') : 'RW ' . ($k->rw->nama ?? ''),
+                    'wilayah_nama' => $k->jenis === 'RT' ? ($k->rt->nama ?? '') . ' / ' . ($k->rt->rw->nama ?? '') : ($k->rw->nama ?? ''),
                     'jumlah_suara' => $k->votes_count,
                     'persentase' => $pct
                 ];
