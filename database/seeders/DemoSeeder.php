@@ -11,6 +11,7 @@ use App\Models\Kandidat;
 use App\Models\Vote;
 use App\Models\UserWilayah;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DemoSeeder extends Seeder
 {
@@ -60,7 +61,8 @@ class DemoSeeder extends Seeder
                 'kandidat_id' => $kRw->id,
                 'petugas_id' => $petugas->id,
                 'jenis' => 'RW',
-                'status' => 'valid'
+                'status' => 'valid',
+                'idempotency_key' => Str::random(32)
             ]);
             $warga->status_vote_rw = 'sudah_memilih';
             
@@ -70,7 +72,8 @@ class DemoSeeder extends Seeder
                 'kandidat_id' => $kRt->id,
                 'petugas_id' => $petugas->id,
                 'jenis' => 'RT',
-                'status' => 'valid'
+                'status' => 'valid',
+                'idempotency_key' => Str::random(32)
             ]);
             $warga->status_vote_rt = 'sudah_memilih';
             
