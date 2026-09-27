@@ -21,7 +21,7 @@ class LaporanController extends Controller
         $totalSuaraRw = Vote::where('status', 'valid')->where('jenis', 'RW')->count();
 
         $totalRt = \App\Models\Rt::count();
-        $rtSelesai = \App\Models\Rt::whereDoesntHave('warga', function($q) {
+        $rtSelesai = \App\Models\Rt::whereDoesntHave('wargas', function($q) {
             $q->where('status_vote_rt', 'belum_dikunjungi')->orWhere('status_vote_rw', 'belum_dikunjungi');
         })->count();
 
