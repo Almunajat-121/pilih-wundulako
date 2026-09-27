@@ -75,7 +75,7 @@ class UserController extends Controller
     {
         $request->validate([
             'rt_ids' => 'array',
-            'rt_ids.*' => 'exists:rts,id'
+            'rt_ids.*' => 'exists:rt,id'
         ]);
         $user->rts()->sync($request->rt_ids ?? []);
         return back()->with('success', 'Wilayah tugas berhasil diperbarui.');

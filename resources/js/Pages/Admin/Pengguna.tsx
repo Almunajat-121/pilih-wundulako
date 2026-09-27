@@ -56,7 +56,7 @@ export default function Pengguna({ users, rt_list }: PenggunaProps) {
     const handleAssign = (e: React.FormEvent) => {
         e.preventDefault();
         if (!assignUser) return;
-        putAssign(`/admin/pengguna/${assignUser.id}/wilayah`, {
+        putAssign(`/admin/pengguna/${assignUser.id}/assign-wilayah`, {
             onSuccess: () => setAssignUser(null),
         });
     };

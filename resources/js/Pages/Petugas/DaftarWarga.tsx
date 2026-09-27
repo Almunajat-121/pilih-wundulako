@@ -130,9 +130,11 @@ export default function DaftarWarga({ warga, rt, filters }: DaftarWargaProps) {
                 </div>
             )}
 
-            <Link href={`/petugas/wilayah/${rt.id}/warga/baru`} className="fab">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-            </Link>
+            <div className="fixed-frame z-40">
+                <Link href={`/petugas/wilayah/${rt.id}/warga/baru`} className="fab" style={{ bottom: '85px' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                </Link>
+            </div>
         </PetugasLayout>
     );
 }

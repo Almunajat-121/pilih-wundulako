@@ -12,7 +12,7 @@ class RtController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:50',
-            'rw_id' => 'required|exists:rws,id'
+            'rw_id' => 'required|exists:rw,id'
         ], [
             'nama.required' => 'Nama RT wajib diisi.',
             'rw_id.required' => 'RW wajib dipilih.'

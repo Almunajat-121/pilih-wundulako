@@ -20,17 +20,22 @@ class LaporanController extends Controller
         $totalSuaraRt = Vote::where('status', 'valid')->where('jenis', 'RT')->count();
         $totalSuaraRw = Vote::where('status', 'valid')->where('jenis', 'RW')->count();
 
+        $totalRt = \App\Models\Rt::count();
+        $rtSelesai = \App\Models\Rt::whereDoesntHave('warga', function($q) {
+            $q->where('status_vote_rt', 'belum_dikunjungi')->orWhere('status_vote_rw', 'belum_dikunjungi');
+        })->count();
+
         return Inertia::render('Admin/Laporan', [
             'stats' => [
                 'total_warga' => $totalWarga,
+                'total_suara_masuk' => $totalSuaraRt, // Menggunakan suara RT sebagai representasi partisipasi
+                'partisipasi' => $totalWarga > 0 ? round(($totalSuaraRt / $totalWarga) * 100, 1) : 0,
+                'rt_selesai' => $rtSelesai,
+                'total_rt' => $totalRt,
+                
+                // Keep the old ones just in case
                 'total_suara_rt' => $totalSuaraRt,
                 'total_suara_rw' => $totalSuaraRw,
-                'sudah_memilih_rt' => Warga::where('status_vote_rt', 'sudah_memilih')->count(),
-                'sudah_memilih_rw' => Warga::where('status_vote_rw', 'sudah_memilih')->count(),
-                'belum_dikunjungi' => Warga::where('status_vote_rt', 'belum_dikunjungi')
-                    ->where('status_vote_rw', 'belum_dikunjungi')->count(),
-                'persen_rt' => $totalWarga > 0 ? round(($totalSuaraRt / $totalWarga) * 100, 1) : 0,
-                'persen_rw' => $totalWarga > 0 ? round(($totalSuaraRw / $totalWarga) * 100, 1) : 0,
             ],
         ]);
     }

@@ -22,8 +22,10 @@ class AuditController extends Controller
             $query->where('status', $status);
         }
 
-        return Inertia::render('Admin/AuditVotes', [
-            'votes' => $query->latest()->paginate(20)->withQueryString()
+        return Inertia::render('Admin/Audit', [
+            'votes' => $query->latest()->paginate(20)->withQueryString(),
+            'tab' => 'votes',
+            'filters' => $request->only('date', 'status')
         ]);
     }
 
@@ -31,8 +33,10 @@ class AuditController extends Controller
     {
         $query = StatusLog::with(['warga', 'aktor']);
 
-        return Inertia::render('Admin/AuditStatusLogs', [
-            'logs' => $query->latest()->paginate(20)->withQueryString()
+        return Inertia::render('Admin/Audit', [
+            'status_logs' => $query->latest()->paginate(20)->withQueryString(),
+            'tab' => 'status_logs',
+            'filters' => []
         ]);
     }
 

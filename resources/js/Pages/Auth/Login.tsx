@@ -66,7 +66,7 @@ export default function Login() {
                     </form>
                     
                     <div className="login-foot">
-                        <a href="/publik">Lihat live count publik &rarr;</a>
+                        <a href="/publik">&larr; Kembali ke halaman Publik</a>
                     </div>
                 </div>
             </div>

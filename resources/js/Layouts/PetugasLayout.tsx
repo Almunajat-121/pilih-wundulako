@@ -17,12 +17,12 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
         const start = () => setLoading(true);
         const finish = () => setLoading(false);
 
-        router.on('start', start);
-        router.on('finish', finish);
+        const removeStart = router.on('start', start);
+        const removeFinish = router.on('finish', finish);
 
         return () => {
-            router.off('start', start);
-            router.off('finish', finish);
+            removeStart();
+            removeFinish();
         };
     }, []);
 
@@ -68,8 +68,8 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
                             <span>Beranda</span>
                         </Link>
                         <Link 
-                            href="/ganti-password" 
-                            className={`nav-tab ${url.startsWith('/ganti-password') ? 'active' : ''}`}
+                            href="/petugas/profil" 
+                            className={`nav-tab ${url.startsWith('/petugas/profil') ? 'active' : ''}`}
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c0-4.1 3.4-6.8 7.5-6.8s7.5 2.7 7.5 6.8"/></svg>
                             <span>Profil</span>

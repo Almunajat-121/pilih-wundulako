@@ -17,6 +17,10 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
 
     const startCamera = async () => {
         try {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Akses kamera tidak didukung. Pastikan Anda menggunakan HTTPS (atau localhost) dan mengizinkan akses kamera.');
+                return;
+            }
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' }
             });

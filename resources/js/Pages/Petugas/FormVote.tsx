@@ -14,10 +14,17 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: FormVotePr
     const [verifikasi, setVerifikasi] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
 
+    const generateUUID = () => {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        }
+        return Date.now().toString(36) + Math.random().toString(36).substring(2);
+    };
+
     const { data, setData, post, processing, errors } = useForm({
         kandidat_rt_id: null as number | null,
         kandidat_rw_id: null as number | null,
-        idempotency_key: crypto.randomUUID(),
+        idempotency_key: generateUUID(),
         verifikasi_identitas: false,
     });
 

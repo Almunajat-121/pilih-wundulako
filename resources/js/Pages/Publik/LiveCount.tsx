@@ -26,7 +26,14 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
                 <div className="bg-white rounded-xl shadow-md p-10 text-center border border-gray-100 my-10">
                     <div className="text-6xl mb-4">dY"Z</div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-2">Voting Sedang Berlangsung</h2>
-                    <p className="text-gray-600">Hasil pemilihan akan ditampilkan setelah proses voting selesai.</p>
+                    <p className="text-gray-600 mb-6">Hasil pemilihan akan ditampilkan setelah proses voting selesai.</p>
+                    
+                    <div style={{ marginTop: '24px' }}>
+                        <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#EAE7E0', color: 'var(--ink)', borderRadius: '100px', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                            Masuk sebagai Petugas / Admin
+                        </a>
+                    </div>
                 </div>
             </PublicLayout>
         );
@@ -167,9 +174,16 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
                 );
             })}
 
-            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-soft)', marginTop: '8px' }}>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-soft)', marginTop: '8px', marginBottom: '16px' }}>
                 Data agregat saja &middot; identitas pemilih tidak ditampilkan ke publik
             </p>
+            
+            <div style={{ textAlign: 'center', marginTop: '24px' }}>
+                <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#EAE7E0', color: 'var(--ink)', borderRadius: '100px', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Masuk sebagai Petugas / Admin
+                </a>
+            </div>
         </PublicLayout>
     );
 }

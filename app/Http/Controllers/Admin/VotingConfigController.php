@@ -14,7 +14,7 @@ class VotingConfigController extends Controller
     {
         return Inertia::render('Admin/VotingConfig', [
             'config' => VotingConfig::first() ?? VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]),
-            'rts' => Rt::with('rw')->get()
+            'rt_list' => Rt::with('rw')->get()
         ]);
     }
 

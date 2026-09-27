@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
 // Petugas routes
 Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
     Route::get('/dashboard', [PetugasDashboardController::class, 'index'])->name('dashboard');
+    Route::inertia('/profil', 'Petugas/Profil')->name('profil');
     
     Route::get('/wilayah/{rt}', [PetugasWargaController::class, 'index'])->name('wilayah.warga');
     Route::get('/wilayah/{rt}/warga/baru', [PetugasWargaController::class, 'create'])->name('wilayah.warga.baru');

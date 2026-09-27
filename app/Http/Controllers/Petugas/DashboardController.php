@@ -23,6 +23,7 @@ class DashboardController extends Controller
                 'id' => $rt->id,
                 'nama' => $rt->nama,
                 'rw' => $rt->rw,
+                'voting_aktif' => $rt->voting_aktif,
                 'total_warga' => $total_warga,
                 'sudah_memilih_rt' => $sudah_memilih_rt,
                 'sudah_memilih_rw' => $sudah_memilih_rw,
