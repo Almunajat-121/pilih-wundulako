@@ -250,7 +250,7 @@
   .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--moss); flex-shrink: 0; }
   .dot.dot-off { background: var(--maroon); }
 
-  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; height: 100vh; overflow: hidden; }
   .topbar { height: 72px; background: var(--card); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; flex-shrink: 0; }
   .page-title { font-size: 21px; font-weight: 600; margin: 0; }
   .page-sub { font-size: 12.5px; color: var(--text-soft); margin-top: 2px; }
@@ -260,7 +260,8 @@
   .logout-link { font-size: 13px; color: var(--maroon); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 5px; background: none; border: none; cursor: pointer; font-family: inherit; }
   .logout-link svg { width: 15px; height: 15px; }
 
-  .content { flex: 1; overflow-y: auto; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .content { flex: 1; min-height: 0; overflow-y: auto; padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .content > * { flex-shrink: 0; }
   
   .card-head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: #FBFAF7; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
   .card-head h3 { margin: 0; font-size: 15px; font-weight: 600; font-family: 'Fraunces', serif; }
