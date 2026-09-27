@@ -58,7 +58,7 @@ class DemoSeeder extends Seeder
             Vote::create([
                 'warga_id' => $warga->id,
                 'kandidat_id' => $kRw->id,
-                'user_id' => $petugas->id,
+                'petugas_id' => $petugas->id,
                 'jenis' => 'RW',
                 'status' => 'valid'
             ]);
@@ -68,7 +68,7 @@ class DemoSeeder extends Seeder
             Vote::create([
                 'warga_id' => $warga->id,
                 'kandidat_id' => $kRt->id,
-                'user_id' => $petugas->id,
+                'petugas_id' => $petugas->id,
                 'jenis' => 'RT',
                 'status' => 'valid'
             ]);
