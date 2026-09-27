@@ -51,42 +51,55 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     Route::put('/warga/{warga}/status', [PetugasKunjunganController::class, 'update'])->name('warga.status.update');
 });
 
-// Admin routes
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+// Admin & Saksi routes
+Route::middleware(['auth', 'role:admin,saksi'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     
-    // CRUD Wilayah
-    Route::resource('rw', RwController::class)->except(['show', 'create', 'edit']);
-    Route::resource('rt', RtController::class)->only(['store', 'update', 'destroy']);
-    Route::put('/rt/{rt}/toggle-voting', [RtController::class, 'toggleVoting'])->name('rt.toggle-voting');
+    // CRUD Wilayah (Read)
+    Route::get('rw', [RwController::class, 'index'])->name('rw.index');
+    // Write routes protected by admin role
+    Route::post('rw', [RwController::class, 'store'])->name('rw.store')->middleware('role:admin');
+    Route::put('rw/{rw}', [RwController::class, 'update'])->name('rw.update')->middleware('role:admin');
+    Route::delete('rw/{rw}', [RwController::class, 'destroy'])->name('rw.destroy')->middleware('role:admin');
+    
+    Route::post('rt', [RtController::class, 'store'])->name('rt.store')->middleware('role:admin');
+    Route::put('rt/{rt}', [RtController::class, 'update'])->name('rt.update')->middleware('role:admin');
+    Route::delete('rt/{rt}', [RtController::class, 'destroy'])->name('rt.destroy')->middleware('role:admin');
+    Route::put('/rt/{rt}/toggle-voting', [RtController::class, 'toggleVoting'])->name('rt.toggle-voting')->middleware('role:admin');
     
     // CRUD Kandidat
-    Route::resource('kandidat', KandidatController::class)->except(['show', 'create', 'edit']);
+    Route::get('kandidat', [KandidatController::class, 'index'])->name('kandidat.index');
+    Route::post('kandidat', [KandidatController::class, 'store'])->name('kandidat.store')->middleware('role:admin');
+    Route::post('kandidat/{kandidat}', [KandidatController::class, 'update'])->name('kandidat.update')->middleware('role:admin'); // POST used for update with file
+    Route::delete('kandidat/{kandidat}', [KandidatController::class, 'destroy'])->name('kandidat.destroy')->middleware('role:admin');
     
     // CRUD Pengguna
-    Route::resource('pengguna', UserController::class)->except(['show', 'create', 'edit']);
-    Route::put('/pengguna/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('pengguna.toggle-active');
-    Route::put('/pengguna/{user}/unlock', [UserController::class, 'unlock'])->name('pengguna.unlock');
-    Route::put('/pengguna/{user}/assign-wilayah', [UserController::class, 'assignWilayah'])->name('pengguna.assign-wilayah');
-    Route::put('/pengguna/{user}/reset-password', [UserController::class, 'resetPassword'])->name('pengguna.reset-password');
+    Route::get('pengguna', [UserController::class, 'index'])->name('pengguna.index');
+    Route::post('pengguna', [UserController::class, 'store'])->name('pengguna.store')->middleware('role:admin');
+    Route::put('pengguna/{user}', [UserController::class, 'update'])->name('pengguna.update')->middleware('role:admin');
+    Route::delete('pengguna/{user}', [UserController::class, 'destroy'])->name('pengguna.destroy')->middleware('role:admin');
+    Route::put('/pengguna/{user}/toggle-active', [UserController::class, 'toggleActive'])->name('pengguna.toggle-active')->middleware('role:admin');
+    Route::put('/pengguna/{user}/unlock', [UserController::class, 'unlock'])->name('pengguna.unlock')->middleware('role:admin');
+    Route::put('/pengguna/{user}/assign-wilayah', [UserController::class, 'assignWilayah'])->name('pengguna.assign-wilayah')->middleware('role:admin');
+    Route::put('/pengguna/{user}/reset-password', [UserController::class, 'resetPassword'])->name('pengguna.reset-password')->middleware('role:admin');
     
     // Warga
     Route::get('/warga', [AdminWargaController::class, 'index'])->name('warga.index');
-    Route::put('/warga/{warga}', [AdminWargaController::class, 'update'])->name('warga.update');
-    Route::delete('/warga/{warga}', [AdminWargaController::class, 'destroy'])->name('warga.destroy');
+    Route::put('/warga/{warga}', [AdminWargaController::class, 'update'])->name('warga.update')->middleware('role:admin');
+    Route::delete('/warga/{warga}', [AdminWargaController::class, 'destroy'])->name('warga.destroy')->middleware('role:admin');
     Route::get('/warga/{warga}/foto', [AdminWargaController::class, 'showFoto'])->name('warga.foto');
     Route::get('/warga/foto/view', [AdminWargaController::class, 'viewFoto'])->name('warga.foto.view');
     
     // Audit
     Route::get('/audit/votes', [AuditController::class, 'indexVotes'])->name('audit.votes');
     Route::get('/audit/status-logs', [AuditController::class, 'indexStatusLogs'])->name('audit.status-logs');
-    Route::put('/audit/votes/{vote}/void', [AuditController::class, 'voidVote'])->name('audit.votes.void');
+    Route::put('/audit/votes/{vote}/void', [AuditController::class, 'voidVote'])->name('audit.votes.void')->middleware('role:admin');
     
     // Voting Config
     Route::get('/voting-config', [VotingConfigController::class, 'show'])->name('voting-config.show');
-    Route::put('/voting-config/global', [VotingConfigController::class, 'updateGlobal'])->name('voting-config.global');
-    Route::put('/voting-config/rt/{rt}', [VotingConfigController::class, 'updatePerRt'])->name('voting-config.rt');
-    Route::put('/voting-config/live-count', [VotingConfigController::class, 'updateLiveCount'])->name('voting-config.live-count');
+    Route::put('/voting-config/global', [VotingConfigController::class, 'updateGlobal'])->name('voting-config.global')->middleware('role:admin');
+    Route::put('/voting-config/rt/{rt}', [VotingConfigController::class, 'updatePerRt'])->name('voting-config.rt')->middleware('role:admin');
+    Route::put('/voting-config/live-count', [VotingConfigController::class, 'updateLiveCount'])->name('voting-config.live-count')->middleware('role:admin');
     
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');

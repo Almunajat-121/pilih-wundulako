@@ -8,18 +8,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureRole
 {
-    /**
-     * Handle an incoming request.
-     * Usage: middleware('role:admin') or middleware('role:petugas')
-     */
     public function handle(Request $request, Closure $next, string $role): Response
     {
         if (!$request->user()) {
             return redirect()->route('login');
         }
 
-        if ($request->user()->role !== $role) {
-            if ($request->user()->role === 'admin') {
+        $roles = explode(',', $role);
+        
+        if (!in_array($request->user()->role, $roles)) {
+            if (in_array($request->user()->role, ['admin', 'saksi'])) {
                 return redirect()->route('admin.dashboard');
             }
             return redirect()->route('petugas.dashboard');

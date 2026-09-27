@@ -187,6 +187,7 @@ export default function Pengguna({ users, rt_list }: PenggunaProps) {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                                 <select value={data.role} onChange={e => setData('role', e.target.value as any)} className="w-full border-gray-300 rounded-md shadow-sm">
                                     <option value="petugas">Petugas Lapangan</option>
+                                    <option value="saksi">Saksi (Read-only)</option>
                                     <option value="admin">Administrator</option>
                                 </select>
                                 {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}

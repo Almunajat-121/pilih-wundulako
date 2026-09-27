@@ -10,6 +10,8 @@ use App\Services\VoteService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Exception;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class VoteController extends Controller
 {
@@ -39,7 +41,24 @@ class VoteController extends Controller
         try {
             $fotoBuktiPath = null;
             if ($request->hasFile('foto_bukti')) {
-                $fotoBuktiPath = $request->file('foto_bukti')->store('bukti_hadir', 'public');
+                $file = $request->file('foto_bukti');
+                
+                $manager = new ImageManager(new Driver());
+                $image = $manager->read($file);
+                
+                // Compress and scale down to 800px width
+                $image->scaleDown(width: 800);
+                
+                // Ensure storage directory exists
+                $directory = storage_path('app/public/bukti_hadir');
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+                
+                $filename = 'bukti_' . uniqid() . '.jpg';
+                $image->toJpeg(75)->save($directory . '/' . $filename);
+                
+                $fotoBuktiPath = 'bukti_hadir/' . $filename;
             }
 
             $result = $voteService->submitVote(

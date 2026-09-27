@@ -36,7 +36,7 @@ export interface Rt {
 
 export type StatusVote = 'belum_dikunjungi' | 'sudah_memilih' | 'tidak_ditemukan' | 'menolak';
 export type JenisVote = 'RT' | 'RW';
-export type UserRole = 'admin' | 'petugas';
+export type UserRole = 'admin' | 'petugas' | 'saksi';
 export type VoteStatus = 'valid' | 'void';
 
 export interface User {
