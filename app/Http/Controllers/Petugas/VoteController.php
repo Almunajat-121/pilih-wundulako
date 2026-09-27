@@ -37,12 +37,18 @@ class VoteController extends Controller
         }
 
         try {
+            $fotoBuktiPath = null;
+            if ($request->hasFile('foto_bukti')) {
+                $fotoBuktiPath = $request->file('foto_bukti')->store('bukti_hadir', 'public');
+            }
+
             $result = $voteService->submitVote(
                 $warga->id,
                 $request->kandidat_rt_id,
                 $request->kandidat_rw_id,
                 $request->user()->id,
-                $request->idempotency_key
+                $request->idempotency_key,
+                $fotoBuktiPath
             );
 
             return redirect()->route('petugas.wilayah.warga', $warga->rt_id)->with('success', $result['message']);

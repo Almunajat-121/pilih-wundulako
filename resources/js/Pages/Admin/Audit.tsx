@@ -54,7 +54,19 @@ export default function Audit({ votes, status_logs, tab, filters }: AuditProps) 
                                             {new Date(vote.created_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })}
                                         </td>
                                         <td style={{ fontWeight: 600 }}>{vote.petugas?.nama}</td>
-                                        <td>{vote.warga?.nama}</td>
+                                        <td>
+                                            <div>{vote.warga?.nama}</div>
+                                            {vote.warga?.foto_bukti_hadir_path && (
+                                                <a 
+                                                    href={`/storage/${vote.warga.foto_bukti_hadir_path}`} 
+                                                    target="_blank" 
+                                                    rel="noreferrer"
+                                                    style={{ fontSize: '11px', color: 'var(--brass)', textDecoration: 'underline', marginTop: '4px', display: 'inline-block' }}
+                                                >
+                                                    â†— Lihat Bukti Hadir
+                                                </a>
+                                            )}
+                                        </td>
                                         <td>
                                             <div style={{ fontWeight: 500 }}>{vote.kandidat?.nama}</div>
                                             <div style={{ fontSize: '11.5px', color: 'var(--text-soft)', marginTop: 2 }}>Pemilihan {vote.jenis}</div>

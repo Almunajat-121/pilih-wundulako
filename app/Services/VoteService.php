@@ -24,8 +24,9 @@ class VoteService
         ?int $kandidatRwId,
         int $petugasId,
         string $idempotencyKey,
+        ?string $fotoBuktiPath
     ): array {
-        return DB::transaction(function () use ($wargaId, $kandidatRtId, $kandidatRwId, $petugasId, $idempotencyKey) {
+        return DB::transaction(function () use ($wargaId, $kandidatRtId, $kandidatRwId, $petugasId, $idempotencyKey, $fotoBuktiPath) {
 
             // 1. Cek idempotency key — mencegah dobel submit akibat retry
             $existingVote = Vote::where('idempotency_key', $idempotencyKey)->first();
@@ -111,7 +112,10 @@ class VoteService
                 $results[] = 'RW';
             }
 
-            // 7. Simpan perubahan status warga
+            // 7. Simpan perubahan status warga dan foto bukti
+            if ($fotoBuktiPath) {
+                $warga->foto_bukti_hadir_path = $fotoBuktiPath;
+            }
             $warga->save();
 
             return [

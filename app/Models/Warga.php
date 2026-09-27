@@ -19,6 +19,7 @@ class Warga extends Model
         'status_vote_rw',
         'jumlah_kunjungan',
         'foto_ktp_path',
+        'foto_bukti_hadir_path',
         'dibuat_oleh'
     ];
 

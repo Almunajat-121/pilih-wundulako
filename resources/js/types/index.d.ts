@@ -63,6 +63,7 @@ export interface Warga {
     status_vote_rw: StatusVote;
     jumlah_kunjungan: number;
     foto_ktp_path: string | null;
+    foto_bukti_hadir_path: string | null;
     dibuat_oleh: number | null;
     created_at: string;
     updated_at: string;

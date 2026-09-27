@@ -18,6 +18,7 @@ class StoreVoteRequest extends FormRequest
             'kandidat_rw_id' => 'nullable|exists:kandidat,id',
             'idempotency_key' => 'required|string',
             'verifikasi_identitas' => 'required|accepted',
+            'foto_bukti' => 'required|image|max:5120',
         ];
     }
 
@@ -38,6 +39,9 @@ class StoreVoteRequest extends FormRequest
             'idempotency_key.required' => 'Kunci identifikasi sistem wajib disertakan.',
             'verifikasi_identitas.required' => 'Konfirmasi verifikasi identitas wajib dicentang.',
             'verifikasi_identitas.accepted' => 'Konfirmasi verifikasi identitas wajib dicentang.',
+            'foto_bukti.required' => 'Foto bukti kehadiran warga wajib diunggah.',
+            'foto_bukti.image' => 'File bukti harus berupa gambar/foto.',
+            'foto_bukti.max' => 'Ukuran foto maksimal 5MB.',
         ];
     }
 }

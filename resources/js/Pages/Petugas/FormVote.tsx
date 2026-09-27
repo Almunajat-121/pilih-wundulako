@@ -13,6 +13,7 @@ interface FormVoteProps {
 export default function FormVote({ warga, kandidat_rt, kandidat_rw }: FormVoteProps) {
     const [verifikasi, setVerifikasi] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
     const generateUUID = () => {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -26,10 +27,19 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: FormVotePr
         kandidat_rw_id: null as number | null,
         idempotency_key: generateUUID(),
         verifikasi_identitas: false,
+        foto_bukti: null as File | null,
     });
 
     const needsRtVote = warga.status_vote_rt === 'belum_dikunjungi';
     const needsRwVote = warga.status_vote_rw === 'belum_dikunjungi';
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setData('foto_bukti', file);
+            setPreviewUrl(URL.createObjectURL(file));
+        }
+    };
 
     const handleContinue = (e: React.FormEvent) => {
         e.preventDefault();
@@ -165,12 +175,44 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: FormVotePr
                         )}
                     </form>
                 )}
+
+                {verifikasi && (
+                    <div className="card mt-6" style={{ padding: '20px' }}>
+                        <h2 className="section-title">Foto Bukti Kehadiran</h2>
+                        <p className="text-sm text-[var(--text-soft)] mb-3">Wajib difoto untuk mencegah penyalahgunaan suara (wajah pemilih terlihat jelas).</p>
+                        
+                        {!previewUrl ? (
+                            <label className="border-2 border-dashed border-[var(--brass)] rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-[#fbfae8] transition">
+                                <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--brass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                <span className="text-[var(--brass)] font-semibold text-sm">Buka Kamera</span>
+                                <input 
+                                    type="file" 
+                                    accept="image/*" 
+                                    capture="environment" 
+                                    className="hidden" 
+                                    onChange={handleFileChange}
+                                />
+                            </label>
+                        ) : (
+                            <div className="relative">
+                                <img src={previewUrl} alt="Preview Bukti" className="w-full h-48 object-cover rounded-xl border border-[var(--line)]" />
+                                <button 
+                                    onClick={() => { setPreviewUrl(null); setData('foto_bukti', null); }}
+                                    className="absolute top-2 right-2 bg-white rounded-full p-2 shadow"
+                                >
+                                    <svg viewBox="0 0 24 24" width="16" height="16" stroke="var(--maroon)" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </button>
+                            </div>
+                        )}
+                        {errors.foto_bukti && <p className="text-sm text-red-600 mt-2">{errors.foto_bukti}</p>}
+                    </div>
+                )}
             </div>
 
             {verifikasi && (
                 <div className="fixed-frame z-40">
                     <div className="submit-bar">
-                        <button type="submit" form="vote-form" className="btn-block" disabled={processing}>
+                        <button type="submit" form="vote-form" className="btn-block" disabled={processing || !data.foto_bukti}>
                             {processing ? 'Menyimpan...' : 'Konfirmasi & simpan suara'}
                         </button>
                     </div>
