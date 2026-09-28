@@ -68,11 +68,16 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
     return (
         <PublicLayout>
             <div className="public-hero">
-                <div className="public-brand">
-                    <div className="public-mark">
-                        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l4.5 4.5L20 6"/></svg>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <div className="public-brand" style={{ marginBottom: 0 }}>
+                        <div className="public-mark">
+                            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l4.5 4.5L20 6"/></svg>
+                        </div>
+                        <span style={{ fontFamily: "'Fraunces', serif", fontSize: '20px', fontWeight: 600 }}>PilihPilih</span>
                     </div>
-                    <span style={{ fontFamily: "'Fraunces', serif", fontSize: '20px', fontWeight: 600 }}>PilihPilih</span>
+                    <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'rgba(0,0,0,0.06)', color: 'var(--ink)', borderRadius: '100px', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+                        Login Petugas
+                    </a>
                 </div>
                 <h1 className="public-title">Live Count Pemilihan RT/RW</h1>
                 <p className="public-sub">Kelurahan Wundulako &middot; hasil suara sah, diperbarui otomatis</p>
@@ -174,16 +179,9 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
                 );
             })}
 
-            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-soft)', marginTop: '8px', marginBottom: '16px' }}>
+            <p style={{ textAlign: 'center', fontSize: '12px', color: 'var(--text-soft)', marginTop: '32px', marginBottom: '32px' }}>
                 Data agregat saja &middot; identitas pemilih tidak ditampilkan ke publik
             </p>
-            
-            <div style={{ textAlign: 'center', marginTop: '24px' }}>
-                <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#EAE7E0', color: 'var(--ink)', borderRadius: '100px', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                    Masuk sebagai Petugas / Admin
-                </a>
-            </div>
         </PublicLayout>
     );
 }
