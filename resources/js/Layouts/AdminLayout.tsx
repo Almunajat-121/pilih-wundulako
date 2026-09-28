@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Link, usePage, Head } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { Link, usePage, Head, router } from '@inertiajs/react';
 import Toast from '../Components/Toast';
+import { useIsMobile } from '../lib/useIsMobile';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -9,42 +10,88 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
     const { auth } = usePage().props as any;
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const isMobile = useIsMobile();
 
     const navItems = [
         { 
-            name: 'Dashboard', href: '/admin/dashboard', 
+            name: 'Dashboard', href: '/admin/dashboard', mobileName: 'Dashboard',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         },
         { 
-            name: 'Kelola Wilayah', href: '/admin/rw', 
+            name: 'Kelola Wilayah', href: '/admin/rw', mobileName: 'Wilayah',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s7-7.58 7-12a7 7 0 1 0-14 0c0 4.42 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
         },
         { 
-            name: 'Data Kandidat', href: '/admin/kandidat', 
+            name: 'Data Kandidat', href: '/admin/kandidat', mobileName: 'Kandidat',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.5 7 21l5-3 5 3-1.5-8.5"/></svg>
         },
         { 
-            name: 'Pengguna & Petugas', href: '/admin/pengguna', 
+            name: 'Pengguna & Petugas', href: '/admin/pengguna', mobileName: 'Pengguna',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M15 20c0-2.6 1.5-4.6 3.5-4.9"/></svg>
         },
         { 
-            name: 'Data Warga', href: '/admin/warga', 
+            name: 'Data Warga', href: '/admin/warga', mobileName: 'Warga',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M6 16.5c0-1.5 1-2.5 2-2.5s2 1 2 2.5"/><path d="M14 10h5M14 14h3"/></svg>
         },
         { 
-            name: 'Audit & Log Suara', href: '/admin/audit', 
+            name: 'Audit & Log Suara', href: '/admin/audit/votes', mobileName: 'Audit',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><path d="M8.5 11h7M8.5 14.5h7M8.5 18h4"/></svg>
         },
         { 
-            name: 'Pengaturan Voting', href: '/admin/voting-config', 
+            name: 'Pengaturan Voting', href: '/admin/voting-config', mobileName: 'Sistem',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         },
         { 
-            name: 'Laporan', href: '/admin/laporan', 
+            name: 'Laporan', href: '/admin/laporan', mobileName: 'Laporan',
             icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
         },
     ];
+
+    useEffect(() => {
+        if (isMobile) {
+            document.body.classList.add('mobile');
+        } else {
+            document.body.classList.remove('mobile');
+        }
+        return () => document.body.classList.remove('mobile');
+    }, [isMobile]);
+
+    if (isMobile) {
+        return (
+            <div className="phone-shell" style={{ margin: '0 auto' }}>
+                {title && <Head title={`${title} - Admin`} />}
+                <Toast />
+
+                <header className="m-header">
+                    <div>
+                        <p className="m-title">{title}</p>
+                        <p className="m-sub">Kelurahan Wundulako</p>
+                    </div>
+                    <div className="m-header-actions">
+                        <Link href="/logout" method="post" as="button" className="chip-btn" style={{ border: 'none' }}>Keluar</Link>
+                    </div>
+                </header>
+
+                <div className="sectionnav-wrap">
+                    <div className="sectionnav">
+                        {navItems.map((item) => {
+                            const isActive = typeof window !== 'undefined' && window.location.pathname.startsWith(item.href);
+                            return (
+                                <Link key={item.name} href={item.href} className={isActive ? 'active' : ''}>
+                                    {item.icon}
+                                    {item.mobileName}
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <main className="m-content no-fixed">
+                    {children}
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-layout">
