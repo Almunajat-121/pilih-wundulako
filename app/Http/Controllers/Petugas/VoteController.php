@@ -44,7 +44,7 @@ class VoteController extends Controller
                 $file = $request->file('foto_bukti');
                 
                 $manager = new ImageManager(new Driver());
-                $image = $manager->read($file);
+                $image = $manager->decode($file);
                 
                 // Compress and scale down to 800px width
                 $image->scaleDown(width: 800);
@@ -56,7 +56,7 @@ class VoteController extends Controller
                 }
                 
                 $filename = 'bukti_' . uniqid() . '.jpg';
-                $image->toJpeg(75)->save($directory . '/' . $filename);
+                $image->save($directory . '/' . $filename, 75);
                 
                 $fotoBuktiPath = 'bukti_hadir/' . $filename;
             }
