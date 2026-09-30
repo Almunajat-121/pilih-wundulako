@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIsMobile } from '../../lib/useIsMobile';
 import { useForm, router } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { PageProps, User, Rt } from '../../types';
@@ -8,7 +9,9 @@ interface PenggunaProps extends PageProps {
     rt_list: Rt[];
 }
 
-export default function Pengguna({ users, rt_list }: PenggunaProps) {
+export default function Pengguna({
+users, rt_list, auth }: PenggunaProps) {
+    const isMobile = useIsMobile();
     const [showAddModal, setShowAddModal] = useState(false);
     const [assignUser, setAssignUser] = useState<User | null>(null);
 
@@ -77,6 +80,59 @@ export default function Pengguna({ users, rt_list }: PenggunaProps) {
         if (!rwGroups[rwName]) rwGroups[rwName] = [];
         rwGroups[rwName].push(rt);
     });
+
+
+    if (isMobile) {
+        return (
+            <AdminLayout title="Kelola Pengguna">
+                <div className="m-toolbar-plain" style={{ display: 'flex', gap: '8px' }}>
+                    <div className="m-search" style={{ flex: 1, marginBottom: 0 }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                        <input type="text" placeholder="Cari pengguna..." />
+                    </div>
+                    <button onClick={() => alert('Fitur tambah hadir selanjutnya')} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '16px' }}>
+                    {users.map(u => (
+                        <div className="m-card" key={u.id}>
+                            <div className="m-card-top">
+                                <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{u.nama}</h3>
+                                <span className={`badge ${u.role === 'admin' ? 'badge-ink' : 'badge-slate'}`}>{u.role === 'admin' ? 'Admin' : 'Petugas'}</span>
+                            </div>
+                            <p className="m-card-nik mono" style={{ marginBottom: '6px' }}>{u.username}</p>
+                            
+                            {u.role === 'admin' ? (
+                                <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 4px' }}>Tugas: semua wilayah</p>
+                            ) : (
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '6px 0 4px' }}>
+                                    {u.rt && u.rt.length > 0 ? u.rt.map(rt => (
+                                        <span key={rt.id} className="tag" style={{ fontSize: '11px', padding: '3px 8px', background: 'var(--slate-soft)', borderRadius: '4px', color: 'var(--slate)' }}>
+                                            {rt.nama} ({rt.rw?.nama})
+                                        </span>
+                                    )) : <span style={{ fontSize: '12px', color: 'var(--maroon)' }}>Belum ada tugas RT</span>}
+                                </div>
+                            )}
+
+                            <p style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: u.is_active ? 'var(--moss)' : 'var(--maroon)', fontWeight: 600, fontSize: '12px', margin: '2px 0 0' }}>
+                                <span className={`dot ${!u.is_active ? 'dot-off' : ''}`}></span>{u.is_active ? 'Aktif' : 'Diblokir'}
+                            </p>
+
+                            <div className="row-actions">
+                                {u.role === 'petugas' && <button onClick={() => { openAssignModal(u); }}>Tugas RT</button>}
+                                <button onClick={() => { handleResetPassword(u.id); }}>Reset Sandi</button>
+                                {auth.user.id !== u.id && (
+                                    <button className="danger" onClick={() => handleToggleStatus(u.id)}>{u.is_active ? 'Blokir' : 'Buka Blokir'}</button>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                    
+                    <p className="footnote-m">Menampilkan {users.length} pengguna</p>
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout title="Pengguna & Petugas">

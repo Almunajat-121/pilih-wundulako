@@ -24,13 +24,75 @@ interface DashboardProps extends PageProps {
     kandidat_rw: Kandidat[];
 }
 
+import { useIsMobile } from '../../lib/useIsMobile';
+
 export default function Dashboard({ stats, progres_per_rw, kandidat_rt, kandidat_rw }: DashboardProps) {
+    const isMobile = useIsMobile();
+
     useEffect(() => {
         const interval = setInterval(() => {
             router.reload({ preserveState: true, preserveScroll: true });
         }, 30000);
         return () => clearInterval(interval);
     }, []);
+
+    if (isMobile) {
+        return (
+            <AdminLayout title="Dashboard">
+                <div className="grid-stats2">
+                    <div className="stat" style={{ '--bar': 'var(--ink)' } as any}>
+                        <p className="stat-label">Total warga DPT</p>
+                        <p className="stat-value num">{stats.total_warga}</p>
+                    </div>
+                    <div className="stat" style={{ '--bar': 'var(--moss)' } as any}>
+                        <p className="stat-label">Sudah memilih</p>
+                        <p className="stat-value num" style={{ color: 'var(--moss)' }}>{stats.sudah_memilih_rt}</p>
+                    </div>
+                    <div className="stat" style={{ '--bar': 'var(--brass)' } as any}>
+                        <p className="stat-label">Belum dikunjungi</p>
+                        <p className="stat-value num" style={{ color: 'var(--brass)' }}>{stats.belum_dikunjungi}</p>
+                    </div>
+                    <div className="stat" style={{ '--bar': 'var(--maroon)' } as any}>
+                        <p className="stat-label">Tidak ditemukan</p>
+                        <p className="stat-value num" style={{ color: 'var(--maroon)' }}>{stats.tidak_ditemukan}</p>
+                    </div>
+                </div>
+
+                <h2 className="section-title">Progres per wilayah (RW)</h2>
+                {progres_per_rw.map((rw, i) => (
+                    <div className="task-card" key={i} style={{ marginBottom: i < progres_per_rw.length - 1 ? '2px' : '0' }}>
+                        <div className="task-head">
+                            <p className="task-rt" style={{ fontSize: '15px' }}>{rw.rw_nama}</p>
+                            <span className="num" style={{ fontSize: '12.5px', color: 'var(--text-soft)' }}>{rw.total} DPT</span>
+                        </div>
+                        <div className="task-body">
+                            <div className="task-progress-label">
+                                <span style={{ color: 'var(--text-soft)' }}>Suara masuk</span>
+                                <span className="num" style={{ fontWeight: 600, color: 'var(--moss)' }}>{rw.sudah_rw}</span>
+                            </div>
+                            <div className="progress"><span style={{ width: `${rw.total > 0 ? Math.round((rw.sudah_rw / rw.total) * 100) : 0}%`, background: 'var(--moss)' }}></span></div>
+                        </div>
+                    </div>
+                ))}
+                
+                <h2 className="section-title" style={{ marginTop: '16px' }}>Perolehan Suara Global (RW)</h2>
+                <div className="m-card" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {kandidat_rw.map((k, index) => {
+                        const bg = index === 0 ? 'var(--ink)' : (index === 1 ? 'var(--brass)' : 'var(--slate)');
+                        return (
+                            <div key={k.id}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                                    <span style={{ fontWeight: 500 }}>{k.nomor_urut}&nbsp;&nbsp;{k.nama}</span>
+                                    <span className="num" style={{ fontWeight: 600 }}>{k.jumlah_suara}</span>
+                                </div>
+                                <div className="progress"><span style={{ width: `${k.persentase}%`, background: bg }}></span></div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout title="Dashboard">

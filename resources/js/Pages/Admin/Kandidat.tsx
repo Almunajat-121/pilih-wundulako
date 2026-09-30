@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIsMobile } from '../../lib/useIsMobile';
 import { useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { PageProps, PaginatedData, Kandidat, Rw, Rt } from '../../types';
@@ -13,7 +14,9 @@ interface KandidatProps extends PageProps {
     };
 }
 
-export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: KandidatProps) {
+export default function KandidatPage({
+kandidat, rw_list, rt_list, filters }: KandidatProps) {
+    const isMobile = useIsMobile();
     const [showModal, setShowModal] = useState(false);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
@@ -52,6 +55,52 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
             onSuccess: () => setDeletingId(null),
         });
     };
+
+
+    if (isMobile) {
+        return (
+            <AdminLayout title="Data Kandidat">
+                <div className="m-toolbar-plain" style={{ display: 'flex', gap: '8px' }}>
+                    <div className="m-search" style={{ flex: 1, marginBottom: 0 }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                        <input type="text" placeholder="Cari kandidat..." />
+                    </div>
+                    <button onClick={() => alert('Fitur tambah hadir selanjutnya')} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
+                </div>
+                <div className="chip-row no-scrollbar" style={{ padding: '12px 18px 0', background: 'var(--card)' }}>
+                    <div className={`chip ${filters.jenis === '' || !filters.jenis ? 'active' : ''}`} onClick={() => handleFilter('jenis', '')}>Semua Tingkat</div>
+                    <div className={`chip ${filters.jenis === 'RW' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RW')}>Calon RW</div>
+                    <div className={`chip ${filters.jenis === 'RT' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RT')}>Calon RT</div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
+                    {kandidat.data.map(k => (
+                        <div className="m-card" key={k.id}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div className="ballot-num">{k.nomor_urut}</div>
+                                <div className="avatar-sm">
+                                    {k.foto_url ? <img src={k.foto_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9px' }}/> : 
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>}
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <p className="m-card-name" style={{ fontSize: '14.5px' }}>{k.nama}</p>
+                                    <span className={`badge ${k.jenis === 'RW' ? 'badge-brass' : 'badge-slate'}`} style={{ marginTop: '4px' }}>
+                                        Ketua {k.jenis} {k.jenis === 'RW' ? (k.rw?.nama || '').replace(/[^0-9]/g, '') : (k.rt?.nama || '').replace(/[^0-9]/g, '')} {k.jenis === 'RT' && `· RW ${(k.rt?.rw?.nama || '').replace(/[^0-9]/g, '')}`}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="row-actions">
+                                <button onClick={() => alert('Edit')}>Edit</button>
+                                <button className="danger" onClick={() => deleteKandidat(k.id)}>Hapus</button>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    <p className="footnote-m">Menampilkan {kandidat.data.length} data</p>
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout title="Data Kandidat">

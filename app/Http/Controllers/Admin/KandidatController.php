@@ -13,7 +13,7 @@ class KandidatController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Kandidat::with(['rt', 'rw']);
+        $query = Kandidat::with(['rt.rw', 'rw']);
         
         if ($jenis = $request->input('jenis')) {
             $query->where('jenis', $jenis);

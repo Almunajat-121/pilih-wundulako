@@ -60,6 +60,7 @@ class DashboardController extends Controller
             return [
                 'id' => $k->id,
                 'nama' => $k->nama,
+                'nomor_urut' => $k->nomor_urut,
                 'rt' => $k->rt,
                 'jumlah_suara' => $suara,
                 'persentase' => $total_warga > 0 ? ($suara / $total_warga) * 100 : 0
@@ -71,6 +72,7 @@ class DashboardController extends Controller
             return [
                 'id' => $k->id,
                 'nama' => $k->nama,
+                'nomor_urut' => $k->nomor_urut,
                 'rw' => $k->rw,
                 'jumlah_suara' => $suara,
                 'persentase' => $total_warga > 0 ? ($suara / $total_warga) * 100 : 0

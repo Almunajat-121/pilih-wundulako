@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useIsMobile } from '../../lib/useIsMobile';
 import { useForm, router, Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { PageProps, PaginatedData, Warga, Rt } from '../../types';
@@ -13,7 +14,9 @@ interface WargaProps extends PageProps {
     };
 }
 
-export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
+export default function WargaPage({
+warga, rt_list, filters }: WargaProps) {
+    const isMobile = useIsMobile();
     const [search, setSearch] = useState(filters.search || '');
     
     const handleFilter = (key: string, value: string) => {
@@ -34,6 +37,66 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
             default: return <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800">{status}</span>;
         }
     };
+
+
+    if (isMobile) {
+        return (
+            <AdminLayout title="Data Warga (DPT)">
+                <div className="m-toolbar-plain">
+                    <form onSubmit={handleSearch} className="m-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                        <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari nama warga..." />
+                    </form>
+                    <div className="chip-row no-scrollbar">
+                        <div className={`chip ${filters.status === '' || !filters.status ? 'active' : ''}`} onClick={() => handleFilter('status', '')}>Semua status</div>
+                        <div className={`chip ${filters.status === 'sudah_memilih' ? 'active' : ''}`} onClick={() => handleFilter('status', 'sudah_memilih')}>Sudah memilih</div>
+                        <div className={`chip ${filters.status === 'belum_dikunjungi' ? 'active' : ''}`} onClick={() => handleFilter('status', 'belum_dikunjungi')}>Belum dikunjungi</div>
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px' }}>
+                    {warga.data.map(item => {
+                        const statusClass = item.status_vote_rt === 'sudah_memilih' ? 'badge-moss' : 
+                                           item.status_vote_rt === 'tidak_ditemukan' ? 'badge-maroon' : 'badge-slate';
+                        const statusLabel = item.status_vote_rt === 'sudah_memilih' ? 'Sudah memilih' :
+                                           item.status_vote_rt === 'tidak_ditemukan' ? 'Tidak ditemukan' : 'Belum memilih';
+                        const toneClass = item.status_vote_rt === 'sudah_memilih' ? 'tone-moss' : 
+                                         item.status_vote_rt === 'tidak_ditemukan' ? 'tone-maroon' : '';
+                        
+                        return (
+                            <div className={`m-card ${toneClass}`} key={item.id}>
+                                <div className="m-card-top">
+                                    <h3 className="m-card-name">{item.nama}</h3>
+                                    <span className={`badge ${statusClass}`}>{statusLabel}</span>
+                                </div>
+                                <p className="m-card-nik mono">Lahir: {item.tanggal_lahir || '-'} &middot; {item.rt?.nama}/{item.rt?.rw?.nama}</p>
+                                <div className="row-actions"><button onClick={() => alert('Edit fitur hadir selanjutnya')}>Edit</button></div>
+                            </div>
+                        );
+                    })}
+                    
+                    <p className="footnote-m">Menampilkan {warga.data.length} dari total data</p>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>
+                        {warga.links.map((link, i) => (
+                            <button
+                                key={i}
+                                disabled={!link.url}
+                                onClick={() => link.url && handleFilter('page', link.label)}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                                className={`chip-btn ${link.active ? 'active' : ''}`}
+                                style={{ 
+                                    background: link.active ? 'var(--ink)' : 'var(--slate-soft)', 
+                                    color: link.active ? '#fff' : 'var(--slate)',
+                                    opacity: !link.url ? 0.5 : 1
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </AdminLayout>
+        );
+    }
 
     return (
         <AdminLayout title="Data Warga (DPT)">
