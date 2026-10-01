@@ -65,7 +65,7 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
                         <input type="text" placeholder="Cari kandidat..." />
                     </div>
-                    <button onClick={() => alert('Fitur tambah hadir selanjutnya')} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
+                    <button onClick={() => setShowModal(true)} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
                 </div>
                 <div className="chip-row no-scrollbar" style={{ padding: '12px 18px 0', background: 'var(--card)' }}>
                     <div className={`chip ${filters.jenis === '' || !filters.jenis ? 'active' : ''}`} onClick={() => handleFilter('jenis', '')}>Semua Tingkat</div>
@@ -89,9 +89,17 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                     </span>
                                 </div>
                             </div>
+
+                            {k.visi_misi && (
+                                <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text)', background: 'var(--slate-soft)', padding: '10px 12px', borderRadius: '8px' }}>
+                                    <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Visi & Misi:</p>
+                                    <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{k.visi_misi}</p>
+                                </div>
+                            )}
+
                             <div className="row-actions">
                                 <button onClick={() => alert('Edit')}>Edit</button>
-                                <button className="danger" onClick={() => deleteKandidat(k.id)}>Hapus</button>
+                                <button className="danger" onClick={() => confirmDelete(k.id)}>Hapus</button>
                             </div>
                         </div>
                     ))}
