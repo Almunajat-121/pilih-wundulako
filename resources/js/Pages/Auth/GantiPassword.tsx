@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import AuthLayout from '@/Layouts/AuthLayout';
 
 export default function GantiPassword() {
+    const [showPassword, setShowPassword] = useState(false);
     const { data, setData, put, processing, errors } = useForm({
         current_password: '',
         password: '',
@@ -30,7 +31,7 @@ export default function GantiPassword() {
                         <div className="login-field">
                             <label>Kata Sandi Lama</label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Masukkan sandi lama"
                                 value={data.current_password}
                                 onChange={e => setData('current_password', e.target.value)}
@@ -42,7 +43,7 @@ export default function GantiPassword() {
                         <div className="login-field">
                             <label>Kata Sandi Baru</label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Masukkan sandi baru"
                                 value={data.password}
                                 onChange={e => setData('password', e.target.value)}
@@ -54,7 +55,7 @@ export default function GantiPassword() {
                         <div className="login-field">
                             <label>Konfirmasi Kata Sandi Baru</label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="Ketik ulang sandi baru"
                                 value={data.password_confirmation}
                                 onChange={e => setData('password_confirmation', e.target.value)}
@@ -62,6 +63,15 @@ export default function GantiPassword() {
                             />
                             {errors.password_confirmation && <p className="mt-1 text-xs text-red-600">{errors.password_confirmation}</p>}
                         </div>
+
+                        <label className="login-remember" style={{ marginTop: '4px' }}>
+                            <input 
+                                type="checkbox" 
+                                checked={showPassword}
+                                onChange={(e) => setShowPassword(e.target.checked)}
+                            />
+                            Lihat sandi
+                        </label>
                         
                         <button type="submit" className="login-submit" disabled={processing} style={{ marginTop: '24px' }}>
                             {processing ? 'Menyimpan...' : 'Simpan Sandi Baru'}

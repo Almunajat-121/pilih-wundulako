@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, usePage } from '@inertiajs/react';
 import AuthLayout from '@/Layouts/AuthLayout';
 
 export default function Login() {
     const { flash } = usePage().props as any;
+    const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors } = useForm({
         username: '',
         password: '',
@@ -47,7 +48,7 @@ export default function Login() {
                         <div className="login-field">
                             <label>Kata sandi</label>
                             <input
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 placeholder="••••••••"
                                 value={data.password}
                                 onChange={(e) => setData('password', e.target.value)}
@@ -55,10 +56,21 @@ export default function Login() {
                             {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                         </div>
                         
-                        <label className="login-remember">
-                            <input type="checkbox" />
-                            Ingat saya
-                        </label>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                            <label className="login-remember" style={{ marginBottom: 0 }}>
+                                <input type="checkbox" />
+                                Ingat saya
+                            </label>
+
+                            <label className="login-remember" style={{ marginBottom: 0 }}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={showPassword}
+                                    onChange={(e) => setShowPassword(e.target.checked)}
+                                />
+                                Lihat sandi
+                            </label>
+                        </div>
                         
                         <button type="submit" className="login-submit" disabled={processing}>
                             {processing ? 'Memproses...' : 'Masuk'}

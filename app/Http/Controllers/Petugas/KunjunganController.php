@@ -11,7 +11,7 @@ class KunjunganController extends Controller
 {
     public function update(Request $request, Warga $warga, VoteService $voteService)
     {
-        if (!$request->user()->rts()->where('rt_id', $warga->rt_id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $warga->rt_id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 

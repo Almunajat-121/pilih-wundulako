@@ -43,6 +43,7 @@ class HandleInertiaRequests extends Middleware
                     'nama' => $request->user()->nama,
                     'username' => $request->user()->username,
                     'role' => $request->user()->role,
+                    'wilayah' => $request->user()->rts()->with('rw')->get(),
                 ] : null,
             ],
             'flash' => [

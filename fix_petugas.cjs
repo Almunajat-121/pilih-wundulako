@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+const fs = require('fs');
+
+const code = import React, { useEffect, useState } from 'react';
 import { Link, usePage, Head, router } from '@inertiajs/react';
 import Toast from '../Components/Toast';
 import { useIsMobile } from '../lib/useIsMobile';
@@ -28,13 +30,14 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
         };
     }, []);
 
+    // Get unique RTs and RWs
     const wilayah = auth?.user?.wilayah || [];
     const rts = Array.from(new Set(wilayah.map((w: any) => w.nama)));
     const rws = Array.from(new Set(wilayah.map((w: any) => w.rw?.nama).filter(Boolean)));
 
     if (!isMobile) {
         return (
-            <div className="admin-layout">
+            <div className="layout-desktop">
                 {title && <Head title={title} />}
                 <Toast />
                 
@@ -49,11 +52,13 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
                         </div>
                     </div>
                     <nav className="nav">
-                        <Link href="/petugas/dashboard" className={`nav-item ${url.startsWith('/petugas/dashboard') || url === '/petugas' ? 'active' : ''}`}>
+                        <Link href="/petugas/dashboard" className={
+av-item }>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>
                             Beranda
                         </Link>
-                        <Link href="/ganti-password" className={`nav-item ${url.startsWith('/ganti-password') ? 'active' : ''}`}>
+                        <Link href="/ganti-password" className={
+av-item }>
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c0-4.1 3.4-6.8 7.5-6.8s7.5 2.7 7.5 6.8"/></svg>
                             Profil
                         </Link>
@@ -62,10 +67,10 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
                         <p style={{fontSize:'11px',color:'#8992A8',margin:'0 0 8px',fontWeight:600,letterSpacing:'.02em'}}>WILAYAH TUGAS</p>
                         <div style={{display:'flex',flexWrap:'wrap',gap:'6px'}}>
                             {rts.map((rt: any, i: number) => (
-                                <span key={`rt-${i}`} style={{fontSize:'11px',padding:'3px 9px',borderRadius:'5px',background:'rgba(169,122,46,.16)',color:'#D7B876',border:'1px solid rgba(169,122,46,.3)',fontWeight:500}}>{rt}</span>
+                                <span key={\t-\\} style={{fontSize:'11px',padding:'3px 9px',borderRadius:'5px',background:'rgba(169,122,46,.16)',color:'#D7B876',border:'1px solid rgba(169,122,46,.3)',fontWeight:500}}>{rt}</span>
                             ))}
                             {rws.map((rw: any, i: number) => (
-                                <span key={`rw-${i}`} style={{fontSize:'11px',padding:'3px 9px',borderRadius:'5px',background:'rgba(255,255,255,.08)',color:'#9FA7BC',border:'1px solid rgba(255,255,255,.12)',fontWeight:500}}>{rw}</span>
+                                <span key={\w-\\} style={{fontSize:'11px',padding:'3px 9px',borderRadius:'5px',background:'rgba(255,255,255,.08)',color:'#9FA7BC',border:'1px solid rgba(255,255,255,.12)',fontWeight:500}}>{rw}</span>
                             ))}
                         </div>
                     </div>
@@ -132,14 +137,16 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
                     <nav className="bottom-nav">
                         <Link 
                             href="/petugas/dashboard" 
-                            className={`nav-tab ${url.startsWith('/petugas/dashboard') ? 'active' : ''}`}
+                            className={\
+av-tab \\}
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h3v-6h4v6h3a1 1 0 0 0 1-1v-9"/></svg>
                             <span>Beranda</span>
                         </Link>
                         <Link 
                             href="/ganti-password" 
-                            className={`nav-tab ${url.startsWith('/ganti-password') ? 'active' : ''}`}
+                            className={\
+av-tab \\}
                         >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c0-4.1 3.4-6.8 7.5-6.8s7.5 2.7 7.5 6.8"/></svg>
                             <span>Profil</span>
@@ -150,3 +157,6 @@ export default function PetugasLayout({ children, title, customHeader }: Petugas
         </div>
     );
 }
+\;
+
+fs.writeFileSync('resources/js/Layouts/PetugasLayout.tsx', code);

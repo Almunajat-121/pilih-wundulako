@@ -18,7 +18,7 @@ class VoteController extends Controller
     public function create(Request $request, Warga $warga)
     {
         $warga->load('rt.rw');
-        if (!$request->user()->rts()->where('rt_id', $warga->rt_id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $warga->rt_id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 
@@ -34,7 +34,7 @@ class VoteController extends Controller
 
     public function store(StoreVoteRequest $request, Warga $warga, VoteService $voteService)
     {
-        if (!$request->user()->rts()->where('rt_id', $warga->rt_id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $warga->rt_id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 

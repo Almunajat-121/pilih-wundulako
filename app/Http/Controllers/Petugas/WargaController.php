@@ -14,7 +14,7 @@ class WargaController extends Controller
 {
     public function index(Request $request, Rt $rt)
     {
-        if (!$request->user()->rts()->where('rt_id', $rt->id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $rt->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 
@@ -39,7 +39,7 @@ class WargaController extends Controller
 
     public function create(Request $request, Rt $rt)
     {
-        if (!$request->user()->rts()->where('rt_id', $rt->id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $rt->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 
@@ -50,7 +50,7 @@ class WargaController extends Controller
 
     public function store(StoreWargaRequest $request, Rt $rt)
     {
-        if (!$request->user()->rts()->where('rt_id', $rt->id)->exists()) {
+        if (!$request->user()->rts()->where('rt.id', $rt->id)->exists()) {
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 

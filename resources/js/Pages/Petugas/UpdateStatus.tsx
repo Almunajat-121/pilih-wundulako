@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { router, Link } from '@inertiajs/react';
 import PetugasLayout from '../../Layouts/PetugasLayout';
 import { PageProps, Warga } from '../../types';
+import { useIsMobile } from '@/lib/useIsMobile';
 
 interface UpdateStatusProps extends PageProps {
     warga: Warga;
 }
 
 export default function UpdateStatus({ warga }: UpdateStatusProps) {
+    const isMobile = useIsMobile();
     const [confirmModal, setConfirmModal] = useState<'tidak_ditemukan' | 'menolak' | null>(null);
 
     const handleUpdate = (status: 'tidak_ditemukan' | 'menolak') => {
@@ -19,74 +21,97 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
         });
     };
 
-    return (
-        <PetugasLayout title="Update Status Kehadiran">
-            <div style={{ marginBottom: '20px' }}>
-                <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-                    Kembali
-                </Link>
-            </div>
-
-            <div className="card" style={{ padding: '20px', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, fontFamily: "'Fraunces', serif", margin: '0 0 4px' }}>{warga.nama}</h2>
-                <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--text-soft)' }}>{warga.alamat}</p>
+    const header = !isMobile ? (
+        <header className="topbar">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ color: 'var(--text-soft)' }}>&larr; Batal</Link>
                 <div>
-                    <span className="tag">Kunjungan ke-{warga.jumlah_kunjungan + 1}</span>
+                    <h2 className="page-title">Update Status Warga</h2>
+                    <p className="page-sub">Laporkan kendala kunjungan</p>
                 </div>
             </div>
+        </header>
+    ) : undefined;
 
-            {warga.jumlah_kunjungan >= 3 && (
-                <div style={{ padding: '16px', background: 'var(--maroon-soft)', border: '1px solid #E7CFCB', borderRadius: 'var(--radius)', marginBottom: '24px', display: 'flex', gap: '12px' }}>
-                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="var(--maroon)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                    <div>
-                        <p style={{ margin: '0 0 4px', fontWeight: 600, color: 'var(--maroon)', fontSize: '14px' }}>Perhatian</p>
-                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--maroon)' }}>Warga ini sudah 3x tidak ditemukan. Laporkan ke admin untuk tindak lanjut.</p>
+    const content = (
+        <>
+            <div style={{ marginBottom: '20px' }}>
+                {isMobile && (
+                    <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+                        Kembali
+                    </Link>
+                )}
+            </div>
+
+            <div style={{ background: 'var(--card)', padding: '20px', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '20px' }}>
+                <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 600 }}>{warga.nama}</h3>
+                <p style={{ margin: 0, color: 'var(--text-soft)', fontSize: '14px' }}>{warga.alamat}</p>
+                {warga.jumlah_kunjungan >= 3 && (
+                    <div style={{ marginTop: '12px', padding: '12px', background: 'var(--maroon-soft)', color: 'var(--maroon)', borderRadius: '6px', fontSize: '13px', display: 'flex', gap: '8px' }}>
+                        <span style={{ fontSize: '16px' }}>??</span>
+                        <span>Warga ini sudah 3x dilaporkan tidak ditemukan/menolak.</span>
                     </div>
+                )}
+            </div>
+
+            <div style={{ display: 'grid', gap: '16px' }}>
+                <button 
+                    onClick={() => setConfirmModal('tidak_ditemukan')}
+                    style={{ background: '#FFF3E0', border: '1px solid #FFE0B2', padding: '24px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer', display: 'flex', gap: '16px', alignItems: 'center', transition: 'all 0.2s' }}
+                    className="hover:shadow-md"
+                >
+                    <span style={{ fontSize: '32px' }}>??</span>
+                    <div>
+                        <h4 style={{ margin: '0 0 4px', color: '#E65100', fontSize: '16px', fontWeight: 600 }}>Warga Tidak Ditemukan</h4>
+                        <p style={{ margin: 0, color: '#F57C00', fontSize: '13px' }}>Pilih ini jika rumah kosong atau warga sedang pergi saat dikunjungi.</p>
+                    </div>
+                </button>
+
+                <button 
+                    onClick={() => setConfirmModal('menolak')}
+                    style={{ background: '#F5F5F5', border: '1px solid #E0E0E0', padding: '24px', borderRadius: '12px', textAlign: 'left', cursor: 'pointer', display: 'flex', gap: '16px', alignItems: 'center', transition: 'all 0.2s' }}
+                    className="hover:shadow-md"
+                >
+                    <span style={{ fontSize: '32px' }}>?</span>
+                    <div>
+                        <h4 style={{ margin: '0 0 4px', color: '#424242', fontSize: '16px', fontWeight: 600 }}>Warga Menolak Memilih</h4>
+                        <p style={{ margin: 0, color: '#616161', fontSize: '13px' }}>Pilih ini jika warga menolak berpartisipasi dalam pemilihan.</p>
+                    </div>
+                </button>
+            </div>
+        </>
+    );
+
+    return (
+        <PetugasLayout title="Update Status Kehadiran" customHeader={header}>
+            {isMobile ? (
+                content
+            ) : (
+                <div className="content-narrow" style={{ paddingTop: '24px' }}>
+                    {content}
                 </div>
             )}
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '32px' }}>
-                <button 
-                    onClick={() => setConfirmModal('tidak_ditemukan')}
-                    className="btn btn-outline"
-                    style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', height: 'auto', background: '#FBFAF7' }}
-                >
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--brass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
-                    <span style={{ fontSize: '15px', fontWeight: 600 }}>Warga Tidak Ditemukan</span>
-                </button>
-                
-                <button 
-                    onClick={() => setConfirmModal('menolak')}
-                    className="btn btn-outline"
-                    style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', height: 'auto', background: '#FBFAF7' }}
-                >
-                    <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--maroon)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                    <span style={{ fontSize: '15px', fontWeight: 600, color: 'var(--maroon)' }}>Warga Menolak Memilih</span>
-                </button>
-            </div>
-
-            {/* Confirmation Modal */}
             {confirmModal && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(27,35,51,0.6)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                    <div className="card" style={{ width: '100%', maxWidth: '360px', padding: '24px', textAlign: 'center' }}>
-                        <div style={{ marginBottom: '20px' }}>
-                            {confirmModal === 'tidak_ditemukan' ? (
-                                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--brass)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 16px' }}><circle cx="12" cy="12" r="10"/><polyline points="12 8 12 12 14 14"/></svg>
-                            ) : (
-                                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--maroon)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ margin: '0 auto 16px' }}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                            )}
-                            <h3 style={{ margin: '0 0 8px', fontSize: '18px', fontWeight: 600, fontFamily: "'Fraunces', serif" }}>Konfirmasi Status</h3>
-                            <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--text-soft)', lineHeight: 1.5 }}>
-                                {confirmModal === 'tidak_ditemukan' 
-                                    ? `Tandai warga ${warga.nama} sebagai "Tidak Ditemukan" untuk kunjungan kali ini?` 
-                                    : `Tandai warga ${warga.nama} sebagai "Menolak Memilih"? Ini akan membatalkan hak pilihnya secara permanen.`}
-                            </p>
-                        </div>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button onClick={() => setConfirmModal(null)} className="btn btn-outline" style={{ flex: 1, justifyContent: 'center' }}>Batal</button>
-                            <button onClick={() => handleUpdate(confirmModal)} className={confirmModal === 'tidak_ditemukan' ? 'btn btn-accent' : 'btn btn-danger'} style={{ flex: 1, justifyContent: 'center' }}>
-                                Ya, Simpan
+                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                    <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '400px' }}>
+                        <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 600 }}>Konfirmasi Laporan</h3>
+                        <p style={{ margin: '0 0 20px', color: 'var(--text-soft)', fontSize: '14px', lineHeight: 1.5 }}>
+                            Anda yakin ingin melaporkan <strong>{warga.nama}</strong> sebagai <span style={{ fontWeight: 600 }}>{confirmModal === 'tidak_ditemukan' ? 'Tidak Ditemukan' : 'Menolak Memilih'}</span>?
+                        </p>
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                            <button 
+                                onClick={() => setConfirmModal(null)}
+                                style={{ padding: '10px 16px', border: '1px solid var(--line)', background: 'transparent', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}
+                            >
+                                Batal
+                            </button>
+                            <button 
+                                onClick={() => handleUpdate(confirmModal)}
+                                style={{ padding: '10px 16px', border: 'none', background: 'var(--ink)', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}
+                            >
+                                Ya, Laporkan
                             </button>
                         </div>
                     </div>
