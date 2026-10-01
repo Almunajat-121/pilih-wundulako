@@ -58,17 +58,17 @@ export default function Login() {
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
                             <label className="login-remember" style={{ marginBottom: 0 }}>
-                                <input type="checkbox" />
-                                Ingat saya
-                            </label>
-
-                            <label className="login-remember" style={{ marginBottom: 0 }}>
                                 <input 
                                     type="checkbox" 
                                     checked={showPassword}
                                     onChange={(e) => setShowPassword(e.target.checked)}
                                 />
                                 Lihat sandi
+                            </label>
+
+                            <label className="login-remember" style={{ marginBottom: 0 }}>
+                                <input type="checkbox" />
+                                Ingat saya
                             </label>
                         </div>
                         
