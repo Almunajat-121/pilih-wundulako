@@ -56,7 +56,7 @@ export default function Login() {
                             {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
                         </div>
                         
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
                             <label className="login-remember" style={{ marginBottom: 0 }}>
                                 <input type="checkbox" />
                                 Ingat saya
