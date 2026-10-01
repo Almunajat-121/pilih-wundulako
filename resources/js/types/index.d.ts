@@ -82,7 +82,7 @@ export interface Kandidat {
     rt_id: number | null;
     rw_id: number | null;
     foto_url: string | null;
-    visi_misi: string | null;
+    visi: string | null; misi: string | null;
     created_at: string;
     updated_at: string;
     // Relations

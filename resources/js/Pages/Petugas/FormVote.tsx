@@ -97,7 +97,7 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                                     <div className="cand-num">{k.nomor_urut}</div>
                                     <div>
                                         <p className="cand-name">{k.nama}</p>
-                                        {k.visi_misi && <p className="cand-visi">Visi: {k.visi_misi.substring(0, 50)}...</p>}
+                                        {(k.visi || k.misi) && <p className="cand-visi">{k.visi ? 'Visi: ' + k.visi.substring(0, 30) + '...' : 'Misi: ' + k.misi.substring(0, 30) + '...'}</p>}
                                     </div>
                                 </div>
                                 <input 
@@ -133,7 +133,7 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                                     <div className="cand-num">{k.nomor_urut}</div>
                                     <div>
                                         <p className="cand-name">{k.nama}</p>
-                                        {k.visi_misi && <p className="cand-visi">Visi: {k.visi_misi.substring(0, 50)}...</p>}
+                                        {(k.visi || k.misi) && <p className="cand-visi">{k.visi ? 'Visi: ' + k.visi.substring(0, 30) + '...' : 'Misi: ' + k.misi.substring(0, 30) + '...'}</p>}
                                     </div>
                                 </div>
                                 <input 

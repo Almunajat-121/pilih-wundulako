@@ -17,7 +17,8 @@ class Kandidat extends Model
         'rt_id',
         'rw_id',
         'foto_url',
-        'visi_misi'
+        'visi',
+        'misi'
     ];
 
     public function rt(): BelongsTo

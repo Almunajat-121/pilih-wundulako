@@ -26,7 +26,7 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
         jenis: 'RT' as 'RT' | 'RW',
         rt_id: '',
         rw_id: '',
-        visi_misi: '',
+        visi: '', misi: '',
         foto: null as File | null,
     });
 
@@ -90,10 +90,20 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                 </div>
                             </div>
 
-                            {k.visi_misi && (
+                            {(k.visi || k.misi) && (
                                 <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text)', background: 'var(--slate-soft)', padding: '10px 12px', borderRadius: '8px' }}>
-                                    <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Visi & Misi:</p>
-                                    <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{k.visi_misi}</p>
+                                    {k.visi && (
+                                        <>
+                                            <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Visi:</p>
+                                            <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5', marginBottom: k.misi ? '8px' : '0' }}>{k.visi}</p>
+                                        </>
+                                    )}
+                                    {k.misi && (
+                                        <>
+                                            <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Misi:</p>
+                                            <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{k.misi}</p>
+                                        </>
+                                    )}
                                 </div>
                             )}
 
@@ -185,7 +195,12 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                     </td>
                                     <td>
                                         <div style={{ color: 'var(--text-soft)', fontSize: '12.5px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                                            {item.visi_misi || <span style={{ fontStyle: 'italic' }}>Tidak ada</span>}
+                                            {(item.visi || item.misi) ? (
+                                                <>
+                                                    {item.visi && <span><strong>Visi:</strong> {item.visi} </span>}
+                                                    {item.misi && <span><strong>Misi:</strong> {item.misi}</span>}
+                                                </>
+                                            ) : <span style={{ fontStyle: 'italic' }}>Tidak ada</span>}
                                         </div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
@@ -268,9 +283,15 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Visi Misi (Opsional)</label>
-                                <textarea value={data.visi_misi} onChange={e => setData('visi_misi', e.target.value)} rows={3} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
-                                {errors.visi_misi && <p className="text-red-500 text-xs mt-1">{errors.visi_misi}</p>}
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Visi (Opsional)</label>
+                                <textarea value={data.visi} onChange={e => setData('visi', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                {errors.visi && <p className="text-red-500 text-xs mt-1">{errors.visi}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Misi (Opsional)</label>
+                                <textarea value={data.misi} onChange={e => setData('misi', e.target.value)} rows={3} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                {errors.misi && <p className="text-red-500 text-xs mt-1">{errors.misi}</p>}
                             </div>
 
                             <div>
