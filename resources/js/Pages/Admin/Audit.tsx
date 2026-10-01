@@ -32,17 +32,17 @@ votes, status_logs, tab, filters }: AuditProps) {
 
     if (isMobile) {
         const type = tab;
-        const data = type === 'votes' ? votes : status_logs;
+        const listData = (type === 'votes' ? votes : status_logs)!;
         return (
             <AdminLayout title="Audit Log">
                 <div className="chip-row no-scrollbar" style={{ padding: '12px 18px', background: 'var(--card)' }}>
                     <Link href="/admin/audit/votes" className={`chip ${type === 'votes' ? 'active' : ''}`}>Riwayat Vote</Link>
-                    <Link href="/admin/audit/status-logs" className={`chip ${type === 'status-logs' ? 'active' : ''}`}>Log Status Warga</Link>
+                    <Link href="/admin/audit/status-logs" className={`chip ${type === 'status_logs' ? 'active' : ''}`}>Log Status Warga</Link>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
                     {type === 'votes' ? (
-                        (data.data as Vote[]).map(v => (
+                        (listData.data as Vote[]).map(v => (
                             <div className={`m-card ${v.status === 'void' ? 'tone-maroon' : ''}`} key={v.id}>
                                 <div className="m-card-top">
                                     <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{v.warga?.nama || 'Warga Terhapus'}</h3>
@@ -60,7 +60,7 @@ votes, status_logs, tab, filters }: AuditProps) {
                             </div>
                         ))
                     ) : (
-                        (data.data as StatusLog[]).map(log => (
+                        (listData.data as StatusLog[]).map(log => (
                             <div className="m-card" key={log.id}>
                                 <div className="m-card-top">
                                     <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{log.warga?.nama || 'Warga Terhapus'}</h3>
@@ -78,10 +78,10 @@ votes, status_logs, tab, filters }: AuditProps) {
                         ))
                     )}
                     
-                    <p className="footnote-m">Menampilkan {data.data.length} entri</p>
+                    <p className="footnote-m">Menampilkan {listData.data.length} entri</p>
                     
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>
-                        {data.links.map((link, i) => (
+                        {listData.links.map((link, i) => (
                             <Link
                                 key={i}
                                 href={link.url || '#'}
