@@ -100,5 +100,13 @@ Setelah menjalankan *seeder*, Anda dapat masuk ke aplikasi menggunakan akun admi
 
 ## 📚 Panduan Desain (Bagi Developer)
 Bagi pengembang yang ingin mengubah UI atau menambah fitur, silakan baca:
-*   [AI_RULES.md](./AI_RULES.md) untuk aturan *coding*, penamaan, dan struktur folder.
+
 *   [DESIGN.md](./DESIGN.md) untuk mempelajari struktur komponen UI dan *design system* yang digunakan.
+
+## ?? Pembaruan Terbaru (Changelog)
+*   **Pemisahan Visi & Misi**: Atribut kandidat visi_misi kini telah dipisah menjadi kolom visi dan misi tersendiri di database dan form UI.
+*   **Bukti Kehadiran (Foto)**: Petugas diwajibkan mengunggah foto bukti (capture kamera langsung) saat merekam suara warga, foto otomatis dikompresi sebelum disimpan.
+*   **Role Saksi**: Menambahkan role saksi dengan akses read-only ke fitur Audit dan Live Count di dashboard.
+*   **Responsivitas Mobile Admin**: Panel Admin kini otomatis menyesuaikan UI menjadi lebih ramah-sentuh di layar HP menggunakan hook useIsMobile.
+*   **Live Count Caching**: Perbaikan bug blank page pada tampilan Publik dan penerapan caching untuk mengoptimalkan query perolehan suara real-time.
+*   **Keamanan Form Login**: Penambahan fitur toggle "Lihat Sandi" pada halaman Login dan Ganti Password dengan susunan checkbox vertikal yang rapi.

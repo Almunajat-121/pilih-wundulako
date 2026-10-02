@@ -115,3 +115,9 @@ The application uses the default Tailwind CSS color palette with a strong emphas
 * **Live Count (`/publik`):**
   - *Structure:* PublicLayout.
   - *Elements:* Header with auto-refresh indicator, horizontal tabs to filter by RW, animated progress bars for each candidate showing live vote percentages. Displays empty state if disabled by admin.
+
+### F. Recent UI Enhancements
+*   **Show Password Toggle**: Added a vertical stack checkbox in Login and GantiPassword to toggle password visibility.
+*   **Candidate Visi & Misi**: Separated isi_misi into distinct isi and misi input fields and display blocks across Admin tables and Mobile voting cards.
+*   **Photo Evidence**: Integrated camera capture natively into the FormVote UI with server-side Intervention Image v4 compression.
+*   **Responsive Admin Layout**: Implemented useIsMobile hook to conditionally render mobile-optimized list cards (instead of wide data tables) for administrators accessing the dashboard via smartphones.
