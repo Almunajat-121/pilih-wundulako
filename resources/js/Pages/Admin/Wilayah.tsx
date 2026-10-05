@@ -45,7 +45,7 @@ rw_list }: WilayahProps) {
     const handleDelete = () => {
         if (!deletingId) return;
         router.delete(`/admin/${deletingId.type}/${deletingId.id}`, {
-            onSuccess: () => setDeletingId(null),
+            onFinish: () => setDeletingId(null),
         });
     };
 

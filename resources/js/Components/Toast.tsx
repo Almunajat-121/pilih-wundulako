@@ -8,7 +8,7 @@ interface ToastMessage {
 }
 
 export default function Toast() {
-    const { flash } = usePage<any>().props;
+    const { flash, errors } = usePage<any>().props;
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     useEffect(() => {
@@ -18,10 +18,13 @@ export default function Toast() {
         if (flash?.error) {
             addToast('error', flash.error);
         }
+        if (errors?.error) {
+            addToast('error', errors.error);
+        }
         if (flash?.warning) {
             addToast('warning', flash.warning);
         }
-    }, [flash]);
+    }, [flash, errors]);
 
     const addToast = (type: 'success' | 'error' | 'warning', message: string) => {
         const id = Date.now();
