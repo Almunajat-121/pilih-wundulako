@@ -40,9 +40,11 @@ class WargaController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:150',
-            'alamat' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:255',
+            'rt_id' => 'required|exists:rt,id',
+            'tanggal_lahir' => 'nullable|date',
         ]);
-        $warga->update($request->only('nama', 'alamat'));
+        $warga->update($request->only('nama', 'alamat', 'rt_id', 'tanggal_lahir'));
         return back()->with('success', 'Data warga berhasil diperbarui.');
     }
 

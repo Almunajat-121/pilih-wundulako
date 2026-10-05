@@ -18,6 +18,34 @@ export default function WargaPage({
 warga, rt_list, filters }: WargaProps) {
     const isMobile = useIsMobile();
     const [search, setSearch] = useState(filters.search || '');
+    const [editingWarga, setEditingWarga] = useState<Warga | null>(null);
+
+    const { data, setData, put, reset, clearErrors, errors, processing } = useForm({
+        nama: '',
+        alamat: '',
+        rt_id: '',
+        tanggal_lahir: ''
+    });
+
+    const openEdit = (w: Warga) => {
+        setEditingWarga(w);
+        setData({
+            nama: w.nama,
+            alamat: w.alamat || '',
+            rt_id: w.rt_id.toString(),
+            tanggal_lahir: w.tanggal_lahir ? w.tanggal_lahir.split('T')[0] : ''
+        });
+        clearErrors();
+    };
+
+    const handleEdit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editingWarga) {
+            put(`/admin/warga/${editingWarga.id}`, {
+                onSuccess: () => setEditingWarga(null)
+            });
+        }
+    };
     
     const handleFilter = (key: string, value: string) => {
         router.get('/admin/warga', { ...filters, [key]: value, search }, { preserveState: true, preserveScroll: true });
@@ -70,7 +98,7 @@ warga, rt_list, filters }: WargaProps) {
                                     <span className={`badge ${statusClass}`}>{statusLabel}</span>
                                 </div>
                                 <p className="m-card-nik mono">Lahir: {item.tanggal_lahir || '-'} &middot; {item.rt?.nama}/{item.rt?.rw?.nama}</p>
-                                <div className="row-actions"><button onClick={() => alert('Edit fitur hadir selanjutnya')}>Edit</button></div>
+                                <div className="row-actions"><button onClick={() => openEdit(item)}>Edit</button></div>
                             </div>
                         );
                     })}
@@ -162,7 +190,7 @@ warga, rt_list, filters }: WargaProps) {
                                             <span style={{ fontWeight: 600, color: isFlagged ? 'var(--maroon)' : 'inherit' }}>{item.jumlah_kunjungan}x</span>
                                         </td>
                                         <td>
-                                            <button onClick={(e) => { e.preventDefault(); alert('Fitur detail warga akan hadir di pembaruan selanjutnya.'); }} className="btn-link">Edit</button>
+                                            <button onClick={(e) => { e.preventDefault(); openEdit(item); }} className="btn-link">Edit</button>
                                         </td>
                                     </tr>
                                 );
@@ -184,6 +212,50 @@ warga, rt_list, filters }: WargaProps) {
                     </div>
                 )}
             </div>
+
+            {editingWarga && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <div className="p-4 border-b flex justify-between items-center bg-gray-50">
+                            <h3 className="font-bold text-gray-800">Edit Data Warga</h3>
+                            <button onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                        </div>
+                        <form onSubmit={handleEdit} className="p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
+                                {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                                <input type="date" value={data.tanggal_lahir} onChange={e => setData('tanggal_lahir', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" />
+                                {errors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{errors.tanggal_lahir}</p>}
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                                <textarea value={data.alamat} onChange={e => setData('alamat', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                {errors.alamat && <p className="text-red-500 text-xs mt-1">{errors.alamat}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah RT</label>
+                                <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
+                                    <option value="">Pilih RT</option>
+                                    {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
+                                </select>
+                                {errors.rt_id && <p className="text-red-500 text-xs mt-1">{errors.rt_id}</p>}
+                            </div>
+                            
+                            <div className="pt-4 flex justify-end gap-3 border-t">
+                                <button type="button" onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
+                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AdminLayout>
     );
 }
