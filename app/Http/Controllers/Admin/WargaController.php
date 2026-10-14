@@ -80,4 +80,39 @@ class WargaController extends Controller
         }
         return response()->file(\Illuminate\Support\Facades\Storage::disk('local')->path($path));
     }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv,txt|max:10240',
+        ], [
+            'file.required' => 'File Excel atau CSV wajib diunggah.',
+            'file.mimes' => 'Format file harus berupa Excel (.xlsx, .xls) atau CSV (.csv).',
+            'file.max' => 'Ukuran file maksimal 10 MB.',
+        ]);
+
+        try {
+            \Maatwebsite\Excel\Facades\Excel::import(
+                new \App\Imports\WargaImport($request->user()->id),
+                $request->file('file')
+            );
+            return back()->with('success', 'Data DPT warga berhasil diimpor.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal mengimpor file: ' . $e->getMessage()]);
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_import_dpt.csv"',
+        ];
+
+        $csvData = "nama,alamat,rt,tanggal_lahir\n"
+                 . "Contoh Warga 1,Jl. Protokol No. 10,RT 01,1990-05-15\n"
+                 . "Contoh Warga 2,Jl. Mawar No. 4,RT 02,1985-11-20\n";
+
+        return response($csvData, 200, $headers);
+    }
 }

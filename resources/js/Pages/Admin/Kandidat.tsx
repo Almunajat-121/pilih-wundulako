@@ -14,10 +14,10 @@ interface KandidatProps extends PageProps {
     };
 }
 
-export default function KandidatPage({
-kandidat, rw_list, rt_list, filters }: KandidatProps) {
+export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: KandidatProps) {
     const isMobile = useIsMobile();
     const [showModal, setShowModal] = useState(false);
+    const [editingKandidat, setEditingKandidat] = useState<Kandidat | null>(null);
     const [deletingId, setDeletingId] = useState<number | null>(null);
 
     const { data, setData, post, reset, processing, errors, clearErrors } = useForm({
@@ -26,7 +26,8 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
         jenis: 'RT' as 'RT' | 'RW',
         rt_id: '',
         rw_id: '',
-        visi: '', misi: '',
+        visi: '',
+        misi: '',
         foto: null as File | null,
     });
 
@@ -34,15 +35,49 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
         router.get('/admin/kandidat', { ...filters, [key]: value }, { preserveState: true, preserveScroll: true });
     };
 
-    const handleAdd = (e: React.FormEvent) => {
-        e.preventDefault();
-        post('/admin/kandidat', {
-            onSuccess: () => {
-                setShowModal(false);
-                reset();
-                clearErrors();
-            },
+    const openAddModal = () => {
+        setEditingKandidat(null);
+        reset();
+        clearErrors();
+        setShowModal(true);
+    };
+
+    const openEditModal = (k: Kandidat) => {
+        setEditingKandidat(k);
+        clearErrors();
+        setData({
+            nama: k.nama,
+            nomor_urut: String(k.nomor_urut),
+            jenis: k.jenis,
+            rt_id: k.rt_id ? String(k.rt_id) : '',
+            rw_id: k.rw_id ? String(k.rw_id) : (k.rt?.rw_id ? String(k.rt.rw_id) : ''),
+            visi: k.visi || '',
+            misi: k.misi || '',
+            foto: null,
         });
+        setShowModal(true);
+    };
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (editingKandidat) {
+            post(`/admin/kandidat/${editingKandidat.id}`, {
+                onSuccess: () => {
+                    setShowModal(false);
+                    setEditingKandidat(null);
+                    reset();
+                    clearErrors();
+                },
+            });
+        } else {
+            post('/admin/kandidat', {
+                onSuccess: () => {
+                    setShowModal(false);
+                    reset();
+                    clearErrors();
+                },
+            });
+        }
     };
 
     const confirmDelete = (id: number) => {
@@ -56,185 +91,197 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
         });
     };
 
-
-    if (isMobile) {
-        return (
-            <AdminLayout title="Data Kandidat">
-                <div className="m-toolbar-plain" style={{ display: 'flex', gap: '8px' }}>
-                    <div className="m-search" style={{ flex: 1, marginBottom: 0 }}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-                        <input type="text" placeholder="Cari kandidat..." />
-                    </div>
-                    <button onClick={() => setShowModal(true)} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
-                </div>
-                <div className="chip-row no-scrollbar" style={{ padding: '12px 18px 0', background: 'var(--card)' }}>
-                    <div className={`chip ${filters.jenis === '' || !filters.jenis ? 'active' : ''}`} onClick={() => handleFilter('jenis', '')}>Semua Tingkat</div>
-                    <div className={`chip ${filters.jenis === 'RW' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RW')}>Calon RW</div>
-                    <div className={`chip ${filters.jenis === 'RT' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RT')}>Calon RT</div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
-                    {kandidat.data.map(k => (
-                        <div className="m-card" key={k.id}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                <div className="ballot-num">{k.nomor_urut}</div>
-                                <div className="avatar-sm">
-                                    {k.foto_url ? <img src={k.foto_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9px' }}/> : 
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <p className="m-card-name" style={{ fontSize: '14.5px' }}>{k.nama}</p>
-                                    <span className={`badge ${k.jenis === 'RW' ? 'badge-brass' : 'badge-slate'}`} style={{ marginTop: '4px' }}>
-                                        Ketua {k.jenis} {k.jenis === 'RW' ? (k.rw?.nama || '').replace(/[^0-9]/g, '') : (k.rt?.nama || '').replace(/[^0-9]/g, '')} {k.jenis === 'RT' && `· RW ${(k.rt?.rw?.nama || '').replace(/[^0-9]/g, '')}`}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {(k.visi || k.misi) && (
-                                <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text)', background: 'var(--slate-soft)', padding: '10px 12px', borderRadius: '8px' }}>
-                                    {k.visi && (
-                                        <>
-                                            <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Visi:</p>
-                                            <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5', marginBottom: k.misi ? '8px' : '0' }}>{k.visi}</p>
-                                        </>
-                                    )}
-                                    {k.misi && (
-                                        <>
-                                            <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Misi:</p>
-                                            <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{k.misi}</p>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-
-                            <div className="row-actions">
-                                <button onClick={() => alert('Edit')}>Edit</button>
-                                <button className="danger" onClick={() => confirmDelete(k.id)}>Hapus</button>
-                            </div>
-                        </div>
-                    ))}
-                    
-                    <p className="footnote-m">Menampilkan {kandidat.data.length} data</p>
-                </div>
-            </AdminLayout>
-        );
-    }
-
     return (
         <AdminLayout title="Data Kandidat">
-            <div className="card">
-                <div className="toolbar">
-                    <div className="toolbar-filters">
-                        <select value={filters.jenis || ''} onChange={e => handleFilter('jenis', e.target.value)} className="select">
-                            <option value="">Semua tingkat</option>
-                            <option value="RT">Ketua RT</option>
-                            <option value="RW">Ketua RW</option>
-                        </select>
-                        <select value={filters.wilayah || ''} onChange={e => handleFilter('wilayah', e.target.value)} className="select">
-                            <option value="">Semua wilayah</option>
-                            {filters.jenis === 'RT' ? (
-                                rw_list.map(rw => (
-                                    <optgroup key={`rw-opt-${rw.id}`} label={`${rw.nama}`}>
-                                        {rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama}</option>)}
-                                    </optgroup>
-                                ))
-                            ) : filters.jenis === 'RW' ? (
-                                rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)
-                            ) : (
-                                <>
-                                    <optgroup label="RW">
-                                        {rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)}
-                                    </optgroup>
-                                    <optgroup label="RT">
-                                        {rw_list.map(rw => (
-                                            rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama} ({rw.nama})</option>)
-                                        ))}
-                                    </optgroup>
-                                </>
-                            )}
-                        </select>
+            {isMobile ? (
+                /* Mobile Layout */
+                <div>
+                    <div className="m-toolbar-plain" style={{ display: 'flex', gap: '8px' }}>
+                        <div className="m-search" style={{ flex: 1, marginBottom: 0 }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                            <input
+                                type="text"
+                                placeholder="Cari kandidat..."
+                                onChange={e => handleFilter('search', e.target.value)}
+                            />
+                        </div>
+                        <button onClick={openAddModal} className="btn btn-primary" style={{ padding: '0 14px' }}>Tambah</button>
                     </div>
-                    <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Tambah Kandidat</button>
-                </div>
-                <div style={{ overflowX: 'auto' }}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Kandidat</th>
-                                <th style={{ textAlign: 'center' }}>No. Urut</th>
-                                <th>Pemilihan</th>
-                                <th>Visi & Misi</th>
-                                <th style={{ textAlign: 'right' }}>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {kandidat.data.map(item => (
-                                <tr key={item.id}>
-                                    <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                            {item.foto_url ? (
-                                                <img src={item.foto_url} alt={item.nama} className="avatar" style={{ objectFit: 'cover' }} />
-                                            ) : (
-                                                <div className="avatar">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                                </div>
-                                            )}
-                                            <span style={{ fontWeight: 600, fontSize: '14.5px' }}>{item.nama}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ textAlign: 'center' }}>
-                                        <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                            <span className="ballot-num">{item.nomor_urut}</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div>
-                                            <span style={{ fontWeight: 600 }}>Ketua {item.jenis}</span>
-                                        </div>
-                                        <div style={{ color: 'var(--text-soft)', fontSize: '12px', marginTop: 2 }}>{item.jenis === 'RT' ? item.rt?.nama : item.rw?.nama}</div>
-                                    </td>
-                                    <td>
-                                        <div style={{ color: 'var(--text-soft)', fontSize: '12.5px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                                            {(item.visi || item.misi) ? (
-                                                <>
-                                                    {item.visi && <span><strong>Visi:</strong> {item.visi} </span>}
-                                                    {item.misi && <span><strong>Misi:</strong> {item.misi}</span>}
-                                                </>
-                                            ) : <span style={{ fontStyle: 'italic' }}>Tidak ada</span>}
-                                        </div>
-                                    </td>
-                                    <td style={{ textAlign: 'right' }}>
-                                        <button className="btn-link" style={{ marginRight: 10 }}>Edit</button>
-                                        <button className="btn-link danger" onClick={() => confirmDelete(item.id)}>Hapus</button>
-                                    </td>
-                                </tr>
-                            ))}
-                            {kandidat.data.length === 0 && (
-                                <tr>
-                                    <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-                {kandidat.last_page > 1 && (
-                    <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                        {kandidat.links.map((link, idx) => (
-                            <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
-                        ))}
+                    <div className="chip-row no-scrollbar" style={{ padding: '12px 18px 0', background: 'var(--card)' }}>
+                        <div className={`chip ${filters.jenis === '' || !filters.jenis ? 'active' : ''}`} onClick={() => handleFilter('jenis', '')}>Semua Tingkat</div>
+                        <div className={`chip ${filters.jenis === 'RW' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RW')}>Calon RW</div>
+                        <div className={`chip ${filters.jenis === 'RT' ? 'active' : ''}`} onClick={() => handleFilter('jenis', 'RT')}>Calon RT</div>
                     </div>
-                )}
-            </div>
 
-            {/* Modal Tambah */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
+                        {kandidat.data.map(k => (
+                            <div className="m-card" key={k.id}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                    <div className="ballot-num">{k.nomor_urut}</div>
+                                    <div className="avatar-sm">
+                                        {k.foto_url ? (
+                                            <img src={k.foto_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '9px' }}/>
+                                        ) : (
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.5-7 8-7s8 3 8 7"/></svg>
+                                        )}
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <p className="m-card-name" style={{ fontSize: '14.5px' }}>{k.nama}</p>
+                                        <span className={`badge ${k.jenis === 'RW' ? 'badge-brass' : 'badge-slate'}`} style={{ marginTop: '4px' }}>
+                                            Ketua {k.jenis} {k.jenis === 'RW' ? (k.rw?.nama || '').replace(/[^0-9]/g, '') : (k.rt?.nama || '').replace(/[^0-9]/g, '')} {k.jenis === 'RT' && `· RW ${(k.rt?.rw?.nama || '').replace(/[^0-9]/g, '')}`}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {(k.visi || k.misi) && (
+                                    <div style={{ marginTop: '12px', fontSize: '13px', color: 'var(--text)', background: 'var(--slate-soft)', padding: '10px 12px', borderRadius: '8px' }}>
+                                        {k.visi && (
+                                            <>
+                                                <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Visi:</p>
+                                                <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5', marginBottom: k.misi ? '8px' : '0' }}>{k.visi}</p>
+                                            </>
+                                        )}
+                                        {k.misi && (
+                                            <>
+                                                <p style={{ fontWeight: 600, marginBottom: '4px', color: 'var(--ink)' }}>Misi:</p>
+                                                <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.5' }}>{k.misi}</p>
+                                            </>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="row-actions">
+                                    <button onClick={() => openEditModal(k)}>Edit</button>
+                                    <button className="danger" onClick={() => confirmDelete(k.id)}>Hapus</button>
+                                </div>
+                            </div>
+                        ))}
+
+                        {kandidat.data.length === 0 && (
+                            <p style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</p>
+                        )}
+                        
+                        <p className="footnote-m">Menampilkan {kandidat.data.length} data</p>
+                    </div>
+                </div>
+            ) : (
+                /* Desktop Layout */
+                <div className="card">
+                    <div className="toolbar">
+                        <div className="toolbar-filters">
+                            <select value={filters.jenis || ''} onChange={e => handleFilter('jenis', e.target.value)} className="select">
+                                <option value="">Semua tingkat</option>
+                                <option value="RT">Ketua RT</option>
+                                <option value="RW">Ketua RW</option>
+                            </select>
+                            <select value={filters.wilayah || ''} onChange={e => handleFilter('wilayah', e.target.value)} className="select">
+                                <option value="">Semua wilayah</option>
+                                {filters.jenis === 'RT' ? (
+                                    rw_list.map(rw => (
+                                        <optgroup key={`rw-opt-${rw.id}`} label={`${rw.nama}`}>
+                                            {rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama}</option>)}
+                                        </optgroup>
+                                    ))
+                                ) : filters.jenis === 'RW' ? (
+                                    rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)
+                                ) : (
+                                    <>
+                                        <optgroup label="RW">
+                                            {rw_list.map(rw => <option key={`rw-${rw.id}`} value={`rw-${rw.id}`}>{rw.nama}</option>)}
+                                        </optgroup>
+                                        <optgroup label="RT">
+                                            {rw_list.map(rw => (
+                                                rw.rt?.map((rt: any) => <option key={`rt-${rt.id}`} value={`rt-${rt.id}`}>{rt.nama} ({rw.nama})</option>)
+                                            ))}
+                                        </optgroup>
+                                    </>
+                                )}
+                            </select>
+                        </div>
+                        <button className="btn btn-primary" onClick={openAddModal}>+ Tambah Kandidat</button>
+                    </div>
+                    <div style={{ overflowX: 'auto' }}>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Kandidat</th>
+                                    <th style={{ textAlign: 'center' }}>No. Urut</th>
+                                    <th>Pemilihan</th>
+                                    <th>Visi & Misi</th>
+                                    <th style={{ textAlign: 'right' }}>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {kandidat.data.map(item => (
+                                    <tr key={item.id}>
+                                        <td>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                                {item.foto_url ? (
+                                                    <img src={item.foto_url} alt={item.nama} className="avatar" style={{ objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div className="avatar">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                                    </div>
+                                                )}
+                                                <span style={{ fontWeight: 600, fontSize: '14.5px' }}>{item.nama}</span>
+                                            </div>
+                                        </td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                                <span className="ballot-num">{item.nomor_urut}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div>
+                                                <span style={{ fontWeight: 600 }}>Ketua {item.jenis}</span>
+                                            </div>
+                                            <div style={{ color: 'var(--text-soft)', fontSize: '12px', marginTop: 2 }}>{item.jenis === 'RT' ? item.rt?.nama : item.rw?.nama}</div>
+                                        </td>
+                                        <td>
+                                            <div style={{ color: 'var(--text-soft)', fontSize: '12.5px', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                                {(item.visi || item.misi) ? (
+                                                    <>
+                                                        {item.visi && <span><strong>Visi:</strong> {item.visi} </span>}
+                                                        {item.misi && <span><strong>Misi:</strong> {item.misi}</span>}
+                                                    </>
+                                                ) : <span style={{ fontStyle: 'italic' }}>Tidak ada</span>}
+                                            </div>
+                                        </td>
+                                        <td style={{ textAlign: 'right' }}>
+                                            <button className="btn-link" style={{ marginRight: 10 }} onClick={() => openEditModal(item)}>Edit</button>
+                                            <button className="btn-link danger" onClick={() => confirmDelete(item.id)}>Hapus</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {kandidat.data.length === 0 && (
+                                    <tr>
+                                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-soft)', padding: '30px' }}>Data tidak ditemukan.</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                    {kandidat.last_page > 1 && (
+                        <div className="footnote" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                            {kandidat.links.map((link, idx) => (
+                                <Link key={idx} href={link.url || '#'} className={`badge ${link.active ? 'badge-ink' : 'badge-slate'}`} style={{ opacity: !link.url ? 0.5 : 1, textDecoration: 'none' }} dangerouslySetInnerHTML={{ __html: link.label }} />
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Modal Tambah / Edit (Desktop & Mobile) */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
                         <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 className="font-bold text-gray-800">Tambah Kandidat</h3>
-                            <button onClick={() => { setShowModal(false); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                            <h3 className="font-bold text-gray-800">
+                                {editingKandidat ? `Edit Kandidat: ${editingKandidat.nama}` : 'Tambah Kandidat'}
+                            </h3>
+                            <button onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
                         </div>
-                        <form onSubmit={handleAdd} className="p-4 space-y-4">
+                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
                                 <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
@@ -249,7 +296,12 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Pemilihan</label>
-                                    <select value={data.jenis} onChange={e => { setData('jenis', e.target.value as any); setData('rt_id', ''); setData('rw_id', ''); }} className="w-full border-gray-300 rounded-md shadow-sm">
+                                    <select
+                                        value={data.jenis}
+                                        disabled={!!editingKandidat}
+                                        onChange={e => { setData('jenis', e.target.value as any); setData('rt_id', ''); setData('rw_id', ''); }}
+                                        className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                    >
                                         <option value="RT">Ketua RT</option>
                                         <option value="RW">Ketua RW</option>
                                     </select>
@@ -261,11 +313,23 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah</label>
                                 {data.jenis === 'RT' ? (
                                     <div className="grid grid-cols-2 gap-4">
-                                        <select value={data.rw_id} onChange={e => { setData('rw_id', e.target.value); setData('rt_id', ''); }} className="w-full border-gray-300 rounded-md shadow-sm" required>
+                                        <select
+                                            value={data.rw_id}
+                                            disabled={!!editingKandidat}
+                                            onChange={e => { setData('rw_id', e.target.value); setData('rt_id', ''); }}
+                                            className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                            required
+                                        >
                                             <option value="">Pilih RW</option>
                                             {rw_list.map(rw => <option key={rw.id} value={rw.id}>{rw.nama}</option>)}
                                         </select>
-                                        <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required disabled={!data.rw_id}>
+                                        <select
+                                            value={data.rt_id}
+                                            disabled={!!editingKandidat || !data.rw_id}
+                                            onChange={e => setData('rt_id', e.target.value)}
+                                            className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                            required
+                                        >
                                             <option value="">Pilih RT</option>
                                             {rw_list.find(rw => rw.id.toString() === data.rw_id)?.rt?.map((rt: any) => (
                                                 <option key={rt.id} value={rt.id}>{rt.nama}</option>
@@ -273,7 +337,13 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                                         </select>
                                     </div>
                                 ) : (
-                                    <select value={data.rw_id} onChange={e => setData('rw_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
+                                    <select
+                                        value={data.rw_id}
+                                        disabled={!!editingKandidat}
+                                        onChange={e => setData('rw_id', e.target.value)}
+                                        className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                        required
+                                    >
                                         <option value="">Pilih RW</option>
                                         {rw_list.map(rw => <option key={rw.id} value={rw.id}>{rw.nama}</option>)}
                                     </select>
@@ -295,21 +365,23 @@ kandidat, rw_list, rt_list, filters }: KandidatProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Foto (Opsional)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Foto {editingKandidat && '(Biarkan kosong jika tidak diubah)'}</label>
                                 <input type="file" accept="image/*" onChange={e => setData('foto', e.target.files ? e.target.files[0] : null)} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
                                 {errors.foto && <p className="text-red-500 text-xs mt-1">{errors.foto}</p>}
                             </div>
                             
                             <div className="pt-4 flex justify-end gap-3 border-t">
-                                <button type="button" onClick={() => { setShowModal(false); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan</button>
+                                <button type="button" onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
+                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                                    {editingKandidat ? 'Simpan Perubahan' : 'Simpan'}
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* Delete Modal */}
+            {/* Modal Delete (Desktop & Mobile) */}
             {deletingId && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
                     <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">

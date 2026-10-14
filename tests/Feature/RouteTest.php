@@ -3,13 +3,24 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\VotingConfig;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class RouteTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_all_admin_routes()
     {
-        $admin = User::where('username', 'admin')->first();
+        VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]);
+
+        $admin = User::create([
+            'nama' => 'Administrator',
+            'username' => 'admin',
+            'password' => bcrypt('admin123'),
+            'role' => 'admin'
+        ]);
         
         $routes = [
             '/admin/dashboard',

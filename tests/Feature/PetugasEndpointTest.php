@@ -142,4 +142,67 @@ class PetugasEndpointTest extends TestCase
             'status_vote_rt' => 'tidak_ditemukan'
         ]);
     }
+
+    public function test_update_status_page_endpoint()
+    {
+        $response = $this->actingAs($this->petugas)->get('/petugas/warga/' . $this->warga->id . '/status');
+        $response->assertStatus(200);
+    }
+
+    public function test_submit_vote_requires_foto_bukti()
+    {
+        $response = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', [
+            'kandidat_rt_id' => $this->kandidatRt->id,
+            'kandidat_rw_id' => 'abstain',
+            'verifikasi_identitas' => true,
+            'idempotency_key' => 'test-no-photo-123',
+            // no foto_bukti
+        ]);
+
+        $response->assertSessionHasErrors('foto_bukti');
+    }
+
+    public function test_submit_vote_cross_region_candidate_rejected()
+    {
+        // Candidate from another RT
+        $otherRw = Rw::create(['nama' => 'RW 99_OTHER']);
+        $otherRt = Rt::create(['nama' => 'RT 99_OTHER', 'rw_id' => $otherRw->id, 'voting_aktif' => true]);
+        $otherKandidat = Kandidat::create([
+            'nama' => 'Kandidat RT Lain',
+            'nomor_urut' => 2,
+            'jenis' => 'RT',
+            'rt_id' => $otherRt->id
+        ]);
+
+        $response = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', [
+            'kandidat_rt_id' => $otherKandidat->id,
+            'kandidat_rw_id' => 'abstain',
+            'verifikasi_identitas' => true,
+            'idempotency_key' => 'cross-region-key-123',
+            'foto_bukti' => UploadedFile::fake()->image('bukti.jpg'),
+        ]);
+
+        $response->assertSessionHasErrors('kandidat_rt_id');
+    }
+
+    public function test_submit_vote_idempotency_prevents_duplicate()
+    {
+        $payload = [
+            'kandidat_rt_id' => $this->kandidatRt->id,
+            'kandidat_rw_id' => 'abstain',
+            'verifikasi_identitas' => true,
+            'idempotency_key' => 'idempotency-fixed-key-456',
+            'foto_bukti' => UploadedFile::fake()->image('bukti.jpg'),
+        ];
+
+        // 1st submit
+        $res1 = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', $payload);
+        $res1->assertSessionHasNoErrors();
+        $this->assertEquals(2, \App\Models\Vote::where('warga_id', $this->warga->id)->count());
+
+        // 2nd submit with identical idempotency key (network retry)
+        $res2 = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', $payload);
+        // Should not crash and count must still be 2 (no duplicate votes added)
+        $this->assertEquals(2, \App\Models\Vote::where('warga_id', $this->warga->id)->count());
+    }
 }
