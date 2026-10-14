@@ -9,6 +9,17 @@ use Illuminate\Http\Request;
 
 class KunjunganController extends Controller
 {
+    public function edit(Request $request, Warga $warga)
+    {
+        if (!$request->user()->rts()->where('rt.id', $warga->rt_id)->exists()) {
+            abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
+        }
+
+        return \Inertia\Inertia::render('Petugas/UpdateStatus', [
+            'warga' => $warga,
+        ]);
+    }
+
     public function update(Request $request, Warga $warga, VoteService $voteService)
     {
         if (!$request->user()->rts()->where('rt.id', $warga->rt_id)->exists()) {
@@ -33,7 +44,7 @@ class KunjunganController extends Controller
                 $request->user()->id
             );
 
-            return back()->with('success', 'Status kunjungan berhasil diperbarui.');
+            return redirect()->route('petugas.wilayah.warga', $warga->rt_id)->with('success', 'Status kunjungan berhasil diperbarui.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui status.']);
         }

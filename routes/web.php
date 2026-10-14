@@ -48,6 +48,7 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
     // Note: middleware('voting.aktif') assuming it will be created, otherwise remove or rely on service validation
     Route::post('/warga/{warga}/vote', [PetugasVoteController::class, 'store'])->name('warga.vote.store');
     
+    Route::get('/warga/{warga}/status', [PetugasKunjunganController::class, 'edit'])->name('warga.status.edit');
     Route::put('/warga/{warga}/status', [PetugasKunjunganController::class, 'update'])->name('warga.status.update');
 });
 
