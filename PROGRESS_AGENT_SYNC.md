@@ -57,6 +57,13 @@
 6. **Laravel Production Cache:** `php artisan optimize` (`config:cache`, `route:cache`, `view:cache`, `event:cache`) aktif di server produksi.
 7. **Benchmark:** Waktu respons server (TTFB) turun drastis dari **~1.48 detik** menjadi **34 – 66 milidetik** (~25x lebih cepat).
 
+## 🛠️ Penyelesaian Fitur UI & Konsolidasi Pengujian (Update Lanjutan)
+1. **Edit Kandidat:** Tombol edit di `Kandidat.tsx` (desktop & mobile) kini berfungsi penuh, membuka form modal dengan data kandidat yang ada dan mengirim update ke `Route::post('kandidat/{kandidat}')`.
+2. **Tambah Pengguna & Pencarian Real-time:** Di `Pengguna.tsx`, tombol "Tambah" di mobile kini membuka modal pembuatan akun pengguna, pencarian bekerja instan di desktop dan mobile, serta modal tugas RT dapat diakses dari mobile.
+3. **Fitur Import DPT Warga:** Mengimplementasikan kelas `App\Imports\WargaImport`, rute `POST /admin/warga/import` dan `GET /admin/warga/import/template`, serta modal interaktif di `Warga.tsx` lengkap dengan tautan unduh contoh template CSV.
+4. **Restrukturisasi Modal Admin (Mobile & Desktop):** Memperbaiki bug arsitektur di mana tampilan mobile mereturn layout sebelum deklarasi modal, sehingga modal (Edit Warga, Import DPT, Tambah Pengguna, Edit/Tambah/Hapus Kandidat) kini 100% aktif dan dapat digunakan di mobile maupun desktop.
+5. **Konsolidasi Suite Tes:** Menghapus 2 file tes duplikat (`PetugasEndpointNoCsrfTest.php` dan `PetugasEndpointRealDBTest.php`), mengintegrasikan pengujian foto bukti, abstain, validasi kandidat lintas wilayah, idempotensi duplikasi, dan rute status ke dalam `PetugasEndpointTest.php`. Seluruh 14 pengujian `php artisan test` sukses (14 passed, 32 assertions, 0 errors).
+
 ## 📌 Note untuk Sesi Chat AI Selanjutnya
 - Jika diminta membuat fitur baru, **pastikan melakukan pencarian grep atau membaca source code terbaru terlebih dahulu**.
 - Kolom kandidat menggunakan `visi` dan `misi` secara terpisah (bukan `visi_misi`).
