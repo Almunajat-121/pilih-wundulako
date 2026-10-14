@@ -8,6 +8,7 @@ use App\Models\StatusLog;
 use App\Models\Rt;
 use App\Models\VotingConfig;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Exception;
 
 class VoteService
@@ -26,7 +27,7 @@ class VoteService
         string $idempotencyKey,
         ?string $fotoBuktiPath
     ): array {
-        return DB::transaction(function () use ($wargaId, $kandidatRtId, $kandidatRwId, $petugasId, $idempotencyKey, $fotoBuktiPath) {
+        $result = DB::transaction(function () use ($wargaId, $kandidatRtId, $kandidatRwId, $petugasId, $idempotencyKey, $fotoBuktiPath) {
 
             // 1. Cek idempotency key — mencegah dobel submit akibat retry
             $existingVote = Vote::whereIn('idempotency_key', [
@@ -136,6 +137,10 @@ class VoteService
                 'voted' => $results,
             ];
         });
+
+        Cache::forget('live_count_data');
+
+        return $result;
     }
 
     /**
@@ -173,6 +178,8 @@ class VoteService
                 'alasan' => "VOID: {$alasan}",
             ]);
         });
+
+        Cache::forget('live_count_data');
     }
 
     /**

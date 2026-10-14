@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Warga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 use Carbon\Carbon;
@@ -31,7 +32,7 @@ class WargaController extends Controller
 
         return Inertia::render('Admin/Warga', [
             'warga' => $query->paginate(20)->withQueryString(),
-            'rt_list' => \App\Models\Rt::with('rw')->get(),
+            'rt_list' => Cache::remember('rt_list_with_rw', 600, fn() => \App\Models\Rt::with('rw')->get()),
             'filters' => $request->only('search', 'rt_id', 'status')
         ]);
     }

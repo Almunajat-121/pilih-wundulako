@@ -14,70 +14,89 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $total_warga = Warga::count();
-        $sudah_memilih_rt = Warga::where('status_vote_rt', 'sudah_memilih')->count();
-        $sudah_memilih_rw = Warga::where('status_vote_rw', 'sudah_memilih')->count();
-        $belum_dikunjungi = Warga::where('status_vote_rt', 'belum_dikunjungi')->where('status_vote_rw', 'belum_dikunjungi')->count();
-        $tidak_ditemukan = Warga::where('status_vote_rt', 'tidak_ditemukan')->count();
-        $menolak = Warga::where('status_vote_rt', 'menolak')->count();
+        $statsRaw = DB::table('warga')
+            ->selectRaw("
+                COUNT(*) as total_warga,
+                SUM(CASE WHEN status_vote_rt = 'sudah_memilih' THEN 1 ELSE 0 END) as sudah_memilih_rt,
+                SUM(CASE WHEN status_vote_rw = 'sudah_memilih' THEN 1 ELSE 0 END) as sudah_memilih_rw,
+                SUM(CASE WHEN status_vote_rt = 'belum_dikunjungi' AND status_vote_rw = 'belum_dikunjungi' THEN 1 ELSE 0 END) as belum_dikunjungi,
+                SUM(CASE WHEN status_vote_rt = 'tidak_ditemukan' THEN 1 ELSE 0 END) as tidak_ditemukan,
+                SUM(CASE WHEN status_vote_rt = 'menolak' THEN 1 ELSE 0 END) as menolak
+            ")
+            ->first();
 
         $stats = [
-            'total_warga' => $total_warga,
-            'sudah_memilih_rt' => $sudah_memilih_rt,
-            'sudah_memilih_rw' => $sudah_memilih_rw,
-            'belum_dikunjungi' => $belum_dikunjungi,
-            'tidak_ditemukan' => $tidak_ditemukan,
-            'menolak' => $menolak,
+            'total_warga' => (int) ($statsRaw->total_warga ?? 0),
+            'sudah_memilih_rt' => (int) ($statsRaw->sudah_memilih_rt ?? 0),
+            'sudah_memilih_rw' => (int) ($statsRaw->sudah_memilih_rw ?? 0),
+            'belum_dikunjungi' => (int) ($statsRaw->belum_dikunjungi ?? 0),
+            'tidak_ditemukan' => (int) ($statsRaw->tidak_ditemukan ?? 0),
+            'menolak' => (int) ($statsRaw->menolak ?? 0),
         ];
+        $total_warga = $stats['total_warga'];
 
-        // Progres per RW
-        $progres_per_rw = [];
-        $rws = Rw::with('rts.wargas')->get();
-        foreach ($rws as $rw) {
-            $total = 0;
-            $sudah_rt = 0;
-            $sudah_rw = 0;
-            
-            foreach ($rw->rts as $rt) {
-                $total += $rt->wargas->count();
-                $sudah_rt += $rt->wargas->where('status_vote_rt', 'sudah_memilih')->count();
-                $sudah_rw += $rt->wargas->where('status_vote_rw', 'sudah_memilih')->count();
-            }
-            
-            $progres_per_rw[] = [
+        // Progres per RW (Aggregated in SQL)
+        $rwStats = DB::table('warga')
+            ->join('rt', 'warga.rt_id', '=', 'rt.id')
+            ->selectRaw("
+                rt.rw_id,
+                COUNT(*) as total,
+                SUM(CASE WHEN warga.status_vote_rt = 'sudah_memilih' THEN 1 ELSE 0 END) as sudah_rt,
+                SUM(CASE WHEN warga.status_vote_rw = 'sudah_memilih' THEN 1 ELSE 0 END) as sudah_rw
+            ")
+            ->groupBy('rt.rw_id')
+            ->get()
+            ->keyBy('rw_id');
+
+        $rws = Rw::orderBy('nama')->get();
+        $progres_per_rw = $rws->map(function ($rw) use ($rwStats) {
+            $stat = $rwStats->get($rw->id);
+            $total = (int) ($stat->total ?? 0);
+            $sudah_rt = (int) ($stat->sudah_rt ?? 0);
+            $sudah_rw = (int) ($stat->sudah_rw ?? 0);
+
+            return [
                 'rw_nama' => 'RW ' . $rw->nama,
                 'total' => $total,
                 'sudah_rt' => $sudah_rt,
                 'sudah_rw' => $sudah_rw,
-                'persen_rt' => $total > 0 ? ($sudah_rt / $total) * 100 : 0,
-                'persen_rw' => $total > 0 ? ($sudah_rw / $total) * 100 : 0,
+                'persen_rt' => $total > 0 ? round(($sudah_rt / $total) * 100, 1) : 0,
+                'persen_rw' => $total > 0 ? round(($sudah_rw / $total) * 100, 1) : 0,
             ];
-        }
+        })->values()->all();
 
-        // Kandidat RT & RW
-        $kandidat_rt = Kandidat::where('jenis', 'RT')->with('rt')->get()->map(function($k) use ($total_warga) {
-            $suara = $k->votes()->where('status', 'valid')->count();
-            return [
-                'id' => $k->id,
-                'nama' => $k->nama,
-                'nomor_urut' => $k->nomor_urut,
-                'rt' => $k->rt,
-                'jumlah_suara' => $suara,
-                'persentase' => $total_warga > 0 ? ($suara / $total_warga) * 100 : 0
-            ];
-        });
+        // Kandidat RT & RW (Eager aggregation via withCount)
+        $kandidat_rt = Kandidat::where('jenis', 'RT')
+            ->with('rt')
+            ->withCount(['votes' => fn($q) => $q->where('status', 'valid')])
+            ->orderBy('nomor_urut')
+            ->get()
+            ->map(function($k) use ($total_warga) {
+                return [
+                    'id' => $k->id,
+                    'nama' => $k->nama,
+                    'nomor_urut' => $k->nomor_urut,
+                    'rt' => $k->rt,
+                    'jumlah_suara' => $k->votes_count,
+                    'persentase' => $total_warga > 0 ? round(($k->votes_count / $total_warga) * 100, 1) : 0
+                ];
+            });
         
-        $kandidat_rw = Kandidat::where('jenis', 'RW')->with('rw')->get()->map(function($k) use ($total_warga) {
-            $suara = $k->votes()->where('status', 'valid')->count();
-            return [
-                'id' => $k->id,
-                'nama' => $k->nama,
-                'nomor_urut' => $k->nomor_urut,
-                'rw' => $k->rw,
-                'jumlah_suara' => $suara,
-                'persentase' => $total_warga > 0 ? ($suara / $total_warga) * 100 : 0
-            ];
-        });
+        $kandidat_rw = Kandidat::where('jenis', 'RW')
+            ->with('rw')
+            ->withCount(['votes' => fn($q) => $q->where('status', 'valid')])
+            ->orderBy('nomor_urut')
+            ->get()
+            ->map(function($k) use ($total_warga) {
+                return [
+                    'id' => $k->id,
+                    'nama' => $k->nama,
+                    'nomor_urut' => $k->nomor_urut,
+                    'rw' => $k->rw,
+                    'jumlah_suara' => $k->votes_count,
+                    'persentase' => $total_warga > 0 ? round(($k->votes_count / $total_warga) * 100, 1) : 0
+                ];
+            });
 
         return Inertia::render('Admin/Dashboard', [
             'stats' => $stats,

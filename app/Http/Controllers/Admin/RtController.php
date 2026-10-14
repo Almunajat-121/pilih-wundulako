@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Rt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class RtController extends Controller
 {
@@ -18,6 +19,7 @@ class RtController extends Controller
             'rw_id.required' => 'RW wajib dipilih.'
         ]);
         Rt::create($request->only('nama', 'rw_id'));
+        Cache::forget('rt_list_with_rw');
         return back()->with('success', 'RT berhasil ditambahkan.');
     }
 
@@ -25,6 +27,7 @@ class RtController extends Controller
     {
         $request->validate(['nama' => 'required|string|max:50'], ['nama.required' => 'Nama RT wajib diisi.']);
         $rt->update($request->only('nama'));
+        Cache::forget('rt_list_with_rw');
         return back()->with('success', 'RT berhasil diperbarui.');
     }
 
@@ -34,6 +37,7 @@ class RtController extends Controller
             return back()->withErrors(['error' => 'Tidak dapat menghapus RT karena masih memiliki warga.']);
         }
         $rt->delete();
+        Cache::forget('rt_list_with_rw');
         return back()->with('success', 'RT berhasil dihapus.');
     }
 

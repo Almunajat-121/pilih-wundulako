@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\VotingConfig;
 use App\Models\Rt;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 
 class VotingConfigController extends Controller
@@ -25,6 +26,8 @@ class VotingConfigController extends Controller
             'voting_aktif_global' => !$config->voting_aktif_global,
             'updated_by' => $request->user()->id
         ]);
+        Cache::forget('voting_config_first');
+        Cache::forget('live_count_data');
         $status = $config->voting_aktif_global ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Voting global berhasil {$status}.");
     }
@@ -32,6 +35,7 @@ class VotingConfigController extends Controller
     public function updatePerRt(Request $request, Rt $rt)
     {
         $rt->update(['voting_aktif' => !$rt->voting_aktif]);
+        Cache::forget('live_count_data');
         $status = $rt->voting_aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Voting wilayah {$rt->nama} berhasil {$status}.");
     }
@@ -43,6 +47,8 @@ class VotingConfigController extends Controller
             'tampilkan_live_count' => !$config->tampilkan_live_count,
             'updated_by' => $request->user()->id
         ]);
+        Cache::forget('voting_config_first');
+        Cache::forget('live_count_data');
         $status = $config->tampilkan_live_count ? 'ditampilkan' : 'disembunyikan';
         return back()->with('success', "Live count publik berhasil {$status}.");
     }

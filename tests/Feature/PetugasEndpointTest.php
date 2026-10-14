@@ -107,10 +107,13 @@ class PetugasEndpointTest extends TestCase
     {
         $response = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', [
             'kandidat_rt_id' => $this->kandidatRt->id,
+            'kandidat_rw_id' => 'abstain',
             'verifikasi_identitas' => true,
-            'idempotency_key' => 'unique-test-key-123'
+            'idempotency_key' => 'unique-test-key-123',
+            'foto_bukti' => \Illuminate\Http\UploadedFile::fake()->image('bukti.jpg'),
         ]);
 
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
         
         $this->assertDatabaseHas('votes', [

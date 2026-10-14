@@ -14,7 +14,7 @@ class LiveCountController extends Controller
 {
     public function index()
     {
-        $config = VotingConfig::first();
+        $config = Cache::remember('voting_config_first', 60, fn() => VotingConfig::first());
 
         if (!$config || !$config->tampilkan_live_count) {
             return Inertia::render('Publik/LiveCount', [
