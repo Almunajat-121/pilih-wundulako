@@ -97,7 +97,7 @@ export default function DaftarWarga({ warga, rt, filters }: Props) {
                                                         </div>
                                                     ) : (
                                                         <span className="status-note" style={{ color: 'var(--moss)' }}>
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12l5 5L20 6"/></svg>
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12l5 5L20 6"/></svg>
                                                             Terekam
                                                         </span>
                                                     )}
@@ -130,7 +130,7 @@ export default function DaftarWarga({ warga, rt, filters }: Props) {
         <PetugasLayout title={`Daftar Warga - ${rt.nama}`} customHeader={
             <header className="m-header-plain">
                 <Link href="/petugas/dashboard" className="back-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
                 </Link>
                 <div>
                     <h2 className="m-header-title">{rt.nama}</h2>
