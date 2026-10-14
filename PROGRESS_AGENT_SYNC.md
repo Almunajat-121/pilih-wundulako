@@ -64,6 +64,26 @@
 4. **Restrukturisasi Modal Admin (Mobile & Desktop):** Memperbaiki bug arsitektur di mana tampilan mobile mereturn layout sebelum deklarasi modal, sehingga modal (Edit Warga, Import DPT, Tambah Pengguna, Edit/Tambah/Hapus Kandidat) kini 100% aktif dan dapat digunakan di mobile maupun desktop.
 5. **Konsolidasi Suite Tes:** Menghapus 2 file tes duplikat (`PetugasEndpointNoCsrfTest.php` dan `PetugasEndpointRealDBTest.php`), mengintegrasikan pengujian foto bukti, abstain, validasi kandidat lintas wilayah, idempotensi duplikasi, dan rute status ke dalam `PetugasEndpointTest.php`. Seluruh 14 pengujian `php artisan test` sukses (14 passed, 32 assertions, 0 errors).
 
+6. **Pembersihan Encoding & Icon UI:** Memperbaiki karakter encoding rusak pada halaman Publik (`LiveCount.tsx`), Lapor Kendala Petugas (`UpdateStatus.tsx`), dan Audit Log (`Audit.tsx`) dengan ikon SVG inline yang tajam dan seragam di semua platform/perangkat.
+
+## 📊 Status Kesiapan Aplikasi (Feature Completeness Audit)
+1. **Fitur Inti (Core Features) — 100% Siap Operasional:**
+   - Autentikasi multi-role (Admin, Petugas, Saksi) & Lockout.
+   - Bilik suara mobile petugas: Foto bukti KTP/kehadiran via kamera WebRTC, suara Sah (RT & RW), suara Abstain, validasi wilayah ketat, dan proteksi idempotensi jaringan.
+   - Pelaporan kendala kunjungan warga (Tidak Ditemukan / Menolak) dengan audit log.
+   - Pendataan warga baru di lapangan dengan kamera.
+   - Manajemen Wilayah (RW & RT) + saklar voting per-RT.
+   - Manajemen Kandidat (CRUD lengkap + foto profil).
+   - Manajemen Pengguna (CRUD + role + penugasan wilayah RT + reset password).
+   - Manajemen DPT Warga (pencarian, filter status, edit data, dan Import massal Excel/CSV).
+   - Dashboard Admin & Petugas real-time (agregasi SQL cepat, tanpa N+1 query).
+   - Audit Trail & Pembatalan Suara (Void Vote dengan alasan wajib).
+   - Laporan & Rekapitulasi (Export Excel 3-sheet & PDF Berita Acara siap cetak).
+   - Live Count Publik transparan (terproteksi konfigurasi tampil/sembunyi, caching 5 detik).
+2. **Detail / Catatan Minor (Non-Blocking):**
+   - Penambahan warga secara satuan (1-per-1) di panel Admin diarahkan menggunakan Import DPT Excel/CSV, sementara penambahan 1-per-1 manual tersedia di aplikasi Petugas lapangan saat door-to-door.
+   - Live count menggunakan auto-polling HTTP 30 detik (sangat stabil untuk spek EC2 hemat resource).
+
 ## 📌 Note untuk Sesi Chat AI Selanjutnya
 - Jika diminta membuat fitur baru, **pastikan melakukan pencarian grep atau membaca source code terbaru terlebih dahulu**.
 - Kolom kandidat menggunakan `visi` dan `misi` secara terpisah (bukan `visi_misi`).
