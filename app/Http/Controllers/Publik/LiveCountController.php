@@ -14,9 +14,11 @@ class LiveCountController extends Controller
 {
     public function index()
     {
-        $config = Cache::remember('voting_config_first', 60, fn() => VotingConfig::first());
+        $tampilkanLiveCount = Cache::remember('tampilkan_live_count', 60, function () {
+            return (bool) (VotingConfig::first()?->tampilkan_live_count ?? false);
+        });
 
-        if (!$config || !$config->tampilkan_live_count) {
+        if (!$tampilkanLiveCount) {
             return Inertia::render('Publik/LiveCount', [
                 'hidden' => true,
                 'data' => null
@@ -51,7 +53,7 @@ class LiveCountController extends Controller
             });
 
             return [
-                'kandidat' => $kandidatFormatted,
+                'kandidat' => $kandidatFormatted->values()->all(),
                 'total_warga' => Warga::count(),
                 'total_sudah_memilih_rt' => Vote::where('jenis', 'RT')->where('status', 'valid')->count(),
                 'total_sudah_memilih_rw' => Vote::where('jenis', 'RW')->where('status', 'valid')->count(),

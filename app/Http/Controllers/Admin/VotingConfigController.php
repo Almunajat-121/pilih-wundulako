@@ -26,7 +26,7 @@ class VotingConfigController extends Controller
             'voting_aktif_global' => !$config->voting_aktif_global,
             'updated_by' => $request->user()->id
         ]);
-        Cache::forget('voting_config_first');
+        Cache::forget('tampilkan_live_count');
         Cache::forget('live_count_data');
         $status = $config->voting_aktif_global ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', "Voting global berhasil {$status}.");
@@ -47,7 +47,7 @@ class VotingConfigController extends Controller
             'tampilkan_live_count' => !$config->tampilkan_live_count,
             'updated_by' => $request->user()->id
         ]);
-        Cache::forget('voting_config_first');
+        Cache::forget('tampilkan_live_count');
         Cache::forget('live_count_data');
         $status = $config->tampilkan_live_count ? 'ditampilkan' : 'disembunyikan';
         return back()->with('success', "Live count publik berhasil {$status}.");

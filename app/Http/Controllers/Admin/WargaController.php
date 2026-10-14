@@ -32,7 +32,7 @@ class WargaController extends Controller
 
         return Inertia::render('Admin/Warga', [
             'warga' => $query->paginate(20)->withQueryString(),
-            'rt_list' => Cache::remember('rt_list_with_rw', 600, fn() => \App\Models\Rt::with('rw')->get()),
+            'rt_list' => \App\Models\Rt::with('rw')->get(),
             'filters' => $request->only('search', 'rt_id', 'status')
         ]);
     }
