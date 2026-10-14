@@ -14,7 +14,7 @@ export default function Pagination({ links }: PaginationProps) {
             <div className="flex flex-1 justify-between sm:hidden">
                 {links[0].url ? (
                     <Link
-                        href={links[0].url}
+                        href={links[0].url!}
                         className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                         dangerouslySetInnerHTML={{ __html: links[0].label }}
                     />
@@ -27,7 +27,7 @@ export default function Pagination({ links }: PaginationProps) {
                 
                 {links[links.length - 1].url ? (
                     <Link
-                        href={links[links.length - 1].url}
+                        href={links[links.length - 1].url!}
                         className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                         dangerouslySetInnerHTML={{ __html: links[links.length - 1].label }}
                     />

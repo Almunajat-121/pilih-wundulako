@@ -14,7 +14,7 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
     useEffect(() => {
         if (!hidden) {
             const interval = setInterval(() => {
-                router.reload({ preserveState: true, preserveScroll: true });
+                router.reload();
             }, 30000);
             return () => clearInterval(interval);
         }

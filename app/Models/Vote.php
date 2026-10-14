@@ -24,7 +24,9 @@ class Vote extends Model
 
     public function kandidat(): BelongsTo
     {
-        return $this->belongsTo(Kandidat::class);
+        return $this->belongsTo(Kandidat::class)->withDefault([
+            'nama' => 'Tidak Memilih (Abstain)'
+        ]);
     }
 
     public function petugas(): BelongsTo

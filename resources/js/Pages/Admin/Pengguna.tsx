@@ -106,7 +106,7 @@ users, rt_list, auth }: PenggunaProps) {
                                 <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 4px' }}>Tugas: semua wilayah</p>
                             ) : (
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '6px 0 4px' }}>
-                                    {u.rt && u.rt.length > 0 ? u.rt.map(rt => (
+                                    {u.wilayah && u.wilayah.length > 0 ? u.wilayah.map((rt: any) => (
                                         <span key={rt.id} className="tag" style={{ fontSize: '11px', padding: '3px 8px', background: 'var(--slate-soft)', borderRadius: '4px', color: 'var(--slate)' }}>
                                             {rt.nama} ({rt.rw?.nama})
                                         </span>

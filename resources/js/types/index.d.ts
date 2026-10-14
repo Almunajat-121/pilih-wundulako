@@ -134,7 +134,7 @@ export interface VotingConfig {
 }
 
 // Inertia shared props
-export interface PageProps {
+export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {
     auth: {
         user: User;
     };
@@ -144,7 +144,8 @@ export interface PageProps {
         warning?: string;
     };
     errors: Record<string, string>;
-}
+    [key: string]: unknown;
+};
 
 // Pagination type dari Laravel
 export interface PaginatedData<T> {

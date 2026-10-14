@@ -31,7 +31,7 @@ export default function Dashboard({ stats, progres_per_rw, kandidat_rt, kandidat
 
     useEffect(() => {
         const interval = setInterval(() => {
-            router.reload({ preserveState: true, preserveScroll: true });
+            router.reload();
         }, 30000);
         return () => clearInterval(interval);
     }, []);

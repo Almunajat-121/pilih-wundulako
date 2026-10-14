@@ -155,7 +155,7 @@ rw_list }: WilayahProps) {
                                             {rw.rt && rw.rt.length > 0 ? (
                                                 <div style={{ border: '1px solid var(--line)', borderRadius: '8px', overflow: 'hidden' }}>
                                                     {rw.rt.map((rt, idx) => (
-                                                        <div key={rt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: idx !== rw.rt.length - 1 ? '1px solid var(--line)' : 'none' }}>
+                                                        <div key={rt.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', borderBottom: idx !== (rw.rt?.length ?? 0) - 1 ? '1px solid var(--line)' : 'none' }}>
                                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                                 <span className="rw-num" style={{ background: 'var(--slate-soft)', color: 'var(--slate)', width: '24px', height: '24px', fontSize: '11.5px' }}>
                                                                     {rt.nama.replace(/\D/g, '') || '-'}

@@ -16,7 +16,7 @@ class WargaController extends Controller
         $query = Warga::with('rt.rw');
 
         if ($search = $request->input('search')) {
-            $query->where('nama', 'like', "%{\$search}%");
+            $query->where('nama', 'like', "%{$search}%");
         }
         
         if ($rt = $request->input('rt_id')) {

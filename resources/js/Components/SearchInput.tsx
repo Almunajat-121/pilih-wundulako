@@ -14,7 +14,7 @@ export default function SearchInput({
     className = '',
 }: SearchInputProps) {
     const [localValue, setLocalValue] = useState(value);
-    const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+    const debounceTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         setLocalValue(value);

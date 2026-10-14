@@ -20,8 +20,8 @@ class VoteService
      */
     public function submitVote(
         int $wargaId,
-        ?int $kandidatRtId,
-        ?int $kandidatRwId,
+        mixed $kandidatRtId,
+        mixed $kandidatRwId,
         int $petugasId,
         string $idempotencyKey,
         ?string $fotoBuktiPath
@@ -29,7 +29,11 @@ class VoteService
         return DB::transaction(function () use ($wargaId, $kandidatRtId, $kandidatRwId, $petugasId, $idempotencyKey, $fotoBuktiPath) {
 
             // 1. Cek idempotency key — mencegah dobel submit akibat retry
-            $existingVote = Vote::where('idempotency_key', $idempotencyKey)->first();
+            $existingVote = Vote::whereIn('idempotency_key', [
+                $idempotencyKey,
+                $idempotencyKey . '_RT',
+                $idempotencyKey . '_RW'
+            ])->first();
             if ($existingVote) {
                 return ['status' => 'already_submitted', 'message' => 'Suara sudah tercatat sebelumnya.'];
             }
@@ -55,14 +59,17 @@ class VoteService
             $results = [];
 
             // 5. Proses vote RT
-            if ($kandidatRtId !== null) {
+            if ($kandidatRtId !== null && $kandidatRtId !== '') {
                 if ($warga->status_vote_rt === 'sudah_memilih') {
                     throw new Exception('Warga sudah memilih Ketua RT sebelumnya.');
                 }
 
+                $isAbstainRt = ($kandidatRtId === 'abstain' || $kandidatRtId === 0 || $kandidatRtId === '0');
+                $actualKandidatRtId = $isAbstainRt ? null : (int)$kandidatRtId;
+
                 Vote::create([
                     'warga_id' => $wargaId,
-                    'kandidat_id' => $kandidatRtId,
+                    'kandidat_id' => $actualKandidatRtId,
                     'jenis' => 'RT',
                     'petugas_id' => $petugasId,
                     'status' => 'valid',
@@ -78,20 +85,24 @@ class VoteService
                     'status_lama' => $statusLama,
                     'status_baru' => 'sudah_memilih',
                     'aktor_id' => $petugasId,
+                    'alasan' => $isAbstainRt ? 'Warga memilih Abstain' : null,
                 ]);
 
-                $results[] = 'RT';
+                $results[] = 'RT' . ($isAbstainRt ? ' (Abstain)' : '');
             }
 
             // 6. Proses vote RW
-            if ($kandidatRwId !== null) {
+            if ($kandidatRwId !== null && $kandidatRwId !== '') {
                 if ($warga->status_vote_rw === 'sudah_memilih') {
                     throw new Exception('Warga sudah memilih Ketua RW sebelumnya.');
                 }
 
+                $isAbstainRw = ($kandidatRwId === 'abstain' || $kandidatRwId === 0 || $kandidatRwId === '0');
+                $actualKandidatRwId = $isAbstainRw ? null : (int)$kandidatRwId;
+
                 Vote::create([
                     'warga_id' => $wargaId,
-                    'kandidat_id' => $kandidatRwId,
+                    'kandidat_id' => $actualKandidatRwId,
                     'jenis' => 'RW',
                     'petugas_id' => $petugasId,
                     'status' => 'valid',
@@ -107,9 +118,10 @@ class VoteService
                     'status_lama' => $statusLama,
                     'status_baru' => 'sudah_memilih',
                     'aktor_id' => $petugasId,
+                    'alasan' => $isAbstainRw ? 'Warga memilih Abstain' : null,
                 ]);
 
-                $results[] = 'RW';
+                $results[] = 'RW' . ($isAbstainRw ? ' (Abstain)' : '');
             }
 
             // 7. Simpan perubahan status warga dan foto bukti
