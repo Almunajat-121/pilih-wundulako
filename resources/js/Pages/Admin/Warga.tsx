@@ -270,33 +270,41 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
 
             {/* Modal Edit Warga (Desktop & Mobile) */}
             {editingWarga && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                            <h3 className="font-bold text-gray-800">Edit Data Warga</h3>
-                            <button onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => { setEditingWarga(null); reset(); clearErrors(); }}>
+                    <div className="modal-card" style={{ maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Data Pemilih
                         </div>
-                        <form onSubmit={handleEdit} className="p-4 space-y-4">
+
+                        <h3 className="modal-title">Edit Data Warga</h3>
+                        <p className="modal-desc">Perbarui identitas, alamat domisili, atau wilayah RT pemilih.</p>
+
+                        <form onSubmit={handleEdit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <label className="field-label">Nama Lengkap *</label>
                                 <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
+                                <label className="field-label">Tanggal Lahir</label>
                                 <input type="date" value={data.tanggal_lahir} onChange={e => setData('tanggal_lahir', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" />
                                 {errors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{errors.tanggal_lahir}</p>}
                             </div>
                             
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
+                                <label className="field-label">Alamat</label>
                                 <textarea value={data.alamat} onChange={e => setData('alamat', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
                                 {errors.alamat && <p className="text-red-500 text-xs mt-1">{errors.alamat}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah RT</label>
+                                <label className="field-label">Wilayah RT *</label>
                                 <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
                                     <option value="">Pilih RT</option>
                                     {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
@@ -304,9 +312,11 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 {errors.rt_id && <p className="text-red-500 text-xs mt-1">{errors.rt_id}</p>}
                             </div>
                             
-                            <div className="pt-4 flex justify-end gap-3 border-t">
-                                <button type="button" onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan Perubahan</button>
+                            <div className="modal-actions pt-4 border-t">
+                                <button type="button" onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="btn btn-outline">Batal</button>
+                                <button type="submit" disabled={processing} className="btn btn-primary">
+                                    {processing ? 'Menyimpan...' : 'Simpan Perubahan'}
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -315,15 +325,23 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
 
             {/* Modal Tambah Warga (Desktop & Mobile) */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                            <h3 className="font-bold text-gray-800">Tambah Data Warga Baru</h3>
-                            <button onClick={() => { setShowAddModal(false); resetAdd(); clearAddErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => { setShowAddModal(false); resetAdd(); clearAddErrors(); }}>
+                    <div className="modal-card" style={{ maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Pendaftaran DPT
                         </div>
-                        <form onSubmit={handleAdd} className="p-4 space-y-4">
+
+                        <h3 className="modal-title">Tambah Warga Baru</h3>
+                        <p className="modal-desc">Tambahkan data pemilih secara manual ke dalam daftar pemilih tetap (DPT).</p>
+
+                        <form onSubmit={handleAdd} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                                <label className="field-label">Nama Lengkap *</label>
                                 <input
                                     type="text"
                                     value={addData.nama}
@@ -336,7 +354,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah RT / RW *</label>
+                                <label className="field-label">Wilayah RT / RW *</label>
                                 <select
                                     value={addData.rt_id}
                                     onChange={e => setAddData('rt_id', e.target.value)}
@@ -350,7 +368,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Domisili</label>
+                                <label className="field-label">Alamat Domisili</label>
                                 <textarea
                                     value={addData.alamat}
                                     onChange={e => setAddData('alamat', e.target.value)}
@@ -362,7 +380,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir (Opsional)</label>
+                                <label className="field-label">Tanggal Lahir (Opsional)</label>
                                 <input
                                     type="date"
                                     value={addData.tanggal_lahir}
@@ -372,18 +390,18 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 {addErrors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{addErrors.tanggal_lahir}</p>}
                             </div>
 
-                            <div className="pt-4 flex justify-end gap-3 border-t">
+                            <div className="modal-actions pt-4 border-t">
                                 <button
                                     type="button"
                                     onClick={() => { setShowAddModal(false); resetAdd(); clearAddErrors(); }}
-                                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                    className="btn btn-outline"
                                 >
                                     Batal
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={addProcessing}
-                                    className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+                                    className="btn btn-primary"
                                 >
                                     {addProcessing ? 'Menyimpan...' : 'Simpan Warga'}
                                 </button>
@@ -395,32 +413,40 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
 
             {/* Modal Import DPT (Desktop & Mobile) */}
             {showImportModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                            <h3 className="font-bold text-gray-800">Import Data DPT Warga</h3>
-                            <button onClick={() => { setShowImportModal(false); resetImport(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => { setShowImportModal(false); resetImport(); }}>
+                    <div className="modal-card" style={{ maxWidth: '480px' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--moss)', background: 'var(--moss-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            Import Data Massal
                         </div>
-                        <form onSubmit={handleImport} className="p-4 space-y-4">
-                            <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 leading-relaxed">
-                                <p className="font-semibold mb-1">Petunjuk Format File:</p>
+
+                        <h3 className="modal-title">Import Data DPT Warga</h3>
+                        <p className="modal-desc">Unggah file Excel atau CSV berisi daftar nama warga dan pembagian wilayahnya.</p>
+
+                        <form onSubmit={handleImport} className="space-y-4">
+                            <div style={{ background: '#FBFAF7', border: '1px solid var(--line)', borderRadius: '8px', padding: '12px', fontSize: '12.5px', lineHeight: 1.5, color: 'var(--text-soft)' }}>
+                                <p style={{ fontWeight: 600, color: 'var(--ink)', marginBottom: '4px' }}>Petunjuk Format File:</p>
                                 <p>File harus memiliki kolom header: <code>nama</code>, <code>alamat</code>, <code>rt</code>, <code>rw</code>, dan <code>tanggal_lahir</code> (opsional).</p>
-                                <p className="mt-1 text-gray-600">Pastikan kolom <code>rw</code> diisi (misal: <code>RW 01</code>) agar warga masuk ke RT pada RW yang tepat.</p>
-                                <div className="mt-2">
-                                    <a href="/admin/warga/import/template" className="inline-flex items-center gap-1 font-semibold text-blue-700 underline hover:text-blue-900">
-                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
-                                        Unduh Contoh Template CSV
+                                <p style={{ marginTop: '4px' }}>Pastikan kolom <code>rw</code> diisi (misal: <code>RW 01</code>) agar warga otomatis masuk ke RT pada RW yang tepat.</p>
+                                <div style={{ marginTop: '8px' }}>
+                                    <a href="/admin/warga/import/template" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontWeight: 600, color: 'var(--ink)', textDecoration: 'underline' }}>
+                                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+                                        Unduh Template CSV Contoh
                                     </a>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Pilih File (Excel / CSV)</label>
+                                <label className="field-label">Pilih File (Excel / CSV) *</label>
                                 <input
                                     type="file"
                                     accept=".xlsx,.xls,.csv"
                                     onChange={e => setImportData('file', e.target.files ? e.target.files[0] : null)}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200"
                                     required
                                 />
                                 {importErrors.file && (
@@ -431,9 +457,9 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 )}
                             </div>
 
-                            <div className="pt-4 flex justify-end gap-3 border-t">
-                                <button type="button" onClick={() => { setShowImportModal(false); resetImport(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={importProcessing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">
+                            <div className="modal-actions pt-4 border-t">
+                                <button type="button" onClick={() => { setShowImportModal(false); resetImport(); }} className="btn btn-outline">Batal</button>
+                                <button type="submit" disabled={importProcessing} className="btn btn-primary">
                                     {importProcessing ? 'Mengimpor...' : 'Mulai Import'}
                                 </button>
                             </div>
@@ -444,36 +470,46 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
 
             {/* Modal Konfirmasi Hapus Warga (Desktop & Mobile) */}
             {deletingWarga && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-bold text-gray-800 text-base">Hapus Data Warga?</h3>
-                                <p className="text-xs text-gray-500">Tindakan ini tidak dapat dibatalkan.</p>
-                            </div>
+                <div className="modal-overlay" onClick={() => setDeletingWarga(null)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--maroon)', background: 'var(--maroon-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Peringatan Hapus
                         </div>
-                        <p className="text-sm text-gray-600">
-                            Apakah Anda yakin ingin menghapus data warga <strong>{deletingWarga.nama}</strong> ({deletingWarga.rt?.nama} / {deletingWarga.rt?.rw?.nama})?
+
+                        <h3 className="modal-title">Hapus Data Warga?</h3>
+                        <p className="modal-desc">
+                            Apakah Anda yakin ingin menghapus data pemilih <strong>{deletingWarga.nama}</strong> ({deletingWarga.rt?.nama} / {deletingWarga.rt?.rw?.nama})?
                         </p>
-                        <div className="flex justify-end gap-2 pt-2 border-t">
+
+                        <div className="callout-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Tindakan ini tidak dapat dibatalkan atau dipulihkan kembali.</span>
+                        </div>
+
+                        <div className="modal-actions">
                             <button
                                 type="button"
                                 onClick={() => setDeletingWarga(null)}
-                                className="px-3.5 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                className="btn btn-outline"
                             >
                                 Batal
                             </button>
                             <button
                                 type="button"
                                 onClick={handleDelete}
-                                className="px-3.5 py-1.5 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 font-medium"
+                                className="btn"
+                                style={{ background: 'var(--maroon)', borderColor: 'var(--maroon)', color: '#fff' }}
                             >
-                                Ya, Hapus
+                                Ya, Hapus Warga
                             </button>
                         </div>
                     </div>
