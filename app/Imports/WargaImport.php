@@ -22,10 +22,12 @@ class WargaImport implements ToModel, WithHeadingRow
 
     public function model(array $row): Model|array|null
     {
-        $nama = trim($row['nama'] ?? $row['nama_lengkap'] ?? '');
+        $nama = trim((string)($row['nama'] ?? $row['nama_lengkap'] ?? ''));
+        $nama = strip_tags(str_replace("\0", '', $nama));
         if (empty($nama)) {
             return null;
         }
+        $nama = mb_substr($nama, 0, 150);
 
         $rtVal = trim((string)($row['rt'] ?? $row['nama_rt'] ?? $row['rt_id'] ?? ''));
         $rwVal = trim((string)($row['rw'] ?? $row['nama_rw'] ?? $row['rw_id'] ?? ''));
@@ -95,9 +97,11 @@ class WargaImport implements ToModel, WithHeadingRow
         }
 
         $alamat = trim((string)($row['alamat'] ?? ''));
+        $alamat = strip_tags(str_replace("\0", '', $alamat));
         if (empty($alamat)) {
             $alamat = 'Kelurahan Wundulako';
         }
+        $alamat = mb_substr($alamat, 0, 255);
 
         $tanggalLahir = null;
         if (!empty($row['tanggal_lahir'])) {

@@ -331,4 +331,96 @@ class PetugasEndpointTest extends TestCase
         $this->assertDatabaseHas('warga', ['nama' => 'Siti Aminah']);
         $this->assertDatabaseHas('warga', ['nama' => 'Rizky']);
     }
+
+    public function test_import_with_missing_headers_or_random_columns()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Corrupt 1',
+            'username' => 'admincorrupt1',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        // CSV with completely wrong/missing headers
+        $csv = "col_x,col_y,col_z\nfoo,bar,baz\n123,456,789\n";
+        $file = UploadedFile::fake()->createWithContent('no_header.csv', $csv);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+        // Should not crash and session should have no errors
+        $response->assertSessionHasNoErrors();
+    }
+
+    public function test_import_with_oversized_strings_and_xss_tags()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Corrupt 2',
+            'username' => 'admincorrupt2',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $giantName = str_repeat('A', 500) . "<script>alert('xss')</script>";
+        $giantAlamat = str_repeat('B', 1000) . "<b>Bold</b> Text";
+
+        $csv = "nama,alamat,rt,rw,tanggal_lahir\n"
+             . "{$giantName},{$giantAlamat},RT 01,RW 01,1990-01-01\n";
+        $file = UploadedFile::fake()->createWithContent('giant.csv', $csv);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+        $response->assertSessionHasNoErrors();
+
+        // Check that name was stripped and truncated to <= 150 chars
+        $warga = Warga::latest('id')->first();
+        $this->assertNotNull($warga);
+        $this->assertLessThanOrEqual(150, mb_strlen($warga->nama));
+        $this->assertStringNotContainsString('<script>', $warga->nama);
+        $this->assertLessThanOrEqual(255, mb_strlen($warga->alamat));
+    }
+
+    public function test_import_with_binary_or_corrupted_bytes_fails_gracefully()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Corrupt Binary',
+            'username' => 'admincorruptbin',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $binaryContent = "\x00\x01\x02\xFF\xFE\xFDCorruptedBinaryData";
+        $file = UploadedFile::fake()->createWithContent('corrupt.csv', $binaryContent);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+        // Controller must catch the error gracefully and return session error (NOT a 500 fatal crash)
+        $response->assertSessionHasErrors('file');
+    }
+
+    public function test_import_with_heavily_corrupted_dates()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Corrupt 3',
+            'username' => 'admincorrupt3',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $csv = "nama,alamat,rt,rw,tanggal_lahir\n"
+             . "Warga Corrupt Date 1,Jl. A,RT 01,RW 01,0000-00-00\n"
+             . "Warga Corrupt Date 2,Jl. B,RT 01,RW 01,9999-99-99\n"
+             . "Warga Corrupt Date 3,Jl. C,RT 01,RW 01,undefined\n"
+             . "Warga Corrupt Date 4,Jl. D,RT 01,RW 01,NULL\n"
+             . "Warga Corrupt Date 5,Jl. E,RT 01,RW 01,2099-12-31\n";
+        $file = UploadedFile::fake()->createWithContent('bad_dates.csv', $csv);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+        $response->assertSessionHasNoErrors();
+
+        // All should be imported with tanggal_lahir = null
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 1', 'tanggal_lahir' => null]);
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 2', 'tanggal_lahir' => null]);
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 3', 'tanggal_lahir' => null]);
+    }
 }
