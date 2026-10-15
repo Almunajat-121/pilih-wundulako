@@ -65,6 +65,7 @@
 5. **Konsolidasi Suite Tes:** Menghapus 2 file tes duplikat (`PetugasEndpointNoCsrfTest.php` dan `PetugasEndpointRealDBTest.php`), mengintegrasikan pengujian foto bukti, abstain, validasi kandidat lintas wilayah, idempotensi duplikasi, dan rute status ke dalam `PetugasEndpointTest.php`. Seluruh 14 pengujian `php artisan test` sukses (14 passed, 32 assertions, 0 errors).
 
 6. **Pembersihan Encoding & Icon UI:** Memperbaiki karakter encoding rusak pada halaman Publik (`LiveCount.tsx`), Lapor Kendala Petugas (`UpdateStatus.tsx`), dan Audit Log (`Audit.tsx`) dengan ikon SVG inline yang tajam dan seragam di semua platform/perangkat.
+7. **Tombol Hapus Warga:** Menambahkan tombol "Hapus" beserta modal dialog konfirmasi pada daftar warga (`Warga.tsx`) baik versi Desktop maupun Mobile. Terintegrasi dengan proteksi backend (`AdminWargaController::destroy`) yang memvalidasi bahwa warga yang sudah memiliki hak suara tidak dapat dihapus, serta membersihkan file foto (KTP/kehadiran) jika ada.
 
 ## 📊 Status Kesiapan Aplikasi (Feature Completeness Audit)
 1. **Fitur Inti (Core Features) — 100% Siap Operasional:**
