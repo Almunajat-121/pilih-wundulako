@@ -423,7 +423,12 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                                     required
                                 />
-                                {importErrors.file && <p className="text-red-500 text-xs mt-1">{importErrors.file}</p>}
+                                {importErrors.file && (
+                                    <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg max-h-48 overflow-y-auto">
+                                        <p className="text-red-700 text-xs font-semibold mb-1">Gagal Mengimpor File:</p>
+                                        <p className="text-red-600 text-xs whitespace-pre-line leading-relaxed">{importErrors.file}</p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="pt-4 flex justify-end gap-3 border-t">

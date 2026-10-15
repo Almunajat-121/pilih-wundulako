@@ -134,7 +134,7 @@ class WargaController extends Controller
             );
             return back()->with('success', 'Data DPT warga berhasil diimpor.');
         } catch (\Throwable $e) {
-            return back()->withErrors(['file' => 'Gagal mengimpor file: ' . $e->getMessage()]);
+            return back()->withErrors(['file' => $e->getMessage()]);
         }
     }
 

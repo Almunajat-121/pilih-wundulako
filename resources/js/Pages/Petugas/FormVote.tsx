@@ -246,38 +246,93 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
             </div>
 
             {showConfirm && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-6 relative">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">Konfirmasi Final</h3>
-                        <p className="text-gray-600 mb-4 text-sm">Periksa kembali pilihan warga sebelum menyimpan. Suara yang sudah disimpan tidak bisa diubah.</p>
+                <div className="modal-overlay" onClick={() => !processing && setShowConfirm(false)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Konfirmasi Bilik Suara
+                        </div>
+
+                        <h3 className="modal-title">Simpan Suara Pemilih?</h3>
+                        <p className="modal-desc">
+                            Periksa kembali pilihan suara warga sebelum menyimpan. Setelah disubmit, suara terekam secara permanen dan tidak dapat diubah.
+                        </p>
                         
-                        <div className="space-y-3 mb-4 bg-gray-50 p-4 rounded-lg">
+                        <div className="voter-summary">
+                            <div className="voter-summary-item">
+                                <span className="item-label">Nama Pemilih</span>
+                                <span className="item-value">{warga.nama}</span>
+                            </div>
                             {needsRt && (
-                                <div>
-                                    <p className="text-xs font-semibold text-gray-500 uppercase">Pilihan Ketua RT</p>
-                                    <p className="font-bold">{getSelectedName(kandidat_rt, data.kandidat_rt_id)}</p>
+                                <div className="voter-summary-item">
+                                    <span className="item-label">Ketua RT</span>
+                                    <span className={`item-value ${data.kandidat_rt_id === 'abstain' ? 'abstain' : ''}`}>
+                                        {getSelectedName(kandidat_rt, data.kandidat_rt_id)}
+                                    </span>
                                 </div>
                             )}
                             {needsRw && (
-                                <div>
-                                    <p className="text-xs font-semibold text-gray-500 uppercase">Pilihan Ketua RW</p>
-                                    <p className="font-bold">{getSelectedName(kandidat_rw, data.kandidat_rw_id)}</p>
+                                <div className="voter-summary-item">
+                                    <span className="item-label">Ketua RW</span>
+                                    <span className={`item-value ${data.kandidat_rw_id === 'abstain' ? 'abstain' : ''}`}>
+                                        {getSelectedName(kandidat_rw, data.kandidat_rw_id)}
+                                    </span>
                                 </div>
                             )}
                         </div>
 
                         {previewUrl && (
-                            <div className="mb-4 flex items-center gap-3 bg-green-50 border border-green-200 p-2.5 rounded-lg">
-                                <img src={previewUrl} alt="Foto Bukti" className="w-12 h-12 object-cover rounded-md border" />
-                                <span className="text-xs text-green-800 font-medium">Foto bukti kehadiran siap dikirim</span>
+                            <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: 'var(--moss-soft)', border: '1px solid rgba(62, 107, 76, 0.25)', padding: '10px 14px', borderRadius: '8px' }}>
+                                <img src={previewUrl} alt="Foto Bukti" style={{ width: '44px', height: '44px', objectFit: 'cover', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)' }} />
+                                <span style={{ fontSize: '12px', color: 'var(--moss)', fontWeight: 500 }}>Foto bukti kehadiran terlampir</span>
                             </div>
                         )}
 
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => setShowConfirm(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md">Batal</button>
-                            <LoadingButton processing={processing} onClick={handleConfirm} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md">
-                                Ya, Simpan Suara
-                            </LoadingButton>
+                        <div className="callout-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Tindakan ini tidak dapat dibatalkan demi menjaga integritas data pemilihan.</span>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button 
+                                type="button" 
+                                disabled={processing}
+                                onClick={() => setShowConfirm(false)} 
+                                className="btn btn-outline"
+                            >
+                                Batal &amp; Periksa
+                            </button>
+                            <button
+                                type="button"
+                                disabled={processing}
+                                onClick={handleConfirm}
+                                className="btn btn-primary"
+                            >
+                                {processing ? (
+                                    <>
+                                        <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                                            <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" className="opacity-75"></path>
+                                        </svg>
+                                        Menyimpan...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                        Ya, Simpan Suara
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

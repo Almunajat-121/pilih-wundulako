@@ -473,3 +473,135 @@ body.mobile #app { width: 100%; max-width: var(--shell-w); display: flex; flex-d
 .status-note{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:500;}
 .status-note svg{width:16px;height:16px;max-width:16px;max-height:16px;flex-shrink:0;}
 
+
+/* ---------- MODAL CONFIRMATION DIALOG (CLAUDE DESIGN) ---------- */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(27, 35, 51, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    z-index: 1000;
+}
+
+.modal-card {
+    background: var(--card, #FFFFFF);
+    border: 1px solid var(--line, #E3DFD3);
+    border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+    width: 100%;
+    max-width: 440px;
+    padding: 24px;
+    position: relative;
+    animation: modalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.96) translateY(8px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--brass, #A97A2E);
+    background: var(--brass-soft, #F3E8D3);
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+}
+
+.modal-title {
+    font-family: 'Fraunces', serif;
+    font-size: 21px;
+    font-weight: 600;
+    color: var(--ink, #1B2333);
+    line-height: 1.25;
+    margin-bottom: 6px;
+}
+
+.modal-desc {
+    font-size: 13px;
+    color: var(--text-soft, #726C5E);
+    line-height: 1.5;
+    margin-bottom: 18px;
+}
+
+.voter-summary {
+    background: #FBFAF7;
+    border: 1px solid var(--line, #E3DFD3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.voter-summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    border-bottom: 1px dashed var(--line, #E3DFD3);
+    padding-bottom: 8px;
+}
+
+.voter-summary-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.item-label {
+    color: var(--text-soft, #726C5E);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    font-weight: 500;
+}
+
+.item-value {
+    font-weight: 600;
+    color: var(--ink, #1B2333);
+    text-align: right;
+}
+
+.item-value.abstain {
+    color: var(--slate, #57616F);
+    font-style: italic;
+}
+
+.callout-warning {
+    background: var(--maroon-soft, #F4E4E1);
+    border: 1px solid rgba(139, 58, 58, 0.2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--maroon, #8B3A3A);
+    line-height: 1.45;
+    margin-bottom: 20px;
+}
+
+.callout-warning svg {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

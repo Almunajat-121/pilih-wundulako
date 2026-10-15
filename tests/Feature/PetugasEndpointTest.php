@@ -352,11 +352,10 @@ class PetugasEndpointTest extends TestCase
             'file' => $file,
         ]);
 
-        $response->assertSessionHasNoErrors();
-        $this->assertDatabaseHas('warga', ['nama' => 'Masruri']);
-        $this->assertDatabaseHas('warga', ['nama' => 'Budi Santoso']);
-        $this->assertDatabaseHas('warga', ['nama' => 'Siti Aminah']);
-        $this->assertDatabaseHas('warga', ['nama' => 'Rizky']);
+        // Strict validation must reject this corrupted file and report line-by-line errors
+        $response->assertSessionHasErrors('file');
+        $this->assertDatabaseMissing('warga', ['nama' => 'Muhammad Rizky']);
+        $this->assertDatabaseMissing('warga', ['nama' => 'Dewi Lestari']);
     }
 
     public function test_import_with_missing_headers_or_random_columns()
@@ -374,8 +373,8 @@ class PetugasEndpointTest extends TestCase
         $file = UploadedFile::fake()->createWithContent('no_header.csv', $csv);
 
         $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
-        // Should not crash and session should have no errors
-        $response->assertSessionHasNoErrors();
+        // Must fail with session error indicating no valid citizen data found
+        $response->assertSessionHasErrors('file');
     }
 
     public function test_import_with_oversized_strings_and_xss_tags()
@@ -424,7 +423,7 @@ class PetugasEndpointTest extends TestCase
         $response->assertSessionHasErrors('file');
     }
 
-    public function test_import_with_heavily_corrupted_dates()
+    public function test_import_with_corrupted_rows_is_strictly_rejected()
     {
         $admin = User::create([
             'nama' => 'Admin Corrupt 3',
@@ -434,20 +433,83 @@ class PetugasEndpointTest extends TestCase
             'is_active' => true,
         ]);
 
+        // CSV with corrupted date, missing address, and invalid RT
         $csv = "nama,alamat,rt,rw,tanggal_lahir\n"
-             . "Warga Corrupt Date 1,Jl. A,RT 01,RW 01,0000-00-00\n"
-             . "Warga Corrupt Date 2,Jl. B,RT 01,RW 01,9999-99-99\n"
-             . "Warga Corrupt Date 3,Jl. C,RT 01,RW 01,undefined\n"
-             . "Warga Corrupt Date 4,Jl. D,RT 01,RW 01,NULL\n"
-             . "Warga Corrupt Date 5,Jl. E,RT 01,RW 01,2099-12-31\n";
-        $file = UploadedFile::fake()->createWithContent('bad_dates.csv', $csv);
+             . "Warga Corrupt 1,Jl. A,RT 01,RW 01,9999-99-99\n"
+             . "Warga Corrupt 2,,RT 01,RW 01,1990-01-01\n"
+             . "Warga Corrupt 3,Jl. C,RT 99,RW 01,1990-01-01\n";
+        $file = UploadedFile::fake()->createWithContent('corrupted.csv', $csv);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+        $response->assertSessionHasErrors('file');
+
+        // Ensure none of the corrupted rows entered the database
+        $this->assertDatabaseMissing('warga', ['nama' => 'Warga Corrupt 1']);
+        $this->assertDatabaseMissing('warga', ['nama' => 'Warga Corrupt 2']);
+        $this->assertDatabaseMissing('warga', ['nama' => 'Warga Corrupt 3']);
+    }
+
+    public function test_import_with_valid_rows_and_optional_empty_dates_succeeds()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Valid',
+            'username' => 'adminvalid',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $csv = "nama,alamat,rt,rw,tanggal_lahir\n"
+             . "Warga Valid 1,Jl. Melati No 1,RT 01,RW 01,1990-05-15\n"
+             . "Warga Valid 2,Jl. Melati No 2,RT 01,RW 01,\n";
+        $file = UploadedFile::fake()->createWithContent('valid.csv', $csv);
 
         $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
         $response->assertSessionHasNoErrors();
 
-        // All should be imported with tanggal_lahir = null
-        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 1', 'tanggal_lahir' => null]);
-        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 2', 'tanggal_lahir' => null]);
-        $this->assertDatabaseHas('warga', ['nama' => 'Warga Corrupt Date 3', 'tanggal_lahir' => null]);
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Valid 1', 'tanggal_lahir' => '1990-05-15']);
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Valid 2', 'tanggal_lahir' => null]);
+    }
+
+    public function test_import_with_user_exact_sample_corrupted_csv_fails_strictly()
+    {
+        $admin = User::create([
+            'nama' => 'Admin User Sample',
+            'username' => 'adminusersample',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $csv = "nama,alamat,rt,tanggal_lahir\n"
+             . "Andika Prasetyo,Jl. Jambu No. 12,RT 01,1991-04-17\n"
+             . "Melisa Anggraini,Jl. Durian No. 8,RT 02,1994-09-23\n"
+             . "Rizal Firmansyah,Jl. Rambutan No. 21,RT 03,1987-15-06\n"
+             . "Nadia Permatasari,,RT 01,1998-02-14\n"
+             . "Dimas Setiawan,Jl. Pinang No. 5,RT 04,1992-11-30\n"
+             . "Vina Oktaviani,Jl. Jeruk No. 16,RT 02,1996-07-19\n"
+             . "Hendra Gunawan,Jl. Sawo No. 9,RT 99,1989-03-12\n"
+             . "Putri Maharani,Jl. Nangka No. 14,,1997-05-25\n"
+             . "Yoga Pratama,Jl. Salak No. 3,RT 01,2031-08-10\n"
+             . "Citra Amelia,Jl. Pepaya No. 11,RT 03,1995-02-29\n"
+             . "Bagas Wicaksono,Jl. Manggis No. 7,RT 02,1993/06/18\n"
+             . "Lia Safitri,Jl. Belimbing No. 20,RT 1,1999-10-05\n"
+             . "Reza Kurniawan,Jl. Kelapa No. 4,RT 04,90-12-15\n"
+             . "Dian Puspitasari,Jl. Cokelat No. 13,RT 02,1988-01-22\n"
+             . "Farhan Maulana,Jl. Rambai No. 6,RT 03,1994-12-08\n"
+             . "Yuni Kartika,Jl. Sukun No. 18,RT 01,1986-06-31\n"
+             . "Wahyu Hidayat,Jl. Pala No. 2,RT 02,1990-03-16\n"
+             . "Intan Permata,Jl. Kemiri No. 10,RT 03,1985-08-27\n"
+             . "Riko Saputra,Jl. Cengkeh No. 15,RT 04,1982-05-11\n"
+             . "Salsa Nuraini,Jl. Asam No. 19,RT 01,1998-14-09\n";
+
+        $file = UploadedFile::fake()->createWithContent('user_test_corrupt.csv', $csv);
+        $response = $this->actingAs($admin)->post('/admin/warga/import', ['file' => $file]);
+
+        $response->assertSessionHasErrors('file');
+        // Ensure no citizens from this invalid file were inserted
+        $this->assertDatabaseMissing('warga', ['nama' => 'Andika Prasetyo']);
+        $this->assertDatabaseMissing('warga', ['nama' => 'Hendra Gunawan']);
+        $this->assertDatabaseMissing('warga', ['nama' => 'Putri Maharani']);
     }
 }
