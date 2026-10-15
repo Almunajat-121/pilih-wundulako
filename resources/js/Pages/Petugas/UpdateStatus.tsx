@@ -98,22 +98,47 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
             )}
 
             {confirmModal && (
-                <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-                    <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '100%', maxWidth: '400px' }}>
-                        <h3 style={{ margin: '0 0 12px', fontSize: '18px', fontWeight: 600 }}>Konfirmasi Laporan</h3>
-                        <p style={{ margin: '0 0 20px', color: 'var(--text-soft)', fontSize: '14px', lineHeight: 1.5 }}>
-                            Anda yakin ingin melaporkan <strong>{warga.nama}</strong> sebagai <span style={{ fontWeight: 600 }}>{confirmModal === 'tidak_ditemukan' ? 'Tidak Ditemukan' : 'Menolak Memilih'}</span>?
+                <div className="modal-overlay" onClick={() => setConfirmModal(null)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--brass)', background: 'var(--brass-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Laporan Kunjungan
+                        </div>
+
+                        <h3 className="modal-title">Konfirmasi Laporan</h3>
+                        <p className="modal-desc">
+                            Anda akan memperbarui status kehadiran untuk warga ini. Laporan ini akan tercatat dalam log aktivitas sistem.
                         </p>
-                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+
+                        <div className="voter-summary">
+                            <div className="voter-summary-item">
+                                <span className="item-label">Nama Warga</span>
+                                <span className="item-value">{warga.nama}</span>
+                            </div>
+                            <div className="voter-summary-item">
+                                <span className="item-label">Status Baru</span>
+                                <span className="item-value" style={{ color: confirmModal === 'tidak_ditemukan' ? 'var(--brass)' : 'var(--maroon)' }}>
+                                    {confirmModal === 'tidak_ditemukan' ? 'Tidak Ditemukan' : 'Menolak Memilih'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="modal-actions">
                             <button 
+                                type="button"
                                 onClick={() => setConfirmModal(null)}
-                                style={{ padding: '10px 16px', border: '1px solid var(--line)', background: 'transparent', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}
+                                className="btn btn-outline"
                             >
                                 Batal
                             </button>
                             <button 
+                                type="button"
                                 onClick={() => handleUpdate(confirmModal)}
-                                style={{ padding: '10px 16px', border: 'none', background: 'var(--ink)', color: '#fff', borderRadius: '8px', cursor: 'pointer', fontWeight: 500 }}
+                                className="btn btn-primary"
                             >
                                 Ya, Laporkan
                             </button>

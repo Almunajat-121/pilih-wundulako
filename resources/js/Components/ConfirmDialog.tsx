@@ -34,60 +34,74 @@ export default function ConfirmDialog({
 
     if (!open) return null;
 
+    const isDanger = variant === 'danger';
+
     return (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
-                <div 
-                    className="fixed inset-0 transition-opacity bg-black bg-opacity-50" 
-                    aria-hidden="true"
-                    onClick={onClose}
-                ></div>
+        <div className="modal-overlay" onClick={() => !processing && onClose()}>
+            <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-badge" style={isDanger ? { color: 'var(--maroon)', background: 'var(--maroon-soft)' } : undefined}>
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        {isDanger ? (
+                            <>
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </>
+                        ) : (
+                            <>
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </>
+                        )}
+                    </svg>
+                    {isDanger ? 'Peringatan Konfirmasi' : 'Konfirmasi Tindakan'}
+                </div>
 
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <h3 className="modal-title">{title}</h3>
+                <p className="modal-desc">{message}</p>
 
-                <div className="inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6 animate-fade-in-up">
-                    <div className="sm:flex sm:items-start">
-                        <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 className="text-lg font-medium leading-6 text-gray-900" id="modal-title">
-                                {title}
-                            </h3>
-                            <div className="mt-2">
-                                <p className="text-sm text-gray-500">
-                                    {message}
-                                </p>
-                            </div>
-                        </div>
+                {isDanger && (
+                    <div className="callout-warning">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>Tindakan ini tidak dapat dibatalkan. Harap teliti sebelum melanjutkan.</span>
                     </div>
-                    <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-2">
-                        <LoadingButton
-                            type="button"
-                            variant={variant}
-                            processing={processing}
-                            onClick={onConfirm}
-                            className="w-full sm:w-auto mb-2 sm:mb-0"
-                        >
-                            {confirmText}
-                        </LoadingButton>
-                        <button
-                            type="button"
-                            className="w-full sm:w-auto inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            onClick={onClose}
-                            disabled={processing}
-                        >
-                            {cancelText}
-                        </button>
-                    </div>
+                )}
+
+                <div className="modal-actions">
+                    <button
+                        type="button"
+                        disabled={processing}
+                        onClick={onClose}
+                        className="btn btn-outline"
+                    >
+                        {cancelText}
+                    </button>
+                    <button
+                        type="button"
+                        disabled={processing}
+                        onClick={onConfirm}
+                        className="btn"
+                        style={isDanger ? { background: 'var(--maroon)', borderColor: 'var(--maroon)', color: '#fff' } : { background: 'var(--ink)', borderColor: 'var(--ink)', color: '#fff' }}
+                    >
+                        {processing ? (
+                            <>
+                                <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle>
+                                    <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" fill="currentColor" className="opacity-75"></path>
+                                </svg>
+                                Memproses...
+                            </>
+                        ) : (
+                            confirmText
+                        )}
+                    </button>
                 </div>
             </div>
-            <style dangerouslySetInnerHTML={{__html: `
-                @keyframes fade-in-up {
-                    from { opacity: 0; transform: translateY(10px) scale(0.95); }
-                    to { opacity: 1; transform: translateY(0) scale(1); }
-                }
-                .animate-fade-in-up {
-                    animation: fade-in-up 0.2s ease-out forwards;
-                }
-            `}} />
         </div>
     );
 }

@@ -232,24 +232,65 @@ votes, status_logs, tab, filters }: AuditProps) {
             </div>
 
             {voidModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2 text-red-600">Peringatan Void Suara</h3>
-                        <p className="text-gray-600 mb-4 text-sm">Anda akan membatalkan (void) suara ini. Tindakan ini akan mengurangi perolehan suara kandidat dan mereset status warga. Harap masukkan alasan yang jelas.</p>
+                <div className="modal-overlay" onClick={() => { if (!processing) { setVoidModal(null); reset(); } }}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--maroon)', background: 'var(--maroon-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Tindakan Kritis &middot; Audit
+                        </div>
+
+                        <h3 className="modal-title">Batalkan (Void) Suara?</h3>
+                        <p className="modal-desc">
+                            Tindakan ini akan menganulir suara yang telah masuk, mengurangi perolehan suara kandidat terkait, dan mengembalikan status warga menjadi belum memilih.
+                        </p>
+
+                        <div className="callout-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Wajib sertakan alasan pembatalan suara yang sah dan dapat dipertanggungjawabkan.</span>
+                        </div>
+
                         <form onSubmit={handleVoid}>
-                            <textarea 
-                                value={data.alasan} 
-                                onChange={e => setData('alasan', e.target.value)} 
-                                placeholder="Alasan void (min. 10 karakter)..." 
-                                className="w-full border-gray-300 rounded-md shadow-sm mb-2" 
-                                rows={3} 
-                                required 
-                                minLength={10}
-                            ></textarea>
-                            {errors.alasan && <p className="text-red-500 text-xs mb-4">{errors.alasan}</p>}
-                            <div className="flex justify-end gap-3 mt-4">
-                                <button type="button" onClick={() => { setVoidModal(null); reset(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md">Batal</button>
-                                <button type="submit" disabled={processing || data.alasan.length < 10} className="px-4 py-2 text-sm text-white bg-red-600 rounded-md disabled:opacity-50">Void Suara</button>
+                            <div style={{ marginBottom: '18px' }}>
+                                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--text-soft)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                                    Alasan Void (Min. 10 Karakter)
+                                </label>
+                                <textarea 
+                                    value={data.alasan} 
+                                    onChange={e => setData('alasan', e.target.value)} 
+                                    placeholder="Jelaskan alasan resmi pembatalan suara ini..." 
+                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--line-2)', borderRadius: '8px', fontFamily: 'inherit', fontSize: '13.5px', background: '#FBFAF7' }}
+                                    rows={3} 
+                                    required 
+                                    minLength={10}
+                                ></textarea>
+                                {errors.alasan && <p style={{ color: 'var(--maroon)', fontSize: '12px', marginTop: '4px' }}>{errors.alasan}</p>}
+                            </div>
+
+                            <div className="modal-actions">
+                                <button 
+                                    type="button" 
+                                    onClick={() => { setVoidModal(null); reset(); }} 
+                                    className="btn btn-outline"
+                                    disabled={processing}
+                                >
+                                    Batal
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    disabled={processing || data.alasan.length < 10} 
+                                    className="btn"
+                                    style={{ background: 'var(--maroon)', borderColor: 'var(--maroon)', color: '#fff' }}
+                                >
+                                    {processing ? 'Memproses...' : 'Ya, Void Suara'}
+                                </button>
                             </div>
                         </form>
                     </div>

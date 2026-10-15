@@ -236,30 +236,40 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
 
             {/* Modal Tambah Pengguna (Desktop & Mobile) */}
             {showAddModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
-                            <h3 className="font-bold text-gray-800">Tambah Pengguna</h3>
-                            <button onClick={() => { setShowAddModal(false); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => { setShowAddModal(false); reset(); clearErrors(); }}>
+                    <div className="modal-card" style={{ maxWidth: '460px' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Akses Pengguna
                         </div>
-                        <form onSubmit={handleAdd} className="p-4 space-y-4">
+
+                        <h3 className="modal-title">Tambah Pengguna Baru</h3>
+                        <p className="modal-desc">
+                            Buat akun akses baru untuk Petugas Lapangan, Saksi, atau Administrator.
+                        </p>
+
+                        <form onSubmit={handleAdd} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <label className="field-label">Nama Lengkap *</label>
                                 <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                                <label className="field-label">Username *</label>
                                 <input type="text" value={data.username} onChange={e => setData('username', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                 {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                <label className="field-label">Password *</label>
                                 <input type="password" value={data.password} onChange={e => setData('password', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                 {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                                <label className="field-label">Peran (Role) *</label>
                                 <select value={data.role} onChange={e => setData('role', e.target.value as any)} className="w-full border-gray-300 rounded-md shadow-sm">
                                     <option value="petugas">Petugas Lapangan</option>
                                     <option value="saksi">Saksi (Read-only)</option>
@@ -267,9 +277,13 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                                 </select>
                                 {errors.role && <p className="text-red-500 text-xs mt-1">{errors.role}</p>}
                             </div>
-                            <div className="pt-4 flex justify-end gap-3 border-t">
-                                <button type="button" onClick={() => { setShowAddModal(false); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan</button>
+                            <div className="modal-actions pt-4 border-t">
+                                <button type="button" onClick={() => { setShowAddModal(false); reset(); clearErrors(); }} className="btn btn-outline">
+                                    Batal
+                                </button>
+                                <button type="submit" disabled={processing} className="btn btn-primary">
+                                    {processing ? 'Menyimpan...' : 'Simpan Pengguna'}
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -278,21 +292,31 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
 
             {/* Modal Tugas Wilayah (Desktop & Mobile) */}
             {assignUser && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] flex flex-col">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl shrink-0">
-                            <h3 className="font-bold text-gray-800">Tugas Wilayah: {assignUser.nama}</h3>
-                            <button onClick={() => setAssignUser(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => setAssignUser(null)}>
+                    <div className="modal-card" style={{ maxWidth: '480px', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Penugasan Wilayah
                         </div>
-                        <div className="p-4 overflow-y-auto flex-1 space-y-4">
+
+                        <h3 className="modal-title">Tugas Wilayah: {assignUser.nama}</h3>
+                        <p className="modal-desc">
+                            Centang RT mana saja yang menjadi cakupan tugas petugas ini saat pemungutan suara.
+                        </p>
+
+                        <div className="overflow-y-auto flex-1 space-y-3 pr-1" style={{ maxHeight: '320px', marginBottom: '16px' }}>
                             {Object.entries(rwGroups).map(([rw, rts]) => (
-                                <div key={rw} className="border border-gray-200 rounded-md p-3">
-                                    <h4 className="font-medium text-sm text-gray-700 mb-2 border-b pb-1">{rw}</h4>
+                                <div key={rw} style={{ background: '#FBFAF7', border: '1px solid var(--line)', borderRadius: '8px', padding: '12px' }}>
+                                    <h4 style={{ fontSize: '13px', fontWeight: 600, color: 'var(--ink)', marginBottom: '8px', borderBottom: '1px dashed var(--line)', paddingBottom: '4px' }}>{rw}</h4>
                                     <div className="grid grid-cols-2 gap-2">
                                         {rts.map(rt => (
-                                            <label key={rt.id} className="flex items-center gap-2 text-sm">
+                                            <label key={rt.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', cursor: 'pointer' }}>
                                                 <input type="checkbox" checked={assignData.rt_ids.includes(rt.id)} onChange={() => toggleRt(rt.id)} className="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500" />
-                                                {rt.nama}
+                                                <span>{rt.nama}</span>
                                             </label>
                                         ))}
                                     </div>
@@ -300,9 +324,14 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                             ))}
                             {Object.keys(rwGroups).length === 0 && <p className="text-sm text-gray-500 text-center">Belum ada data RT/RW.</p>}
                         </div>
-                        <div className="p-4 flex justify-end gap-3 border-t bg-white shrink-0 rounded-b-xl">
-                            <button type="button" onClick={() => setAssignUser(null)} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                            <button type="button" onClick={handleAssign} disabled={assignProcessing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan Tugas</button>
+
+                        <div className="modal-actions pt-3 border-t">
+                            <button type="button" onClick={() => setAssignUser(null)} className="btn btn-outline">
+                                Batal
+                            </button>
+                            <button type="button" onClick={handleAssign} disabled={assignProcessing} className="btn btn-primary">
+                                {assignProcessing ? 'Menyimpan...' : 'Simpan Tugas'}
+                            </button>
                         </div>
                     </div>
                 </div>

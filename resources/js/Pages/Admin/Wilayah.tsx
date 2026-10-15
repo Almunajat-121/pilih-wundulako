@@ -183,13 +183,38 @@ rw_list }: WilayahProps) {
 
             {/* Delete Modal */}
             {deletingId && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
-                        <p className="text-gray-600 mb-6 text-sm">Apakah Anda yakin ingin menghapus data {deletingId.type.toUpperCase()} ini? Tindakan ini tidak dapat dibatalkan.</p>
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => setDeletingId(null)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                            <button onClick={handleDelete} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Hapus</button>
+                <div className="modal-overlay" onClick={() => setDeletingId(null)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--maroon)', background: 'var(--maroon-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Konfirmasi Hapus Wilayah
+                        </div>
+
+                        <h3 className="modal-title">Hapus {deletingId.type.toUpperCase()}?</h3>
+                        <p className="modal-desc">
+                            Apakah Anda yakin ingin menghapus data {deletingId.type.toUpperCase()} ini? Tindakan ini akan menghapus wilayah terkait dari sistem.
+                        </p>
+
+                        <div className="callout-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Data yang sudah dihapus tidak dapat dipulihkan kembali.</span>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button type="button" onClick={() => setDeletingId(null)} className="btn btn-outline">
+                                Batal
+                            </button>
+                            <button type="button" onClick={handleDelete} className="btn" style={{ background: 'var(--maroon)', borderColor: 'var(--maroon)', color: '#fff' }}>
+                                Ya, Hapus Data
+                            </button>
                         </div>
                     </div>
                 </div>

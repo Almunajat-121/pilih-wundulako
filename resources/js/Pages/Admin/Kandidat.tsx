@@ -273,29 +273,39 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
 
             {/* Modal Tambah / Edit (Desktop & Mobile) */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-                        <div className="p-4 border-b flex justify-between items-center bg-gray-50">
-                            <h3 className="font-bold text-gray-800">
-                                {editingKandidat ? `Edit Kandidat: ${editingKandidat.nama}` : 'Tambah Kandidat'}
-                            </h3>
-                            <button onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                <div className="modal-overlay" onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }}>
+                    <div className="modal-card" style={{ maxWidth: '480px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Data Kandidat
                         </div>
-                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+
+                        <h3 className="modal-title">
+                            {editingKandidat ? `Edit: ${editingKandidat.nama}` : 'Tambah Kandidat Baru'}
+                        </h3>
+                        <p className="modal-desc">
+                            Lengkapi informasi calon ketua RT/RW termasuk nomor urut, wilayah tugas, visi, misi, dan foto profil.
+                        </p>
+
+                        <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                                <label className="field-label">Nama Lengkap *</label>
                                 <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Urut</label>
+                                    <label className="field-label">Nomor Urut *</label>
                                     <input type="number" min="1" value={data.nomor_urut} onChange={e => setData('nomor_urut', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
                                     {errors.nomor_urut && <p className="text-red-500 text-xs mt-1">{errors.nomor_urut}</p>}
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Jenis Pemilihan</label>
+                                    <label className="field-label">Jenis Pemilihan *</label>
                                     <select
                                         value={data.jenis}
                                         disabled={!!editingKandidat}
@@ -310,7 +320,7 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                             </div>
                             
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah</label>
+                                <label className="field-label">Wilayah Tugas *</label>
                                 {data.jenis === 'RT' ? (
                                     <div className="grid grid-cols-2 gap-4">
                                         <select
@@ -353,27 +363,29 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Visi (Opsional)</label>
-                                <textarea value={data.visi} onChange={e => setData('visi', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                <label className="field-label">Visi (Opsional)</label>
+                                <textarea value={data.visi} onChange={e => setData('visi', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Visi kandidat..."></textarea>
                                 {errors.visi && <p className="text-red-500 text-xs mt-1">{errors.visi}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Misi (Opsional)</label>
-                                <textarea value={data.misi} onChange={e => setData('misi', e.target.value)} rows={3} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                <label className="field-label">Misi (Opsional)</label>
+                                <textarea value={data.misi} onChange={e => setData('misi', e.target.value)} rows={3} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Misi kandidat..."></textarea>
                                 {errors.misi && <p className="text-red-500 text-xs mt-1">{errors.misi}</p>}
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Foto {editingKandidat && '(Biarkan kosong jika tidak diubah)'}</label>
-                                <input type="file" accept="image/*" onChange={e => setData('foto', e.target.files ? e.target.files[0] : null)} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                <label className="field-label">Foto {editingKandidat && '(Biarkan kosong jika tidak diubah)'}</label>
+                                <input type="file" accept="image/*" onChange={e => setData('foto', e.target.files ? e.target.files[0] : null)} className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-gray-100 file:text-gray-800 hover:file:bg-gray-200" />
                                 {errors.foto && <p className="text-red-500 text-xs mt-1">{errors.foto}</p>}
                             </div>
                             
-                            <div className="pt-4 flex justify-end gap-3 border-t">
-                                <button type="button" onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                                <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">
-                                    {editingKandidat ? 'Simpan Perubahan' : 'Simpan'}
+                            <div className="modal-actions pt-4 border-t">
+                                <button type="button" onClick={() => { setShowModal(false); setEditingKandidat(null); reset(); clearErrors(); }} className="btn btn-outline">
+                                    Batal
+                                </button>
+                                <button type="submit" disabled={processing} className="btn btn-primary">
+                                    {processing ? 'Menyimpan...' : (editingKandidat ? 'Simpan Perubahan' : 'Tambah Kandidat')}
                                 </button>
                             </div>
                         </form>
@@ -383,13 +395,38 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
 
             {/* Modal Delete (Desktop & Mobile) */}
             {deletingId && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6">
-                        <h3 className="text-lg font-bold text-gray-900 mb-2">Konfirmasi Hapus</h3>
-                        <p className="text-gray-600 mb-6 text-sm">Yakin menghapus kandidat ini? Semua data suara yang terkait akan ikut terhapus.</p>
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => setDeletingId(null)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
-                            <button onClick={handleDelete} className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700">Hapus</button>
+                <div className="modal-overlay" onClick={() => setDeletingId(null)}>
+                    <div className="modal-card" onClick={e => e.stopPropagation()}>
+                        <div className="modal-badge" style={{ color: 'var(--maroon)', background: 'var(--maroon-soft)' }}>
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                            Peringatan Hapus
+                        </div>
+
+                        <h3 className="modal-title">Hapus Kandidat Ini?</h3>
+                        <p className="modal-desc">
+                            Apakah Anda yakin ingin menghapus data kandidat ini? Semua data suara yang terkait akan ikut terhapus.
+                        </p>
+
+                        <div className="callout-warning">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                            <span>Tindakan ini tidak dapat dibatalkan atau dipulihkan kembali.</span>
+                        </div>
+
+                        <div className="modal-actions">
+                            <button type="button" onClick={() => setDeletingId(null)} className="btn btn-outline">
+                                Batal
+                            </button>
+                            <button onClick={handleDelete} className="btn" style={{ background: 'var(--maroon)', borderColor: 'var(--maroon)', color: '#fff' }}>
+                                Ya, Hapus Kandidat
+                            </button>
                         </div>
                     </div>
                 </div>
