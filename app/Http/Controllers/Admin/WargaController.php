@@ -114,13 +114,14 @@ class WargaController extends Controller
     public function downloadTemplate()
     {
         $headers = [
-            'Content-Type' => 'text/csv',
+            'Content-Type' => 'text/csv; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="template_import_dpt.csv"',
         ];
 
-        $csvData = "nama,alamat,rt,tanggal_lahir\n"
-                 . "Contoh Warga 1,Jl. Protokol No. 10,RT 01,1990-05-15\n"
-                 . "Contoh Warga 2,Jl. Mawar No. 4,RT 02,1985-11-20\n";
+        $csvData = "nama,alamat,rt,rw,tanggal_lahir\n"
+                 . "Contoh Warga 1,Jl. Protokol No. 10,RT 01,RW 01,1990-05-15\n"
+                 . "Contoh Warga 2,Jl. Mawar No. 4,RT 02,RW 01,1985-11-20\n"
+                 . "Contoh Warga 3,Jl. Melati No. 8,RT 01,RW 02,1992-08-12\n";
 
         return response($csvData, 200, $headers);
     }

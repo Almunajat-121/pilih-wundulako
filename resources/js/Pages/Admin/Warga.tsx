@@ -298,7 +298,8 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                         <form onSubmit={handleImport} className="p-4 space-y-4">
                             <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 leading-relaxed">
                                 <p className="font-semibold mb-1">Petunjuk Format File:</p>
-                                <p>File harus memiliki kolom header: <code>nama</code>, <code>alamat</code>, <code>rt</code>, dan <code>tanggal_lahir</code> (opsional).</p>
+                                <p>File harus memiliki kolom header: <code>nama</code>, <code>alamat</code>, <code>rt</code>, <code>rw</code>, dan <code>tanggal_lahir</code> (opsional).</p>
+                                <p className="mt-1 text-gray-600">Pastikan kolom <code>rw</code> diisi (misal: <code>RW 01</code>) agar warga masuk ke RT pada RW yang tepat.</p>
                                 <div className="mt-2">
                                     <a href="/admin/warga/import/template" className="inline-flex items-center gap-1 font-semibold text-blue-700 underline hover:text-blue-900">
                                         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>

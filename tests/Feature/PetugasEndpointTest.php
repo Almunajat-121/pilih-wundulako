@@ -216,7 +216,12 @@ class PetugasEndpointTest extends TestCase
             'is_active' => true,
         ]);
 
-        $csvContent = "nama,alamat,rt,tanggal_lahir\nWarga Impor Satu,Jl. Mawar 1,RT 01,1995-01-01\nWarga Impor Dua,Jl. Melati 2,RT 01,1998-05-10\n";
+        $rw2 = Rw::create(['nama' => 'RW 02']);
+        $rt1Rw2 = Rt::create(['nama' => 'RT 01', 'rw_id' => $rw2->id, 'voting_aktif' => true]);
+
+        $csvContent = "nama,alamat,rt,rw,tanggal_lahir\n"
+                    . "Warga Impor Satu,Jl. Mawar 1,RT 01,RW 01,1995-01-01\n"
+                    . "Warga Impor Dua,Jl. Melati 2,RT 01,RW 02,1998-05-10\n";
         $file = UploadedFile::fake()->createWithContent('dpt.csv', $csvContent);
 
         $response = $this->actingAs($admin)->post('/admin/warga/import', [
@@ -224,8 +229,10 @@ class PetugasEndpointTest extends TestCase
         ]);
 
         $response->assertSessionHasNoErrors();
-        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Satu']);
-        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Dua']);
+        // Warga Impor Satu should be in RT 01 of RW 01 ($this->rt->id)
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Satu', 'rt_id' => $this->rt->id]);
+        // Warga Impor Dua should be in RT 01 of RW 02 ($rt1Rw2->id)
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Dua', 'rt_id' => $rt1Rw2->id]);
     }
 
     public function test_admin_can_delete_warga_without_votes()
