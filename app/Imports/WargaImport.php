@@ -35,9 +35,12 @@ class WargaImport implements ToModel, WithHeadingRow
         if (empty($rwVal)) {
             if (preg_match('/(?:rw|r\.w)\s*[:.\/-]?\s*([0-9]+)/i', $rtVal, $mRw)) {
                 $rwVal = $mRw[1];
-            } elseif (preg_match('/([0-9]+)\s*[\/|\\]\s*([0-9]+)/', $rtVal, $mSlash)) {
-                $rtVal = $mSlash[1];
-                $rwVal = $mSlash[2];
+            } elseif (str_contains($rtVal, '/') || str_contains($rtVal, '\\')) {
+                $parts = explode('/', str_replace('\\', '/', $rtVal));
+                if (count($parts) >= 2) {
+                    $rtVal = trim($parts[0]);
+                    $rwVal = trim($parts[1]);
+                }
             }
         }
 
@@ -91,20 +94,34 @@ class WargaImport implements ToModel, WithHeadingRow
             $rtId = $this->rts->first()?->id ?? 1;
         }
 
-        $alamat = trim($row['alamat'] ?? 'Kelurahan Wundulako');
+        $alamat = trim((string)($row['alamat'] ?? ''));
+        if (empty($alamat)) {
+            $alamat = 'Kelurahan Wundulako';
+        }
 
         $tanggalLahir = null;
         if (!empty($row['tanggal_lahir'])) {
-            if (is_numeric($row['tanggal_lahir'])) {
+            $rawDate = trim((string)$row['tanggal_lahir']);
+            if (is_numeric($rawDate)) {
                 try {
-                    $tanggalLahir = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float)$row['tanggal_lahir'])->format('Y-m-d');
-                } catch (\Throwable $e) {
+                    $tanggalLahir = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float)$rawDate)->format('Y-m-d');
+                } catch (\Throwable) {
                     $tanggalLahir = null;
                 }
             } else {
-                $time = strtotime((string)$row['tanggal_lahir']);
+                $cleanedDate = str_replace(['/', '.'], '-', $rawDate);
+                $time = strtotime($cleanedDate);
                 if ($time !== false) {
-                    $tanggalLahir = date('Y-m-d', $time);
+                    $parsed = date('Y-m-d', $time);
+                    $parts = explode('-', $parsed);
+                    if (count($parts) === 3) {
+                        $y = (int)$parts[0];
+                        $m = (int)$parts[1];
+                        $d = (int)$parts[2];
+                        if ($y >= 1900 && $y <= (int)date('Y') && checkdate($m, $d, $y)) {
+                            $tanggalLahir = $parsed;
+                        }
+                    }
                 }
             }
         }

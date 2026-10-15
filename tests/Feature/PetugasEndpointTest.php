@@ -281,4 +281,54 @@ class PetugasEndpointTest extends TestCase
         $response->assertSessionHasErrors('error');
         $this->assertDatabaseHas('warga', ['id' => $this->warga->id]);
     }
+
+    public function test_import_with_user_provided_edge_cases_csv()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Edge Test',
+            'username' => 'adminedgetest',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $csv = "nama,alamat,rt,tanggal_lahir\n"
+             . "Contoh Warga 1,Jl. Protokol No. 10,RT 01,1990-05-15\n"
+             . ", Jl. Mawar No. 4,RT 02,1985-11-20\n"
+             . "Masruri,jl.apel no40,rt 02,198511-20\n"
+             . "Ahmad Fauzan,Jl. Melati No. 12,RT 01,1992-13-08\n"
+             . "Siti Aminah,,RT 03,1995-07-21\n"
+             . "Muhammad Rizky,Jl. Anggrek No. 15,RT 99,1988-09-12\n"
+             . "Nur Aisyah,Jl. Flamboyan No. 6,,1998-01-30\n"
+             . "Andi Saputra,Jl. Diponegoro No. 22,RT 01,2030-12-05\n"
+             . "Dewi Lestari,Jl. Cempaka No. 9,RT 03,1993-06-31\n"
+             . "Budi Santoso,Jl. Merpati No. 18,RT 02,1979-04-25\n"
+             . "Rina Marlina,Jl. Dahlia No. 11,RT 04,1996-10-14\n"
+             . "Fajar Ramadhan,Jl. Pattimura No. 3,RT 1,1991-08-09\n"
+             . "Nurul Hidayah,Jl. Teratai No. 25,RT 03,1987-02-19\n"
+             . "Ilham Akbar,Jl. Nusa Indah No. 14,RT 02,1994/12/11\n"
+             . "Fitri Handayani,Jl. Kamboja No. 8,RT 04,1999-05-03\n"
+             . "Arman Syah,Jl. Pemuda No. 17,RT 01,84-07-28\n"
+             . "Rahmawati,Jl. Beringin No. 5,RT 03,1990-11-16\n"
+             . "Dedi Kurniawan,Jl. Mangga No. 20,RT 02,1986-03-22\n"
+             . "Hasna Putri,Jl. Srikaya No. 13,RT 04,1997-09-07\n"
+             . "Randi Pratama,Jl. Ahmad Yani No. 30,RT 01,1992-01-18\n"
+             . "Contoh Warga 1,Jl. Protokol No. 10,RT 01,1990-05-15\n"
+             . "M4sruri,Jl. Apel No. 40,RT 02,1985-11-20\n"
+             . "Fauzan,Jl. Melati No. 12,RT 01,1992-03-08\n"
+             . "Siti Aminah,Jl. Kenanga No. 7,RT 03,1995-07-21\n"
+             . "Rizky,Jl. Anggrek No. 15,RT 02,1888-09-12\n";
+
+        $file = UploadedFile::fake()->createWithContent('user_test.csv', $csv);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('warga', ['nama' => 'Masruri']);
+        $this->assertDatabaseHas('warga', ['nama' => 'Budi Santoso']);
+        $this->assertDatabaseHas('warga', ['nama' => 'Siti Aminah']);
+        $this->assertDatabaseHas('warga', ['nama' => 'Rizky']);
+    }
 }
