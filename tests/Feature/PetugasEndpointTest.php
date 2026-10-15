@@ -205,4 +205,73 @@ class PetugasEndpointTest extends TestCase
         // Should not crash and count must still be 2 (no duplicate votes added)
         $this->assertEquals(2, \App\Models\Vote::where('warga_id', $this->warga->id)->count());
     }
+
+    public function test_admin_can_import_warga_csv()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Test',
+            'username' => 'admintest',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $csvContent = "nama,alamat,rt,tanggal_lahir\nWarga Impor Satu,Jl. Mawar 1,RT 01,1995-01-01\nWarga Impor Dua,Jl. Melati 2,RT 01,1998-05-10\n";
+        $file = UploadedFile::fake()->createWithContent('dpt.csv', $csvContent);
+
+        $response = $this->actingAs($admin)->post('/admin/warga/import', [
+            'file' => $file,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Satu']);
+        $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Dua']);
+    }
+
+    public function test_admin_can_delete_warga_without_votes()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Test 2',
+            'username' => 'admintest2',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $wargaBaru = Warga::create([
+            'nama' => 'Warga Mau Dihapus',
+            'alamat' => 'Jl. Mawar No. 12',
+            'rt_id' => $this->rt->id,
+            'status_vote_rt' => 'belum_dikunjungi',
+            'status_vote_rw' => 'belum_dikunjungi',
+        ]);
+
+        $response = $this->actingAs($admin)->delete('/admin/warga/' . $wargaBaru->id);
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseMissing('warga', ['id' => $wargaBaru->id]);
+    }
+
+    public function test_admin_cannot_delete_warga_with_votes()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Test 3',
+            'username' => 'admintest3',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        // Submit vote first for this->warga
+        $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', [
+            'kandidat_rt_id' => $this->kandidatRt->id,
+            'kandidat_rw_id' => 'abstain',
+            'verifikasi_identitas' => true,
+            'idempotency_key' => 'cannot-delete-key-789',
+            'foto_bukti' => UploadedFile::fake()->image('bukti.jpg'),
+        ]);
+
+        $response = $this->actingAs($admin)->delete('/admin/warga/' . $this->warga->id);
+        $response->assertSessionHasErrors('error');
+        $this->assertDatabaseHas('warga', ['id' => $this->warga->id]);
+    }
 }
