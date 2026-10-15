@@ -37,6 +37,33 @@ class WargaController extends Controller
         ]);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:150',
+            'alamat' => 'nullable|string|max:255',
+            'rt_id' => 'required|exists:rt,id',
+            'tanggal_lahir' => 'nullable|date',
+        ], [
+            'nama.required' => 'Nama warga wajib diisi.',
+            'rt_id.required' => 'Wilayah RT wajib dipilih.',
+            'rt_id.exists' => 'Wilayah RT yang dipilih tidak valid.',
+        ]);
+
+        Warga::create([
+            'nama' => strip_tags(trim($request->nama)),
+            'alamat' => strip_tags(trim($request->alamat ?: 'Kelurahan Wundulako')),
+            'rt_id' => $request->rt_id,
+            'tanggal_lahir' => $request->tanggal_lahir ?: null,
+            'status_vote_rt' => 'belum_dikunjungi',
+            'status_vote_rw' => 'belum_dikunjungi',
+            'jumlah_kunjungan' => 0,
+            'dibuat_oleh' => $request->user()->id,
+        ]);
+
+        return back()->with('success', 'Data warga berhasil ditambahkan.');
+    }
+
     public function update(Request $request, Warga $warga)
     {
         $request->validate([

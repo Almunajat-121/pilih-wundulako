@@ -235,6 +235,33 @@ class PetugasEndpointTest extends TestCase
         $this->assertDatabaseHas('warga', ['nama' => 'Warga Impor Dua', 'rt_id' => $rt1Rw2->id]);
     }
 
+    public function test_admin_can_store_single_warga()
+    {
+        $admin = User::create([
+            'nama' => 'Admin Single Add',
+            'username' => 'adminsingleadd',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $payload = [
+            'nama' => 'Warga Satuan Baru',
+            'alamat' => 'Jl. Kartini No. 5',
+            'rt_id' => $this->rt->id,
+            'tanggal_lahir' => '1995-04-12',
+        ];
+
+        $response = $this->actingAs($admin)->post('/admin/warga', $payload);
+        $response->assertSessionHasNoErrors();
+        $this->assertDatabaseHas('warga', [
+            'nama' => 'Warga Satuan Baru',
+            'rt_id' => $this->rt->id,
+            'status_vote_rt' => 'belum_dikunjungi',
+            'status_vote_rw' => 'belum_dikunjungi',
+        ]);
+    }
+
     public function test_admin_can_delete_warga_without_votes()
     {
         $admin = User::create([

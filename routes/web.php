@@ -86,6 +86,7 @@ Route::middleware(['auth', 'role:admin,saksi'])->prefix('admin')->name('admin.')
     
     // Warga
     Route::get('/warga', [AdminWargaController::class, 'index'])->name('warga.index');
+    Route::post('/warga', [AdminWargaController::class, 'store'])->name('warga.store')->middleware('role:admin');
     Route::post('/warga/import', [AdminWargaController::class, 'import'])->name('warga.import')->middleware('role:admin');
     Route::get('/warga/import/template', [AdminWargaController::class, 'downloadTemplate'])->name('warga.import.template');
     Route::put('/warga/{warga}', [AdminWargaController::class, 'update'])->name('warga.update')->middleware('role:admin');

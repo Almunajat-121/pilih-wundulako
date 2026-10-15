@@ -20,11 +20,30 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
     const [editingWarga, setEditingWarga] = useState<Warga | null>(null);
     const [deletingWarga, setDeletingWarga] = useState<Warga | null>(null);
     const [showImportModal, setShowImportModal] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
 
     const handleDelete = () => {
         if (!deletingWarga) return;
         router.delete(`/admin/warga/${deletingWarga.id}`, {
             onSuccess: () => setDeletingWarga(null),
+        });
+    };
+
+    const { data: addData, setData: setAddData, post: postAdd, reset: resetAdd, clearErrors: clearAddErrors, errors: addErrors, processing: addProcessing } = useForm({
+        nama: '',
+        alamat: '',
+        rt_id: '',
+        tanggal_lahir: '',
+    });
+
+    const handleAdd = (e: React.FormEvent) => {
+        e.preventDefault();
+        postAdd('/admin/warga', {
+            onSuccess: () => {
+                setShowAddModal(false);
+                resetAdd();
+                clearAddErrors();
+            }
         });
     };
 
@@ -104,6 +123,9 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                             <div className={`chip ${filters.status === 'belum_dikunjungi' ? 'active' : ''}`} onClick={() => handleFilter('status', 'belum_dikunjungi')}>Belum memilih</div>
                         </div>
                         <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                            <button className="btn btn-primary" style={{ fontSize: '13px', padding: '6px 12px' }} onClick={() => setShowAddModal(true)}>
+                                + Tambah Warga
+                            </button>
                             <button className="btn btn-outline" style={{ fontSize: '13px', padding: '6px 12px' }} onClick={() => setShowImportModal(true)}>
                                 Import DPT
                             </button>
@@ -170,6 +192,10 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 <option value="">Semua Wilayah</option>
                                 {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
                             </select>
+                            <button className="btn btn-primary" onClick={() => setShowAddModal(true)}>
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                Tambah Warga
+                            </button>
                             <button className="btn btn-outline" onClick={() => setShowImportModal(true)}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
                                 Import DPT
@@ -281,6 +307,86 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                             <div className="pt-4 flex justify-end gap-3 border-t">
                                 <button type="button" onClick={() => { setEditingWarga(null); reset(); clearErrors(); }} className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200">Batal</button>
                                 <button type="submit" disabled={processing} className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50">Simpan Perubahan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Tambah Warga (Desktop & Mobile) */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+                        <div className="p-4 border-b flex justify-between items-center bg-gray-50 rounded-t-xl">
+                            <h3 className="font-bold text-gray-800">Tambah Data Warga Baru</h3>
+                            <button onClick={() => { setShowAddModal(false); resetAdd(); clearAddErrors(); }} className="text-gray-400 hover:text-gray-600">✕</button>
+                        </div>
+                        <form onSubmit={handleAdd} className="p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                                <input
+                                    type="text"
+                                    value={addData.nama}
+                                    onChange={e => setAddData('nama', e.target.value)}
+                                    placeholder="Nama sesuai KTP..."
+                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    required
+                                />
+                                {addErrors.nama && <p className="text-red-500 text-xs mt-1">{addErrors.nama}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Wilayah RT / RW *</label>
+                                <select
+                                    value={addData.rt_id}
+                                    onChange={e => setAddData('rt_id', e.target.value)}
+                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    required
+                                >
+                                    <option value="">Pilih RT / RW</option>
+                                    {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
+                                </select>
+                                {addErrors.rt_id && <p className="text-red-500 text-xs mt-1">{addErrors.rt_id}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Domisili</label>
+                                <textarea
+                                    value={addData.alamat}
+                                    onChange={e => setAddData('alamat', e.target.value)}
+                                    placeholder="Contoh: Jl. Poros Wundulako No. 12"
+                                    rows={2}
+                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                ></textarea>
+                                {addErrors.alamat && <p className="text-red-500 text-xs mt-1">{addErrors.alamat}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir (Opsional)</label>
+                                <input
+                                    type="date"
+                                    value={addData.tanggal_lahir}
+                                    onChange={e => setAddData('tanggal_lahir', e.target.value)}
+                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                />
+                                {addErrors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{addErrors.tanggal_lahir}</p>}
+                            </div>
+
+                            <div className="pt-4 flex justify-end gap-3 border-t">
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowAddModal(false); resetAdd(); clearAddErrors(); }}
+                                    className="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={addProcessing}
+                                    className="px-4 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50 font-medium"
+                                >
+                                    {addProcessing ? 'Menyimpan...' : 'Simpan Warga'}
+                                </button>
                             </div>
                         </form>
                     </div>
