@@ -66,6 +66,7 @@
 
 6. **Pembersihan Encoding & Icon UI:** Memperbaiki karakter encoding rusak pada halaman Publik (`LiveCount.tsx`), Lapor Kendala Petugas (`UpdateStatus.tsx`), dan Audit Log (`Audit.tsx`) dengan ikon SVG inline yang tajam dan seragam di semua platform/perangkat.
 7. **Tombol Hapus Warga:** Menambahkan tombol "Hapus" beserta modal dialog konfirmasi pada daftar warga (`Warga.tsx`) baik versi Desktop maupun Mobile. Terintegrasi dengan proteksi backend (`AdminWargaController::destroy`) yang memvalidasi bahwa warga yang sudah memiliki hak suara tidak dapat dihapus, serta membersihkan file foto (KTP/kehadiran) jika ada.
+8. **Perbaikan Tipe Return `WargaImport` (PHP 8.5):** Memperbaiki deklarasi method `public function model(array $row): Model|array|null` agar kompatibel dengan interface `ToModel` dari library `maatwebsite/excel` di PHP 8.5+, serta parsing serial date Excel yang aman.
 
 ## 📊 Status Kesiapan Aplikasi (Feature Completeness Audit)
 1. **Fitur Inti (Core Features) — 100% Siap Operasional:**
