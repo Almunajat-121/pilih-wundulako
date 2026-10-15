@@ -18,7 +18,15 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
     const isMobile = useIsMobile();
     const [search, setSearch] = useState(filters.search || '');
     const [editingWarga, setEditingWarga] = useState<Warga | null>(null);
+    const [deletingWarga, setDeletingWarga] = useState<Warga | null>(null);
     const [showImportModal, setShowImportModal] = useState(false);
+
+    const handleDelete = () => {
+        if (!deletingWarga) return;
+        router.delete(`/admin/warga/${deletingWarga.id}`, {
+            onSuccess: () => setDeletingWarga(null),
+        });
+    };
 
     const { data, setData, put, reset, clearErrors, errors, processing } = useForm({
         nama: '',
@@ -122,8 +130,9 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                     </div>
                                 </div>
 
-                                <div className="row-actions">
+                                <div className="row-actions" style={{ display: 'flex', gap: '8px' }}>
                                     <button onClick={() => openEdit(w)}>Edit Data</button>
+                                    <button onClick={() => setDeletingWarga(w)} style={{ color: 'var(--maroon)' }}>Hapus</button>
                                 </div>
                             </div>
                         ))}
@@ -205,7 +214,10 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                             <span className="badge badge-slate">{item.jumlah_kunjungan} kali</span>
                                         </td>
                                         <td>
-                                            <button className="btn-link" onClick={() => openEdit(item)}>Edit</button>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                <button className="btn-link" onClick={() => openEdit(item)}>Edit</button>
+                                                <button className="btn-link danger" onClick={() => setDeletingWarga(item)} style={{ color: 'var(--maroon)' }}>Hapus</button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -314,6 +326,44 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal Konfirmasi Hapus Warga (Desktop & Mobile) */}
+            {deletingWarga && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-lg w-full max-w-sm p-5 space-y-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+                                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800 text-base">Hapus Data Warga?</h3>
+                                <p className="text-xs text-gray-500">Tindakan ini tidak dapat dibatalkan.</p>
+                            </div>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                            Apakah Anda yakin ingin menghapus data warga <strong>{deletingWarga.nama}</strong> ({deletingWarga.rt?.nama} / {deletingWarga.rt?.rw?.nama})?
+                        </p>
+                        <div className="flex justify-end gap-2 pt-2 border-t">
+                            <button
+                                type="button"
+                                onClick={() => setDeletingWarga(null)}
+                                className="px-3.5 py-1.5 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleDelete}
+                                className="px-3.5 py-1.5 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 font-medium"
+                            >
+                                Ya, Hapus
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

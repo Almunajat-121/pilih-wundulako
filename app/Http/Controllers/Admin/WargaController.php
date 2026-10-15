@@ -54,6 +54,15 @@ class WargaController extends Controller
         if ($warga->votes()->count() > 0) {
             return back()->withErrors(['error' => 'Tidak dapat menghapus warga yang sudah memiliki data suara.']);
         }
+
+        if ($warga->foto_ktp_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($warga->foto_ktp_path)) {
+            \Illuminate\Support\Facades\Storage::disk('local')->delete($warga->foto_ktp_path);
+        }
+
+        if ($warga->foto_bukti_hadir_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($warga->foto_bukti_hadir_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($warga->foto_bukti_hadir_path);
+        }
+
         $warga->delete();
         return back()->with('success', 'Warga berhasil dihapus.');
     }
