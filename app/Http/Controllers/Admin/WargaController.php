@@ -41,18 +41,19 @@ class WargaController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:150',
-            'alamat' => 'nullable|string|max:255',
+            'alamat' => 'required|string|max:255',
             'rt_id' => 'required|exists:rt,id',
             'tanggal_lahir' => 'nullable|date',
         ], [
             'nama.required' => 'Nama warga wajib diisi.',
+            'alamat.required' => 'Alamat warga wajib diisi.',
             'rt_id.required' => 'Wilayah RT wajib dipilih.',
             'rt_id.exists' => 'Wilayah RT yang dipilih tidak valid.',
         ]);
 
         Warga::create([
             'nama' => strip_tags(trim($request->nama)),
-            'alamat' => strip_tags(trim($request->alamat ?: 'Kelurahan Wundulako')),
+            'alamat' => strip_tags(trim($request->alamat)),
             'rt_id' => $request->rt_id,
             'tanggal_lahir' => $request->tanggal_lahir ?: null,
             'status_vote_rt' => 'belum_dikunjungi',
