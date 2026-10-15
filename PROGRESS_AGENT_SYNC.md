@@ -69,6 +69,7 @@
 8. **Perbaikan Tipe Return `WargaImport` (PHP 8.5):** Memperbaiki deklarasi method `public function model(array $row): Model|array|null` agar kompatibel dengan interface `ToModel` dari library `maatwebsite/excel` di PHP 8.5+, serta parsing serial date Excel yang aman.
 9. **Dukungan Kolom `rw` & Resolusi RT/RW Unik:** Memperbarui template CSV (`nama,alamat,rt,rw,tanggal_lahir`) dan logika `WargaImport` agar mencocokkan pasangan nomor RT dan nomor RW sekaligus. Mencegah warga salah terpetakan ke RW lain saat nomor RT sama (misal RT 01 di RW 01 vs RT 01 di RW 04). Juga mendukung format gabungan seperti `RT 01 / RW 02`.
 10. **Perbaikan Syntax Regex & Penanganan Data Edge-Case:** Mengganti regex pemisah slash dengan operasi string aman (`str_replace` + `explode`) untuk mencegah error PCRE `Compilation failed: unmatched closing parenthesis`. Menambahkan validasi kalender `checkdate()` dan batasan tahun (1900 – tahun sekarang), serta fallback otomatis untuk alamat kosong, baris tanpa nama, dan nomor RT yang tidak terdaftar.
+11. **Ketahanan Terhadap Berkas Rusak & Malformed CSV:** Menambahkan proteksi `Throwable` di `AdminWargaController::import`, pembersihan tag XSS (`strip_tags`), pemangkasan panjang string (`mb_substr(..., 150)` dan `255`), dan penanganan berkas biner/korup secara elegan tanpa menghasilkan HTTP 500 error. Seluruh 22 tes backend lulus 100%.
 
 ## 📊 Status Kesiapan Aplikasi (Feature Completeness Audit)
 1. **Fitur Inti (Core Features) — 100% Siap Operasional:**
