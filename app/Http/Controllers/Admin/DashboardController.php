@@ -56,7 +56,7 @@ class DashboardController extends Controller
             $sudah_rw = (int) ($stat->sudah_rw ?? 0);
 
             return [
-                'rw_nama' => 'RW ' . $rw->nama,
+                'rw_nama' => str_starts_with($rw->nama, 'RW') ? $rw->nama : 'RW ' . $rw->nama,
                 'total' => $total,
                 'sudah_rt' => $sudah_rt,
                 'sudah_rw' => $sudah_rw,
@@ -69,6 +69,7 @@ class DashboardController extends Controller
         $kandidat_rt = Kandidat::where('jenis', 'RT')
             ->with('rt')
             ->withCount(['votes' => fn($q) => $q->where('status', 'valid')])
+            ->orderByDesc('votes_count')
             ->orderBy('nomor_urut')
             ->get()
             ->map(function($k) use ($total_warga) {
@@ -85,6 +86,7 @@ class DashboardController extends Controller
         $kandidat_rw = Kandidat::where('jenis', 'RW')
             ->with('rw')
             ->withCount(['votes' => fn($q) => $q->where('status', 'valid')])
+            ->orderByDesc('votes_count')
             ->orderBy('nomor_urut')
             ->get()
             ->map(function($k) use ($total_warga) {

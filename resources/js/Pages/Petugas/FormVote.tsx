@@ -82,19 +82,26 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                 </div>
                 <div className="callout callout-brass">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-                    <div className="verify-row" style={{ alignItems: 'flex-start' }}>
-                        <input 
-                            type="checkbox" 
-                            id="verify" 
-                            checked={verifikasi}
-                            onChange={(e) => {
-                                setVerifikasi(e.target.checked);
-                                setData('verifikasi_identitas', e.target.checked);
-                            }}
-                        />
-                        <label htmlFor="verify" style={{ fontSize: '13px', lineHeight: 1.5, cursor: 'pointer' }}>
-                            Saya sebagai petugas menyatakan bahwa warga ini benar-benar diverifikasi identitasnya.
-                        </label>
+                    <div style={{ flex: 1 }}>
+                        <div className="verify-row" style={{ alignItems: 'flex-start' }}>
+                            <input 
+                                type="checkbox" 
+                                id="verify" 
+                                checked={verifikasi}
+                                onChange={(e) => {
+                                    setVerifikasi(e.target.checked);
+                                    setData('verifikasi_identitas', e.target.checked);
+                                }}
+                            />
+                            <label htmlFor="verify" style={{ fontSize: '13px', lineHeight: 1.5, cursor: 'pointer', fontWeight: 600 }}>
+                                Saya sebagai petugas menyatakan bahwa warga ini benar-benar diverifikasi identitasnya.
+                            </label>
+                        </div>
+                        {!verifikasi && (
+                            <p style={{ fontSize: '12px', color: '#855E22', marginTop: '6px', marginLeft: '29px' }}>
+                                Centang kotak di atas untuk membuka bilik suara dan kamera foto kehadiran.
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

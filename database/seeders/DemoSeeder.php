@@ -29,11 +29,11 @@ class DemoSeeder extends Seeder
         ]);
         UserWilayah::firstOrCreate(['user_id' => $petugas->id, 'rt_id' => $rt->id]);
 
-        $kanRw1 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 1, 'jenis' => 'RW'], ['nama' => 'Bapak Budi Santoso', 'visi_misi' => 'RW Aman, Tentram, dan Maju bersama warga.']);
-        $kanRw2 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 2, 'jenis' => 'RW'], ['nama' => 'Ibu Siti Aminah', 'visi_misi' => 'RW Bersih, Hijau, dan Sejahtera.']);
+        $kanRw1 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 1, 'jenis' => 'RW'], ['nama' => 'Bapak Budi Santoso', 'visi' => 'RW Aman, Tentram, dan Maju bersama warga.', 'misi' => 'Meningkatkan kerukunan.']);
+        $kanRw2 = Kandidat::firstOrCreate(['rw_id' => $rw->id, 'nomor_urut' => 2, 'jenis' => 'RW'], ['nama' => 'Ibu Siti Aminah', 'visi' => 'RW Bersih, Hijau, dan Sejahtera.', 'misi' => 'Gotong royong berkala.']);
 
-        $kanRt1 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 1, 'jenis' => 'RT'], ['nama' => 'Agus Yudhoyono', 'visi_misi' => 'Jalanan RT mulus tanpa lubang.']);
-        $kanRt2 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 2, 'jenis' => 'RT'], ['nama' => 'Faisal Basri', 'visi_misi' => 'Keamanan RT 24 Jam Nonstop.']);
+        $kanRt1 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 1, 'jenis' => 'RT'], ['nama' => 'Agus Yudhoyono', 'visi' => 'Jalanan RT mulus tanpa lubang.', 'misi' => 'Drainase bersih.']);
+        $kanRt2 = Kandidat::firstOrCreate(['rt_id' => $rt->id, 'nomor_urut' => 2, 'jenis' => 'RT'], ['nama' => 'Faisal Basri', 'visi' => 'Keamanan RT 24 Jam Nonstop.', 'misi' => 'Poskamling aktif.']);
 
         $names = ['Andi', 'Budi', 'Citra', 'Dewi', 'Eko', 'Fitri', 'Gita', 'Hadi', 'Iwan', 'Joko', 'Kiki', 'Lestari', 'Mira', 'Nina', 'Oki', 'Putri', 'Qori', 'Rina', 'Siti', 'Tono'];
         for ($i = 1; $i <= 20; $i++) {

@@ -13,7 +13,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('rts')->get()->map(function($user) {
+        $users = User::with('rts.rw')->get()->map(function($user) {
             $user->wilayah = $user->rts;
             return $user;
         });

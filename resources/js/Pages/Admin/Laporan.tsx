@@ -19,7 +19,7 @@ export default function Laporan({ stats }: LaporanProps) {
 
     return (
         <AdminLayout title="Laporan & Unduh Data">
-            <div className="grid-stats">
+            <div className="grid-stats-3">
                 <div className="stat" style={{ '--bar': 'var(--ink)' } as React.CSSProperties}>
                     <p className="stat-label">Total Suara Masuk</p>
                     <h3 className="stat-value">{stats.total_suara_masuk}</h3>

@@ -50,69 +50,66 @@ rw_list }: WilayahProps) {
     };
 
 
-    if (isMobile) {
-        return (
-            <AdminLayout title="Kelola Wilayah">
-                <form onSubmit={handleAddRw} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
-                    <input type="text" value={rwData.nama} onChange={e => setRwData('nama', e.target.value)} placeholder="Nama RW, contoh: RW 03" className="input" style={{ flex: 1 }} />
-                    <button className="btn btn-primary" type="submit" disabled={rwProcessing}>Tambah</button>
-                </form>
-                {rwErrors.nama && <div style={{ color: 'var(--maroon)', fontSize: '12px', marginTop: '-10px', marginBottom: '14px' }}>{rwErrors.nama}</div>}
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px' }}>
-                    {rw_list.map(rw => {
-                        const isExpanded = expandedRw === rw.id;
-                        return (
-                            <div key={rw.id} className={`accordion-item ${!isExpanded ? 'is-collapsed' : ''}`}>
-                                <div className="accordion-head" onClick={() => setExpandedRw(isExpanded ? null : rw.id)}>
-                                    <div className="rw-left">
-                                        <span className="rw-num">{rw.nama.replace(/[^0-9]/g, '') || 'RW'}</span>
-                                        <div>
-                                            <div className="rw-name">{rw.nama}</div>
-                                            <div className="rw-meta">{rw.rt?.length || 0} RT</div>
-                                        </div>
-                                    </div>
-                                    <div className="rw-right">
-                                        <button onClick={(e) => { e.stopPropagation(); confirmDelete('rw', rw.id); }} style={{ background: 'none', border: 'none', color: 'var(--maroon)', fontWeight: 600, fontSize: '12.5px' }}>Hapus</button>
-                                        <svg className="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
-                                    </div>
-                                </div>
-                                
-                                {isExpanded && (
-                                    <div style={{ padding: '13px 14px', background: '#fff' }}>
-                                        <form onSubmit={(e) => handleAddRt(e, rw.id)} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-                                            <input type="text" value={rtData.nama} onChange={e => setRtData('nama', e.target.value)} placeholder="Nama RT, cth: RT 03" className="input" style={{ flex: 1 }} />
-                                            <button className="btn btn-outline" type="submit" disabled={rtProcessing}>Tambah RT</button>
-                                        </form>
-                                        
-                                        {rw.rt && rw.rt.length > 0 && (
-                                            <div style={{ border: '1px solid var(--line)', borderRadius: '9px', overflow: 'hidden' }}>
-                                                {rw.rt.map(rt => (
-                                                    <div className="rt-row" key={rt.id}>
-                                                        <div className="rt-left">
-                                                            <span className="rw-num" style={{ background: 'var(--slate-soft)', color: 'var(--slate)' }}>{rt.nama.replace(/[^0-9]/g, '') || 'RT'}</span>
-                                                            <span style={{ fontWeight: 500, fontSize: '13px' }}>{rt.nama}</span>
-                                                            <span  className={`badge ${rt.voting_aktif ? 'badge-moss' : 'badge-maroon'}`} >{rt.voting_aktif ? 'Aktif' : 'Tutup'}</span>
-                                                        </div>
-                                                        <button onClick={() => confirmDelete('rt', rt.id)} style={{ color: 'var(--maroon)', fontSize: '12.5px', fontWeight: 600, background: 'none', border: 'none' }}>Hapus</button>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </AdminLayout>
-        );
-    }
-
     return (
         <AdminLayout title="Kelola Wilayah">
-            <div className="card" style={{ maxWidth: '760px' }}>
-                <div className="card-head">
+            {isMobile ? (
+                <>
+                    <form onSubmit={handleAddRw} style={{ display: 'flex', gap: '8px', marginBottom: '14px' }}>
+                        <input type="text" value={rwData.nama} onChange={e => setRwData('nama', e.target.value)} placeholder="Nama RW, contoh: RW 03" className="input" style={{ flex: 1 }} />
+                        <button className="btn btn-primary" type="submit" disabled={rwProcessing}>Tambah</button>
+                    </form>
+                    {rwErrors.nama && <div style={{ color: 'var(--maroon)', fontSize: '12px', marginTop: '-10px', marginBottom: '14px' }}>{rwErrors.nama}</div>}
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px' }}>
+                        {rw_list.map(rw => {
+                            const isExpanded = expandedRw === rw.id;
+                            return (
+                                <div key={rw.id} className={`accordion-item ${!isExpanded ? 'is-collapsed' : ''}`}>
+                                    <div className="accordion-head" onClick={() => setExpandedRw(isExpanded ? null : rw.id)}>
+                                        <div className="rw-left">
+                                            <span className="rw-num">{rw.nama.replace(/[^0-9]/g, '') || 'RW'}</span>
+                                            <div>
+                                                <div className="rw-name">{rw.nama}</div>
+                                                <div className="rw-meta">{rw.rt?.length || 0} RT</div>
+                                            </div>
+                                        </div>
+                                        <div className="rw-right">
+                                            <button onClick={(e) => { e.stopPropagation(); confirmDelete('rw', rw.id); }} style={{ background: 'none', border: 'none', color: 'var(--maroon)', fontWeight: 600, fontSize: '12.5px' }}>Hapus</button>
+                                            <svg className="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+                                        </div>
+                                    </div>
+                                    
+                                    {isExpanded && (
+                                        <div style={{ padding: '13px 14px', background: '#fff' }}>
+                                            <form onSubmit={(e) => handleAddRt(e, rw.id)} style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                                                <input type="text" value={rtData.nama} onChange={e => setRtData('nama', e.target.value)} placeholder="Nama RT, cth: RT 03" className="input" style={{ flex: 1 }} />
+                                                <button className="btn btn-outline" type="submit" disabled={rtProcessing}>Tambah RT</button>
+                                            </form>
+                                            
+                                            {rw.rt && rw.rt.length > 0 && (
+                                                <div style={{ border: '1px solid var(--line)', borderRadius: '9px', overflow: 'hidden' }}>
+                                                    {rw.rt.map(rt => (
+                                                        <div className="rt-row" key={rt.id}>
+                                                            <div className="rt-left">
+                                                                <span className="rw-num" style={{ background: 'var(--slate-soft)', color: 'var(--slate)' }}>{rt.nama.replace(/[^0-9]/g, '') || 'RT'}</span>
+                                                                <span style={{ fontWeight: 500, fontSize: '13px' }}>{rt.nama}</span>
+                                                                <span  className={`badge ${rt.voting_aktif ? 'badge-moss' : 'badge-maroon'}`} >{rt.voting_aktif ? 'Aktif' : 'Tutup'}</span>
+                                                            </div>
+                                                            <button onClick={() => confirmDelete('rt', rt.id)} style={{ color: 'var(--maroon)', fontSize: '12.5px', fontWeight: 600, background: 'none', border: 'none' }}>Hapus</button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </>
+            ) : (
+                <div className="card" style={{ maxWidth: '760px' }}>
+                    <div className="card-head">
                     <h3>Daftar RW</h3>
                 </div>
                 <div style={{ padding: '18px 20px' }}>
@@ -180,6 +177,7 @@ rw_list }: WilayahProps) {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Delete Modal */}
             {deletingId && (

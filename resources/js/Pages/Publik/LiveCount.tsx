@@ -56,8 +56,7 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
 
     if (filterRw !== 'Semua') {
         filteredKandidatRw = filteredKandidatRw.filter(k => k.wilayah_nama === filterRw);
-        // Note: In real app, we need to know which RT belongs to which RW to filter RT properly. 
-        // Here we just show all RT if filtered by RW, or assume wilayah_nama contains RW info (e.g. "RT 01 / RW 02")
+        filteredKandidatRt = filteredKandidatRt.filter(k => (k.wilayah_nama || '').includes(filterRw));
     }
 
     // Group RT by wilayah

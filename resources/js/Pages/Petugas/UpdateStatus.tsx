@@ -21,7 +21,17 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
         });
     };
 
-    const header = !isMobile ? (
+    const header = isMobile ? (
+        <header className="m-header-plain">
+            <Link href={`/petugas/wilayah/${warga.rt_id}`} className="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            </Link>
+            <div>
+                <h2 className="m-header-title">Update Status Warga</h2>
+                <p className="m-sub">Laporkan kendala kunjungan</p>
+            </div>
+        </header>
+    ) : (
         <header className="topbar">
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ color: 'var(--text-soft)' }}>&larr; Batal</Link>
@@ -31,18 +41,10 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
                 </div>
             </div>
         </header>
-    ) : undefined;
+    );
 
     const content = (
         <>
-            <div style={{ marginBottom: '20px' }}>
-                {isMobile && (
-                    <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-                        Kembali
-                    </Link>
-                )}
-            </div>
 
             <div style={{ background: 'var(--card)', padding: '20px', borderRadius: 'var(--radius)', border: '1px solid var(--line)', marginBottom: '20px' }}>
                 <h3 style={{ margin: '0 0 4px', fontSize: '18px', fontWeight: 600 }}>{warga.nama}</h3>
@@ -90,7 +92,9 @@ export default function UpdateStatus({ warga }: UpdateStatusProps) {
     return (
         <PetugasLayout title="Update Status Kehadiran" customHeader={header}>
             {isMobile ? (
-                content
+                <div style={{ padding: '16px 18px 32px' }}>
+                    {content}
+                </div>
             ) : (
                 <div className="content-narrow" style={{ paddingTop: '24px' }}>
                     {content}

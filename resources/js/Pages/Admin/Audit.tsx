@@ -30,85 +30,83 @@ votes, status_logs, tab, filters }: AuditProps) {
     };
 
 
-    if (isMobile) {
-        const type = tab;
-        const listData = (type === 'votes' ? votes : status_logs)!;
-        return (
-            <AdminLayout title="Audit Log">
-                <div className="chip-row no-scrollbar" style={{ padding: '12px 18px', background: 'var(--card)' }}>
-                    <Link href="/admin/audit/votes" className={`chip ${type === 'votes' ? 'active' : ''}`}>Riwayat Vote</Link>
-                    <Link href="/admin/audit/status-logs" className={`chip ${type === 'status_logs' ? 'active' : ''}`}>Log Status Warga</Link>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
-                    {type === 'votes' ? (
-                        (listData.data as Vote[]).map(v => (
-                            <div className={`m-card ${v.status === 'void' ? 'tone-maroon' : ''}`} key={v.id}>
-                                <div className="m-card-top">
-                                    <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{v.warga?.nama || 'Warga Terhapus'}</h3>
-                                    <span className={`badge ${v.status === 'valid' ? 'badge-moss' : 'badge-maroon'}`}>{v.status === 'valid' ? 'Sah' : 'Dibatalkan'}</span>
-                                </div>
-                                <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 10px' }}>
-                                    Oleh <strong style={{ color: 'var(--text)' }}>{v.petugas?.username || '-'}</strong> &middot; <span className="mono">{new Date(v.created_at).toLocaleString('id-ID')}</span>
-                                </p>
-                                
-                                {v.status === 'valid' ? (
-                                    <button onClick={() => setVoidModal(v.id)} className="btn btn-outline" style={{ width: '100%', justifyContent: 'center', color: 'var(--maroon)', borderColor: 'var(--maroon-soft)' }}>Batalkan suara (void)</button>
-                                ) : (
-                                    <p style={{ fontSize: '12px', color: 'var(--text-soft)', fontStyle: 'italic', margin: 0 }}>Alasan: {v.alasan_void || '-'}</p>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        (listData.data as StatusLog[]).map(log => (
-                            <div className="m-card" key={log.id}>
-                                <div className="m-card-top">
-                                    <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{log.warga?.nama || 'Warga Terhapus'}</h3>
-                                    <span className="badge badge-slate">{log.jenis}</span>
-                                </div>
-                                <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 8px' }}>
-                                    Oleh <strong style={{ color: 'var(--text)' }}>{log.aktor?.username || '-'}</strong> &middot; <span className="mono">{new Date(log.created_at).toLocaleString('id-ID')}</span>
-                                </p>
-                                <div style={{ background: 'var(--slate-soft)', padding: '8px 10px', borderRadius: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ textDecoration: 'line-through', color: 'var(--text-soft)' }}>{log.status_lama}</span>
-                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                                    <span style={{ fontWeight: 600 }}>{log.status_baru}</span>
-                                </div>
-                            </div>
-                        ))
-                    )}
-                    
-                    <p className="footnote-m">Menampilkan {listData.data.length} entri</p>
-                    
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>
-                        {listData.links.map((link, i) => (
-                            <Link
-                                key={i}
-                                href={link.url || '#'}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                                className={`chip-btn ${link.active ? 'active' : ''}`}
-                                style={{ 
-                                    background: link.active ? 'var(--ink)' : 'var(--slate-soft)', 
-                                    color: link.active ? '#fff' : 'var(--slate)',
-                                    opacity: !link.url ? 0.5 : 1,
-                                    pointerEvents: !link.url ? 'none' : 'auto',
-                                    textDecoration: 'none'
-                                }}
-                            />
-                        ))}
-                    </div>
-                </div>
-            </AdminLayout>
-        );
-    }
+    const type = tab;
+    const listData = (type === 'votes' ? votes : status_logs)!;
 
     return (
         <AdminLayout title="Audit & Log Suara">
-            <div className="card">
-                <div className="tabs">
-                    <Link href="/admin/audit/votes" className={`tab ${tab === 'votes' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Suara</Link>
-                    <Link href="/admin/audit/status-logs" className={`tab ${tab === 'status_logs' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Perubahan Status</Link>
-                </div>
+            {isMobile ? (
+                <>
+                    <div className="chip-row no-scrollbar" style={{ padding: '12px 18px', background: 'var(--card)' }}>
+                        <Link href="/admin/audit/votes" className={`chip ${type === 'votes' ? 'active' : ''}`}>Riwayat Vote</Link>
+                        <Link href="/admin/audit/status-logs" className={`chip ${type === 'status_logs' ? 'active' : ''}`}>Log Status Warga</Link>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '26px', paddingTop: '12px' }}>
+                        {type === 'votes' ? (
+                            (listData.data as Vote[]).map(v => (
+                                <div className={`m-card ${v.status === 'void' ? 'tone-maroon' : ''}`} key={v.id}>
+                                    <div className="m-card-top">
+                                        <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{v.warga?.nama || 'Warga Terhapus'}</h3>
+                                        <span className={`badge ${v.status === 'valid' ? 'badge-moss' : 'badge-maroon'}`}>{v.status === 'valid' ? 'Sah' : 'Dibatalkan'}</span>
+                                    </div>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 10px' }}>
+                                        Oleh <strong style={{ color: 'var(--text)' }}>{v.petugas?.username || '-'}</strong> &middot; <span className="mono">{new Date(v.created_at).toLocaleString('id-ID')}</span>
+                                    </p>
+                                    
+                                    {v.status === 'valid' ? (
+                                        <button onClick={() => setVoidModal(v.id)} className="btn btn-outline" style={{ width: '100%', justifyContent: 'center', color: 'var(--maroon)', borderColor: 'var(--maroon-soft)' }}>Batalkan suara (void)</button>
+                                    ) : (
+                                        <p style={{ fontSize: '12px', color: 'var(--text-soft)', fontStyle: 'italic', margin: 0 }}>Alasan: {v.alasan_void || '-'}</p>
+                                    )}
+                                </div>
+                            ))
+                        ) : (
+                            (listData.data as StatusLog[]).map(log => (
+                                <div className="m-card" key={log.id}>
+                                    <div className="m-card-top">
+                                        <h3 className="m-card-name" style={{ fontSize: '14.5px' }}>{log.warga?.nama || 'Warga Terhapus'}</h3>
+                                        <span className="badge badge-slate">{log.jenis}</span>
+                                    </div>
+                                    <p style={{ fontSize: '12px', color: 'var(--text-soft)', margin: '0 0 8px' }}>
+                                        Oleh <strong style={{ color: 'var(--text)' }}>{log.aktor?.username || '-'}</strong> &middot; <span className="mono">{new Date(log.created_at).toLocaleString('id-ID')}</span>
+                                    </p>
+                                    <div style={{ background: 'var(--slate-soft)', padding: '8px 10px', borderRadius: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <span style={{ textDecoration: 'line-through', color: 'var(--text-soft)' }}>{log.status_lama}</span>
+                                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                        <span style={{ fontWeight: 600 }}>{log.status_baru}</span>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                        
+                        <p className="footnote-m">Menampilkan {listData.data.length} entri</p>
+                        
+                        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '8px' }}>
+                            {listData.links.map((link, i) => (
+                                <Link
+                                    key={i}
+                                    href={link.url || '#'}
+                                    dangerouslySetInnerHTML={{ __html: link.label }}
+                                    className={`chip-btn ${link.active ? 'active' : ''}`}
+                                    style={{ 
+                                        background: link.active ? 'var(--ink)' : 'var(--slate-soft)', 
+                                        color: link.active ? '#fff' : 'var(--slate)',
+                                        opacity: !link.url ? 0.5 : 1,
+                                        pointerEvents: !link.url ? 'none' : 'auto',
+                                        textDecoration: 'none'
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <div className="card">
+                    <div className="tabs">
+                        <Link href="/admin/audit/votes" className={`tab ${tab === 'votes' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Suara</Link>
+                        <Link href="/admin/audit/status-logs" className={`tab ${tab === 'status_logs' ? 'active' : ''}`} style={{ textDecoration: 'none' }}>Log Perubahan Status</Link>
+                    </div>
                 
                 <div style={{ overflowX: 'auto' }}>
                     {tab === 'votes' && votes && (
@@ -230,6 +228,7 @@ votes, status_logs, tab, filters }: AuditProps) {
                     </div>
                 )}
             </div>
+            )}
 
             {voidModal && (
                 <div className="modal-overlay" onClick={() => { if (!processing) { setVoidModal(null); reset(); } }}>

@@ -124,7 +124,7 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '6px 0 4px' }}>
                                         {u.wilayah && u.wilayah.length > 0 ? u.wilayah.map((rt: any) => (
                                             <span key={rt.id} className="tag" style={{ fontSize: '11px', padding: '3px 8px', background: 'var(--slate-soft)', borderRadius: '4px', color: 'var(--slate)' }}>
-                                                {rt.nama} ({rt.rw?.nama})
+                                                {rt.nama}{rt.rw?.nama ? ` (${rt.rw.nama})` : ''}
                                             </span>
                                         )) : <span style={{ fontSize: '12px', color: 'var(--maroon)' }}>Belum ada tugas RT</span>}
                                     </div>
@@ -196,7 +196,7 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                                             ) : user.wilayah && user.wilayah.length > 0 ? (
                                                 <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', maxWidth: 300 }}>
                                                     {user.wilayah.map((rt: any) => (
-                                                        <span key={rt.id} className="badge badge-slate" style={{ fontSize: '11px' }}>{rt.nama} ({rt.rw?.nama})</span>
+                                                        <span key={rt.id} className="badge badge-slate" style={{ fontSize: '11px' }}>{rt.nama}{rt.rw?.nama ? ` (${rt.rw.nama})` : ''}</span>
                                                     ))}
                                                 </div>
                                             ) : (

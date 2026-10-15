@@ -137,7 +137,7 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
                         />
                         {errors.alamat && <p className="text-red-500 text-xs mt-1">{errors.alamat}</p>}
                     </div>
-                    <div className="field-full" style={{ maxWidth: '340px' }}>
+                    <div className="field-full" style={!isMobile ? { maxWidth: '340px' } : undefined}>
                         <label className="field-label">Wilayah</label>
                         <input 
                             type="text" 
