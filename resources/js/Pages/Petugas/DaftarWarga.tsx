@@ -58,7 +58,7 @@ export default function DaftarWarga({ warga, rt, filters }: Props) {
                 <div className="content-narrow">
                     <div className="card">
                         <div className="toolbar">
-                            <div className="search-wrap">
+                            <div>
                                 <SearchInput value={search} onChange={setSearch} placeholder="Cari nama warga..." className="w-[280px]" />
                             </div>
                             <div className="toolbar-filters">
@@ -128,27 +128,28 @@ export default function DaftarWarga({ warga, rt, filters }: Props) {
 
     return (
         <PetugasLayout title={`Daftar Warga - ${rt.nama}`} customHeader={
-            <header className="m-header-plain">
-                <Link href="/petugas/dashboard" className="back-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                </Link>
-                <div>
-                    <h2 className="m-header-title">{rt.nama}</h2>
-                    <p className="m-header-sub">{rt.rw?.nama}</p>
+            <div style={{ position: 'sticky', top: 0, zIndex: 20 }}>
+                <header className="m-header-plain">
+                    <Link href="/petugas/dashboard" className="back-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    </Link>
+                    <div>
+                        <h2 className="m-header-title">{rt.nama}</h2>
+                        <p className="m-header-sub">{rt.rw?.nama}</p>
+                    </div>
+                </header>
+                <div className="m-toolbar-plain" style={{ padding: '12px 18px 14px', background: '#fff', borderBottom: '1px solid var(--line)' }}>
+                    <SearchInput value={search} onChange={setSearch} placeholder="Cari nama warga..." className="w-full" />
+                    <div className="chip-row no-scrollbar" style={{ marginTop: '10px' }}>
+                        <div className={`chip ${!filters.status ? 'active' : ''}`} onClick={() => handleFilter('status', '')}>Semua</div>
+                        <div className={`chip ${filters.status === 'belum_dikunjungi' ? 'active' : ''}`} onClick={() => handleFilter('status', 'belum_dikunjungi')}>Belum Dikunjungi</div>
+                        <div className={`chip ${filters.status === 'sudah_memilih' ? 'active' : ''}`} onClick={() => handleFilter('status', 'sudah_memilih')}>Sudah Memilih</div>
+                        <div className={`chip ${filters.status === 'bermasalah' ? 'active' : ''}`} onClick={() => handleFilter('status', 'bermasalah')}>Bermasalah</div>
+                    </div>
                 </div>
-            </header>
+            </div>
         }>
-            <div className="m-toolbar-plain" style={{ padding: '12px 18px 0' }}>
-                <SearchInput value={search} onChange={setSearch} placeholder="Cari nama warga..." className="w-full" />
-            </div>
-            
-            <div className="chip-row no-scrollbar" style={{ padding: '12px 18px' }}>
-                <div className={`chip ${!filters.status ? 'active' : ''}`} onClick={() => handleFilter('status', '')}>Semua</div>
-                <div className={`chip ${filters.status === 'belum_dikunjungi' ? 'active' : ''}`} onClick={() => handleFilter('status', 'belum_dikunjungi')}>Belum Dikunjungi</div>
-                <div className={`chip ${filters.status === 'sudah_memilih' ? 'active' : ''}`} onClick={() => handleFilter('status', 'sudah_memilih')}>Sudah Memilih</div>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '86px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {warga.data.map(w => {
                     const finalStatus = isSudah(w) ? 'sudah_memilih' : isBermasalah(w) ? w.status_vote_rt : w.status_vote_rt;
                     return (
