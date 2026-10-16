@@ -59,10 +59,17 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            if ($user->isAdmin()) {
-                return redirect()->intended(route('admin.dashboard'));
+            $defaultRoute = ($user->isAdmin() || $user->isSaksi())
+                ? route('admin.dashboard')
+                : route('petugas.dashboard');
+
+            $intended = session()->get('url.intended');
+            if ($intended && !str_contains($intended, '/publik') && $intended !== url('/') && $intended !== route('login')) {
+                return redirect()->intended($defaultRoute);
             }
-            return redirect()->intended(route('petugas.dashboard'));
+
+            session()->forget('url.intended');
+            return redirect($defaultRoute);
         }
 
         RateLimiter::hit($key);

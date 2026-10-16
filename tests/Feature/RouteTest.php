@@ -47,4 +47,39 @@ class RouteTest extends TestCase
             $this->assertNotEquals(500, $response->status(), "Route $route failed!");
         }
     }
+
+    public function test_authenticated_user_accessing_login_redirects_to_dashboard()
+    {
+        VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]);
+
+        $admin = User::create([
+            'nama' => 'Administrator',
+            'username' => 'admin_test',
+            'password' => bcrypt('admin123'),
+            'role' => 'admin'
+        ]);
+
+        $response = $this->actingAs($admin)->get('/login');
+        $response->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_login_redirects_to_admin_dashboard_even_if_intended_was_publik()
+    {
+        VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]);
+
+        $admin = User::create([
+            'nama' => 'Administrator',
+            'username' => 'admin_test2',
+            'password' => bcrypt('admin123'),
+            'role' => 'admin'
+        ]);
+
+        $response = $this->withSession(['url.intended' => 'http://localhost:8000/publik'])
+            ->post('/login', [
+                'username' => 'admin_test2',
+                'password' => 'admin123',
+            ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+    }
 }

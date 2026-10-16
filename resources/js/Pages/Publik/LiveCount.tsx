@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { router } from '@inertiajs/react';
+import { router, Link, usePage } from '@inertiajs/react';
 import PublicLayout from '../../Layouts/PublicLayout';
 import { LiveCountData } from '../../types';
 
@@ -9,7 +9,12 @@ interface LiveCountProps {
 }
 
 export default function LiveCount({ data, hidden }: LiveCountProps) {
+    const { auth } = usePage().props as any;
     const [filterRw, setFilterRw] = useState<string>('Semua');
+
+    const authDestination = auth?.user 
+        ? (['admin', 'saksi'].includes(auth.user.role) ? '/admin/dashboard' : '/petugas/dashboard') 
+        : '/login';
 
     useEffect(() => {
         if (!hidden) {
@@ -38,10 +43,10 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
                     <p className="text-gray-600 mb-6">Hasil pemilihan akan ditampilkan setelah proses voting selesai.</p>
                     
                     <div style={{ marginTop: '24px' }}>
-                        <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#EAE7E0', color: 'var(--ink)', borderRadius: '100px', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
+                        <Link href={authDestination} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#EAE7E0', color: 'var(--ink)', borderRadius: '100px', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}>
                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                            Masuk sebagai Petugas / Admin
-                        </a>
+                            {auth?.user ? 'Buka Dashboard' : 'Masuk sebagai Petugas / Admin'}
+                        </Link>
                     </div>
                 </div>
             </PublicLayout>
@@ -83,9 +88,9 @@ export default function LiveCount({ data, hidden }: LiveCountProps) {
                         </div>
                         <span style={{ fontFamily: "'Fraunces', serif", fontSize: '20px', fontWeight: 600 }}>PilihPilih</span>
                     </div>
-                    <a href="/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'rgba(0,0,0,0.06)', color: 'var(--ink)', borderRadius: '100px', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
-                        Login Petugas
-                    </a>
+                    <Link href={authDestination} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'rgba(0,0,0,0.06)', color: 'var(--ink)', borderRadius: '100px', fontSize: '13px', fontWeight: 500, textDecoration: 'none' }}>
+                        {auth?.user ? 'Buka Dashboard' : 'Login Petugas'}
+                    </Link>
                 </div>
                 <h1 className="public-title">Live Count Pemilihan RT/RW</h1>
                 <p className="public-sub">Kelurahan Wundulako &middot; hasil suara sah, diperbarui otomatis</p>

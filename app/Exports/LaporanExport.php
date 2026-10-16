@@ -7,9 +7,10 @@ use App\Models\Kandidat;
 use App\Models\Rt;
 use App\Models\Rw;
 use App\Models\Warga;
+use Maatwebsite\Excel\Concerns\Export;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class LaporanExport implements WithMultipleSheets
+class LaporanExport implements Export, WithMultipleSheets
 {
     public function sheets(): array
     {

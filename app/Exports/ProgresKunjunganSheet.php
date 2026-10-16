@@ -33,14 +33,14 @@ class ProgresKunjunganSheet implements FromArray, WithTitle, WithHeadings, WithS
 
         $rtList = Rt::with('rw')
             ->withCount([
-                'warga',
-                'warga as sudah_rt' => fn($q) => $q->where('status_vote_rt', 'sudah_memilih'),
-                'warga as sudah_rw' => fn($q) => $q->where('status_vote_rw', 'sudah_memilih'),
-                'warga as tidak_ditemukan' => fn($q) => $q->where('status_vote_rt', 'tidak_ditemukan')
+                'wargas as warga_count',
+                'wargas as sudah_rt' => fn($q) => $q->where('status_vote_rt', 'sudah_memilih'),
+                'wargas as sudah_rw' => fn($q) => $q->where('status_vote_rw', 'sudah_memilih'),
+                'wargas as tidak_ditemukan' => fn($q) => $q->where('status_vote_rt', 'tidak_ditemukan')
                     ->orWhere('status_vote_rw', 'tidak_ditemukan'),
-                'warga as menolak' => fn($q) => $q->where('status_vote_rt', 'menolak')
+                'wargas as menolak' => fn($q) => $q->where('status_vote_rt', 'menolak')
                     ->orWhere('status_vote_rw', 'menolak'),
-                'warga as belum' => fn($q) => $q->where('status_vote_rt', 'belum_dikunjungi')
+                'wargas as belum' => fn($q) => $q->where('status_vote_rt', 'belum_dikunjungi')
                     ->where('status_vote_rw', 'belum_dikunjungi'),
             ])
             ->orderBy('rw_id')

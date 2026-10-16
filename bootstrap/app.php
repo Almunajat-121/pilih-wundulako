@@ -12,6 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectUsersTo(function (Request $request) {
+            $user = $request->user();
+            if ($user && in_array($user->role, ['admin', 'saksi'])) {
+                return route('admin.dashboard');
+            }
+            return route('petugas.dashboard');
+        });
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
