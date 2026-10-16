@@ -452,17 +452,38 @@ body.mobile #app { width: 100%; max-width: var(--shell-w); display: flex; flex-d
 .verify-row input[type=checkbox]{width:19px;height:19px;accent-color:var(--brass);margin-top:1px;flex-shrink:0;}
 
 .vote-list{display:flex;flex-direction:column;gap:11px;}
-.vote-option{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 18px;background:#fff;border:2px solid var(--line);border-radius:12px;cursor:pointer;}
+.vote-option{display:flex;flex-direction:column;gap:0;padding:14px 18px;background:#fff;border:2px solid var(--line);border-radius:12px;cursor:pointer;transition:border-color .15s ease, background-color .15s ease;}
 .vote-option:has(:checked){border-color:var(--brass);background:var(--brass-soft);}
 .vote-option.abstain:has(:checked){border-color:var(--maroon);background:var(--maroon-soft);}
+.vote-option-head{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%;}
 .vote-option input[type=radio]{width:21px;height:21px;accent-color:var(--brass);flex-shrink:0;}
 .vote-option.abstain input[type=radio]{accent-color:var(--maroon);}
-.cand-row{display:flex;align-items:center;gap:14px;}
+.cand-row{display:flex;align-items:center;gap:14px;flex:1;min-width:0;}
 .cand-num{width:46px;height:46px;border-radius:50%;background:var(--slate-soft);color:var(--slate);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:17px;flex-shrink:0;}
 .vote-option:has(:checked) .cand-num{background:var(--brass);color:#fff;}
-.cand-name{font-weight:600;font-size:14.5px;}
-.cand-visi{font-size:12px;color:var(--text-soft);margin-top:2px;}
-.abstain-label{font-weight:600;font-size:13.5px;color:var(--text-soft);}
+.cand-photo{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--line);flex-shrink:0;}
+.cand-info{flex:1;min-width:0;}
+.cand-name{font-weight:600;font-size:15px;color:var(--ink);margin:0;}
+.abstain-label{font-weight:600;font-size:14px;color:var(--text-soft);}
+
+/* Visi & Misi toggle button & drawer */
+.btn-visi-toggle{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:3px 9px;border-radius:6px;font-size:11.5px;font-weight:600;color:var(--brass);background:rgba(169,122,46,0.08);border:1px solid rgba(169,122,46,0.22);cursor:pointer;font-family:inherit;transition:all .15s ease;user-select:none;}
+.btn-visi-toggle:hover{background:rgba(169,122,46,0.16);border-color:var(--brass);}
+.btn-visi-toggle svg{transition:transform .2s ease;}
+
+.cand-vm-drawer{width:100%;margin-top:12px;padding:12px 14px;background:#FAF8F5;border:1px solid var(--line);border-radius:10px;font-size:13px;cursor:default;box-sizing:border-box;}
+.vote-option:has(:checked) .cand-vm-drawer{background:#fff;border-color:#E2D2B5;}
+
+.vm-item{margin-bottom:10px;}
+.vm-item:last-child{margin-bottom:0;}
+.vm-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;margin-bottom:4px;}
+.vm-tag-visi{background:var(--brass-soft);color:var(--brass);border:1px solid rgba(169,122,46,0.3);}
+.vm-tag-misi{background:var(--slate-soft);color:var(--slate);border:1px solid #D8DBDF;}
+.vm-text{font-size:12.5px;line-height:1.55;color:var(--ink);margin:0;white-space:pre-wrap;word-break:break-word;}
+
+.vm-footer-action{display:flex;justify-content:flex-end;margin-top:8px;padding-top:6px;border-top:1px dashed var(--line);}
+.btn-vm-modal-trigger{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--text-soft);background:transparent;border:none;cursor:pointer;padding:2px 6px;border-radius:4px;font-family:inherit;transition:color .15s ease;}
+.btn-vm-modal-trigger:hover{color:var(--ink);}
 
 .sticky-footer{width:100%;box-sizing:border-box;position:sticky;bottom:0;background:#fff;border-top:1px solid var(--line);padding:18px 30px;}
 .btn-block{width:100%;padding:14px;border-radius:10px;font-size:14.5px;font-weight:600;text-align:center;border:none;cursor:pointer;background:var(--ink);color:#fff;}

@@ -16,6 +16,14 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
     const [verifikasi, setVerifikasi] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [expandedIds, setExpandedIds] = useState<number[]>([]);
+    const [modalKandidat, setModalKandidat] = useState<{ kandidat: Kandidat; jenis: 'RT' | 'RW' } | null>(null);
+
+    const toggleExpand = (id: number) => {
+        setExpandedIds(prev => 
+            prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+        );
+    };
     
     const { data, setData, post, processing, errors } = useForm({
         kandidat_rt_id: '',
@@ -110,33 +118,120 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                 <div className="section-block">
                     <h2 className="section-h">Pemilihan Ketua RT</h2>
                     <div className="vote-list">
-                        {kandidat_rt.map(k => (
-                            <label key={k.id} className="vote-option">
-                                <div className="cand-row">
-                                    <div className="cand-num">{k.nomor_urut}</div>
-                                    <div>
-                                        <p className="cand-name">{k.nama}</p>
-                                        {(k.visi || k.misi) && <p className="cand-visi">{k.visi ? 'Visi: ' + k.visi.substring(0, 30) + '...' : (k.misi ? 'Misi: ' + k.misi.substring(0, 30) + '...' : '')}</p>}
+                        {kandidat_rt.map(k => {
+                            const isSelected = data.kandidat_rt_id === k.id.toString();
+                            const isExpanded = expandedIds.includes(k.id);
+                            const hasVisiMisi = Boolean(k.visi || k.misi);
+
+                            return (
+                                <label key={k.id} className="vote-option">
+                                    <div className="vote-option-head">
+                                        <div className="cand-row">
+                                            <div className="cand-num">{k.nomor_urut}</div>
+                                            {k.foto_url && (
+                                                <img src={k.foto_url} alt={k.nama} className="cand-photo" />
+                                            )}
+                                            <div className="cand-info">
+                                                <p className="cand-name">{k.nama}</p>
+                                                {hasVisiMisi && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                toggleExpand(k.id);
+                                                            }}
+                                                            className="btn-visi-toggle"
+                                                            aria-expanded={isExpanded}
+                                                        >
+                                                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                            </svg>
+                                                            <span>{isExpanded ? 'Tutup Visi & Misi' : 'Lihat Visi & Misi'}</span>
+                                                            <svg 
+                                                                viewBox="0 0 24 24" 
+                                                                width="11" 
+                                                                height="11" 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="2.5" 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round"
+                                                                style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+                                                            >
+                                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                setModalKandidat({ kandidat: k, jenis: 'RT' });
+                                                            }}
+                                                            className="btn-vm-modal-trigger"
+                                                            title="Baca Visi & Misi di Layar Penuh"
+                                                        >
+                                                            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                                            <span>Layar Penuh</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <input 
+                                            type="radio" 
+                                            name="rt" 
+                                            value={k.id}
+                                            checked={isSelected}
+                                            onChange={(e) => setData('kandidat_rt_id', e.target.value)}
+                                        />
                                     </div>
-                                </div>
+
+                                    {isExpanded && hasVisiMisi && (
+                                        <div className="cand-vm-drawer" onClick={(e) => e.stopPropagation()}>
+                                            {k.visi && (
+                                                <div className="vm-item">
+                                                    <span className="vm-tag vm-tag-visi">VISI</span>
+                                                    <p className="vm-text">{k.visi}</p>
+                                                </div>
+                                            )}
+                                            {k.misi && (
+                                                <div className="vm-item" style={{ marginTop: k.visi ? '10px' : 0 }}>
+                                                    <span className="vm-tag vm-tag-misi">MISI</span>
+                                                    <p className="vm-text">{k.misi}</p>
+                                                </div>
+                                            )}
+                                            <div className="vm-footer-action">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setModalKandidat({ kandidat: k, jenis: 'RT' })}
+                                                    className="btn-vm-modal-trigger"
+                                                >
+                                                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                                    <span>Buka Dialog Layar Penuh</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </label>
+                            );
+                        })}
+                        <label className="vote-option abstain">
+                            <div className="vote-option-head">
+                                <span className="abstain-label">Tidak memilih (abstain)</span>
                                 <input 
                                     type="radio" 
                                     name="rt" 
-                                    value={k.id}
-                                    checked={data.kandidat_rt_id === k.id.toString()}
+                                    value="abstain"
+                                    checked={data.kandidat_rt_id === 'abstain'}
                                     onChange={(e) => setData('kandidat_rt_id', e.target.value)}
                                 />
-                            </label>
-                        ))}
-                        <label className="vote-option abstain">
-                            <span className="abstain-label">Tidak memilih (abstain)</span>
-                            <input 
-                                type="radio" 
-                                name="rt" 
-                                value="abstain"
-                                checked={data.kandidat_rt_id === 'abstain'}
-                                onChange={(e) => setData('kandidat_rt_id', e.target.value)}
-                            />
+                            </div>
                         </label>
                     </div>
                     {errors.kandidat_rt_id && <p style={{ color: 'var(--maroon)', fontSize: '12px', marginTop: '6px' }}>{errors.kandidat_rt_id}</p>}
@@ -147,33 +242,120 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                 <div className="section-block">
                     <h2 className="section-h">Pemilihan Ketua RW</h2>
                     <div className="vote-list">
-                        {kandidat_rw.map(k => (
-                            <label key={k.id} className="vote-option">
-                                <div className="cand-row">
-                                    <div className="cand-num">{k.nomor_urut}</div>
-                                    <div>
-                                        <p className="cand-name">{k.nama}</p>
-                                        {(k.visi || k.misi) && <p className="cand-visi">{k.visi ? 'Visi: ' + k.visi.substring(0, 30) + '...' : (k.misi ? 'Misi: ' + k.misi.substring(0, 30) + '...' : '')}</p>}
+                        {kandidat_rw.map(k => {
+                            const isSelected = data.kandidat_rw_id === k.id.toString();
+                            const isExpanded = expandedIds.includes(k.id);
+                            const hasVisiMisi = Boolean(k.visi || k.misi);
+
+                            return (
+                                <label key={k.id} className="vote-option">
+                                    <div className="vote-option-head">
+                                        <div className="cand-row">
+                                            <div className="cand-num">{k.nomor_urut}</div>
+                                            {k.foto_url && (
+                                                <img src={k.foto_url} alt={k.nama} className="cand-photo" />
+                                            )}
+                                            <div className="cand-info">
+                                                <p className="cand-name">{k.nama}</p>
+                                                {hasVisiMisi && (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                toggleExpand(k.id);
+                                                            }}
+                                                            className="btn-visi-toggle"
+                                                            aria-expanded={isExpanded}
+                                                        >
+                                                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                                                <polyline points="14 2 14 8 20 8"></polyline>
+                                                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                                            </svg>
+                                                            <span>{isExpanded ? 'Tutup Visi & Misi' : 'Lihat Visi & Misi'}</span>
+                                                            <svg 
+                                                                viewBox="0 0 24 24" 
+                                                                width="11" 
+                                                                height="11" 
+                                                                fill="none" 
+                                                                stroke="currentColor" 
+                                                                strokeWidth="2.5" 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round"
+                                                                style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+                                                            >
+                                                                <polyline points="6 9 12 15 18 9"></polyline>
+                                                            </svg>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                setModalKandidat({ kandidat: k, jenis: 'RW' });
+                                                            }}
+                                                            className="btn-vm-modal-trigger"
+                                                            title="Baca Visi & Misi di Layar Penuh"
+                                                        >
+                                                            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                                            <span>Layar Penuh</span>
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <input 
+                                            type="radio" 
+                                            name="rw" 
+                                            value={k.id}
+                                            checked={isSelected}
+                                            onChange={(e) => setData('kandidat_rw_id', e.target.value)}
+                                        />
                                     </div>
-                                </div>
+
+                                    {isExpanded && hasVisiMisi && (
+                                        <div className="cand-vm-drawer" onClick={(e) => e.stopPropagation()}>
+                                            {k.visi && (
+                                                <div className="vm-item">
+                                                    <span className="vm-tag vm-tag-visi">VISI</span>
+                                                    <p className="vm-text">{k.visi}</p>
+                                                </div>
+                                            )}
+                                            {k.misi && (
+                                                <div className="vm-item" style={{ marginTop: k.visi ? '10px' : 0 }}>
+                                                    <span className="vm-tag vm-tag-misi">MISI</span>
+                                                    <p className="vm-text">{k.misi}</p>
+                                                </div>
+                                            )}
+                                            <div className="vm-footer-action">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setModalKandidat({ kandidat: k, jenis: 'RW' })}
+                                                    className="btn-vm-modal-trigger"
+                                                >
+                                                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                                                    <span>Buka Dialog Layar Penuh</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+                                </label>
+                            );
+                        })}
+                        <label className="vote-option abstain">
+                            <div className="vote-option-head">
+                                <span className="abstain-label">Tidak memilih (abstain)</span>
                                 <input 
                                     type="radio" 
                                     name="rw" 
-                                    value={k.id}
-                                    checked={data.kandidat_rw_id === k.id.toString()}
+                                    value="abstain"
+                                    checked={data.kandidat_rw_id === 'abstain'}
                                     onChange={(e) => setData('kandidat_rw_id', e.target.value)}
                                 />
-                            </label>
-                        ))}
-                        <label className="vote-option abstain">
-                            <span className="abstain-label">Tidak memilih (abstain)</span>
-                            <input 
-                                type="radio" 
-                                name="rw" 
-                                value="abstain"
-                                checked={data.kandidat_rw_id === 'abstain'}
-                                onChange={(e) => setData('kandidat_rw_id', e.target.value)}
-                            />
+                            </div>
                         </label>
                     </div>
                     {errors.kandidat_rw_id && <p style={{ color: 'var(--maroon)', fontSize: '12px', marginTop: '6px' }}>{errors.kandidat_rw_id}</p>}
@@ -410,6 +592,79 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                                         Ya, Simpan Suara
                                     </>
                                 )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {modalKandidat && (
+                <div className="modal-overlay" onClick={() => setModalKandidat(null)}>
+                    <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '520px', padding: '0', overflow: 'hidden' }}>
+                        <div style={{ padding: '20px 22px', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#FBFAF7' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                                <div className="cand-num" style={{ background: 'var(--brass)', color: '#fff', width: '44px', height: '44px', fontSize: '18px' }}>
+                                    {modalKandidat.kandidat.nomor_urut}
+                                </div>
+                                {modalKandidat.kandidat.foto_url && (
+                                    <img 
+                                        src={modalKandidat.kandidat.foto_url} 
+                                        alt={modalKandidat.kandidat.nama} 
+                                        style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', border: '1px solid var(--line)' }} 
+                                    />
+                                )}
+                                <div>
+                                    <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'var(--ink)' }}>{modalKandidat.kandidat.nama}</h3>
+                                    <p style={{ margin: '2px 0 0', fontSize: '12.5px', color: 'var(--text-soft)' }}>Calon Ketua {modalKandidat.jenis}</p>
+                                </div>
+                            </div>
+                            <button 
+                                type="button" 
+                                onClick={() => setModalKandidat(null)} 
+                                style={{ background: '#EAE7E0', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: 'var(--ink)' }}
+                                aria-label="Tutup dialog"
+                            >
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div style={{ padding: '22px', maxHeight: '60vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {modalKandidat.kandidat.visi && (
+                                <div style={{ background: 'var(--brass-soft)', border: '1px solid #E7D6AE', borderRadius: '10px', padding: '14px 16px' }}>
+                                    <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--brass)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>VISI</span>
+                                    <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.6, color: '#4A3512', whiteSpace: 'pre-wrap' }}>{modalKandidat.kandidat.visi}</p>
+                                </div>
+                            )}
+                            {modalKandidat.kandidat.misi && (
+                                <div style={{ background: '#FAF8F5', border: '1px solid var(--line)', borderRadius: '10px', padding: '14px 16px' }}>
+                                    <span style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--ink)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>MISI</span>
+                                    <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.6, color: 'var(--ink)', whiteSpace: 'pre-wrap' }}>{modalKandidat.kandidat.misi}</p>
+                                </div>
+                            )}
+                        </div>
+                        <div style={{ padding: '16px 22px', borderTop: '1px solid var(--line)', background: '#FBFAF7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+                            <button 
+                                type="button" 
+                                onClick={() => setModalKandidat(null)} 
+                                className="btn btn-outline" 
+                                style={{ padding: '9px 18px' }}
+                            >
+                                Tutup
+                            </button>
+                            <button 
+                                type="button" 
+                                onClick={() => {
+                                    if (modalKandidat.jenis === 'RT') {
+                                        setData('kandidat_rt_id', modalKandidat.kandidat.id.toString());
+                                    } else {
+                                        setData('kandidat_rw_id', modalKandidat.kandidat.id.toString());
+                                    }
+                                    setModalKandidat(null);
+                                }} 
+                                className="btn btn-primary" 
+                                style={{ padding: '10px 20px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                Pilih Kandidat Ini
                             </button>
                         </div>
                     </div>
