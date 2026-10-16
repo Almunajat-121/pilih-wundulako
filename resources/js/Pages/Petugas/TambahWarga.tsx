@@ -193,27 +193,77 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
         <PetugasLayout title="Tambah Warga Baru" customHeader={header}>
             <form onSubmit={submit} className="flex flex-col h-full relative">
                 {isMobile ? (
-                    <div className="flex flex-col gap-6 pt-2 pb-24" style={{ padding: '0 18px' }}>
-                        {content}
+                    <div className="flex flex-col gap-4 pb-28">
+                        <div className="card shadow-sm">
+                            {content}
+                        </div>
                     </div>
                 ) : (
-                    <div className="content-narrow w-full" style={{ paddingBottom: '100px', paddingTop: '20px' }}>
-                        <div className="card">
+                    <div className="content-narrow w-full" style={{ paddingTop: '20px', paddingBottom: '40px' }}>
+                        <div style={{ marginBottom: '14px' }}>
+                            <Link href={`/petugas/wilayah/${rt.id}`} className="btn-link" style={{ color: 'var(--text-soft)', padding: '4px 0', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                                <span>Kembali ke Wilayah {rt.nama}</span>
+                            </Link>
+                        </div>
+                        <div className="card shadow-sm">
                             {content}
+                            <div className="card-footer" style={{
+                                padding: '18px 28px',
+                                background: '#FBFAF7',
+                                borderTop: '1px solid var(--line)',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '16px'
+                            }}>
+                                <div style={{ fontSize: '13px', color: 'var(--text-soft)' }}>
+                                    {!data.nama || !data.alamat || !data.foto_ktp ? (
+                                        <span>Lengkapi nama, alamat domisili, dan foto identitas asli</span>
+                                    ) : (
+                                        <span style={{ color: 'var(--moss)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                            Data pemilih siap didaftarkan
+                                        </span>
+                                    )}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Link href={`/petugas/wilayah/${rt.id}`} className="btn btn-outline" style={{ padding: '9px 18px' }}>
+                                        Batal
+                                    </Link>
+                                    <LoadingButton 
+                                        processing={processing}
+                                        type="submit" 
+                                        className="btn btn-primary"
+                                        disabled={!data.nama || !data.alamat || !data.foto_ktp}
+                                        style={{ 
+                                            padding: '10px 24px', 
+                                            opacity: (!data.nama || !data.alamat || !data.foto_ktp) ? 0.45 : 1,
+                                            fontSize: '13.5px',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        Simpan &amp; Lanjutkan ke Voting
+                                    </LoadingButton>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}
 
-                <div className={isMobile ? "fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40 max-w-[480px] mx-auto" : "sticky-footer"} style={!isMobile ? { maxWidth: '760px', margin: '0 auto' } : {}}>
-                    <LoadingButton 
-                        processing={processing}
-                        type="submit" 
-                        className="btn-block"
-                        disabled={!data.nama || !data.alamat || !data.foto_ktp}
-                    >
-                        Simpan &amp; Lanjutkan ke Voting
-                    </LoadingButton>
-                </div>
+                {isMobile && (
+                    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[var(--line)] p-3.5 z-40 max-w-[480px] mx-auto shadow-lg">
+                        <LoadingButton 
+                            processing={processing}
+                            type="submit" 
+                            className="btn-block"
+                            disabled={!data.nama || !data.alamat || !data.foto_ktp}
+                            style={{ padding: '13px', borderRadius: '9px' }}
+                        >
+                            Simpan &amp; Lanjutkan ke Voting
+                        </LoadingButton>
+                    </div>
+                )}
             </form>
         </PetugasLayout>
     );

@@ -8,6 +8,7 @@ interface LoadingButtonProps {
     variant?: 'primary' | 'danger' | 'secondary';
     disabled?: boolean;
     onClick?: () => void;
+    style?: React.CSSProperties;
 }
 
 export default function LoadingButton({
@@ -18,6 +19,7 @@ export default function LoadingButton({
     variant = 'primary',
     disabled = false,
     onClick,
+    style,
 }: LoadingButtonProps) {
     
     let variantClasses = '';
@@ -40,6 +42,7 @@ export default function LoadingButton({
             type={type}
             disabled={disabled || processing}
             onClick={onClick}
+            style={style}
             className={`inline-flex items-center justify-center px-4 py-2 border text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors ${variantClasses} ${disabledClasses} ${className}`}
         >
             {processing ? (

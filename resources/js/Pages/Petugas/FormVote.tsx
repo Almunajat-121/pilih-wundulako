@@ -80,28 +80,28 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                         <p className="voter-nik mono">Alamat: {warga.alamat}</p>
                     </div>
                 </div>
-                <div className="callout callout-brass">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
-                    <div style={{ flex: 1 }}>
-                        <div className="verify-row" style={{ alignItems: 'flex-start' }}>
-                            <input 
-                                type="checkbox" 
-                                id="verify" 
-                                checked={verifikasi}
-                                onChange={(e) => {
-                                    setVerifikasi(e.target.checked);
-                                    setData('verifikasi_identitas', e.target.checked);
-                                }}
-                            />
-                            <label htmlFor="verify" style={{ fontSize: '13px', lineHeight: 1.5, cursor: 'pointer', fontWeight: 600 }}>
+                <div className="callout callout-brass" style={{ marginTop: '14px', padding: isMobile ? '13px 14px' : '15px 18px', borderRadius: '10px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', width: '100%' }}>
+                        <input 
+                            type="checkbox" 
+                            id="verify" 
+                            checked={verifikasi}
+                            onChange={(e) => {
+                                setVerifikasi(e.target.checked);
+                                setData('verifikasi_identitas', e.target.checked);
+                            }}
+                            style={{ width: '20px', height: '20px', accentColor: 'var(--brass)', marginTop: '2px', flexShrink: 0, cursor: 'pointer' }}
+                        />
+                        <div style={{ flex: 1 }}>
+                            <label htmlFor="verify" style={{ fontSize: '13.5px', lineHeight: 1.45, cursor: 'pointer', fontWeight: 600, color: '#5B3F11', display: 'block' }}>
                                 Saya sebagai petugas menyatakan bahwa warga ini benar-benar diverifikasi identitasnya.
                             </label>
+                            {!verifikasi && (
+                                <p style={{ fontSize: '12px', color: '#855E22', marginTop: '6px', lineHeight: 1.45 }}>
+                                    Centang kotak di atas untuk membuka bilik suara dan kamera foto kehadiran.
+                                </p>
+                            )}
                         </div>
-                        {!verifikasi && (
-                            <p style={{ fontSize: '12px', color: '#855E22', marginTop: '6px', marginLeft: '29px' }}>
-                                Centang kotak di atas untuk membuka bilik suara dan kamera foto kehadiran.
-                            </p>
-                        )}
                     </div>
                 </div>
             </div>
@@ -229,28 +229,99 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
     return (
         <PetugasLayout title="Form Pemilihan" customHeader={header}>
             {isMobile ? (
-                <div className="flex flex-col gap-6 pt-2 pb-24" style={{ padding: '0 18px' }}>
-                    {content}
+                <div className="flex flex-col gap-4 pb-28">
+                    <div className="card shadow-sm">
+                        {content}
+                    </div>
                 </div>
             ) : (
-                <div className="content-narrow" style={{ paddingBottom: '100px', paddingTop: '20px' }}>
-                    <div className="card">
+                <div className="content-narrow w-full" style={{ paddingTop: '20px', paddingBottom: '40px' }}>
+                    <div style={{ marginBottom: '14px' }}>
+                        <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn-link" style={{ color: 'var(--text-soft)', padding: '4px 0', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            <span>Kembali ke Daftar Pemilih ({warga.rt?.nama || 'RT'})</span>
+                        </Link>
+                    </div>
+                    <div className="card shadow-sm">
                         {content}
+                        <div className="card-footer" style={{
+                            padding: '18px 28px',
+                            background: '#FBFAF7',
+                            borderTop: '1px solid var(--line)',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '16px'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                                {isReady ? (
+                                    <span style={{ color: 'var(--moss)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        Semua data &amp; foto bukti lengkap
+                                    </span>
+                                ) : (
+                                    <span style={{ color: 'var(--text-soft)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                        {!verifikasi ? 'Centang kotak verifikasi identitas di atas' : 'Lengkapi pilihan calon dan foto bukti kehadiran'}
+                                    </span>
+                                )}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn btn-outline" style={{ padding: '9px 18px' }}>
+                                    Batal
+                                </Link>
+                                <button 
+                                    type="button" 
+                                    disabled={!isReady} 
+                                    onClick={() => setShowConfirm(true)}
+                                    className="btn btn-primary"
+                                    style={{ 
+                                        padding: '10px 24px', 
+                                        opacity: isReady ? 1 : 0.45,
+                                        cursor: isReady ? 'pointer' : 'not-allowed',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        fontSize: '13.5px',
+                                        fontWeight: 600
+                                    }}
+                                >
+                                    <span>Konfirmasi Suara</span>
+                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
 
-            <div className={isMobile ? "fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40 max-w-[480px] mx-auto" : "sticky-footer"} style={!isMobile ? { maxWidth: '760px', margin: '0 auto' } : {}}>
-                <button 
-                    type="button" 
-                    className="btn-block"
-                    disabled={!isReady} 
-                    onClick={() => setShowConfirm(true)}
-                    style={{ opacity: isReady ? 1 : 0.5 }}
-                >
-                    Konfirmasi Suara
-                </button>
-            </div>
+            {isMobile && (
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[var(--line)] p-3.5 z-40 max-w-[480px] mx-auto shadow-lg">
+                    <button 
+                        type="button" 
+                        className="btn-block"
+                        disabled={!isReady} 
+                        onClick={() => setShowConfirm(true)}
+                        style={{ 
+                            opacity: isReady ? 1 : 0.45,
+                            cursor: isReady ? 'pointer' : 'not-allowed',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            padding: '13px',
+                            fontSize: '14.5px',
+                            fontWeight: 600,
+                            borderRadius: '9px'
+                        }}
+                    >
+                        <span>Konfirmasi Suara</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            )}
 
             {showConfirm && (
                 <div className="modal-overlay" onClick={() => !processing && setShowConfirm(false)}>
