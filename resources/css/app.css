@@ -621,3 +621,15 @@ body.mobile #app { width: 100%; max-width: var(--shell-w); display: flex; flex-d
     justify-content: flex-end;
     gap: 10px;
 }
+
+.modal-card input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.modal-card select,
+.modal-card textarea {
+    padding-left: 14px;
+    padding-right: 14px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 13.5px;
+    box-sizing: border-box;
+}
+

@@ -294,14 +294,14 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
                                 <label className="field-label">Nama Lengkap *</label>
-                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
+                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="field-label">Nomor Urut *</label>
-                                    <input type="number" min="1" value={data.nomor_urut} onChange={e => setData('nomor_urut', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
+                                    <input type="number" min="1" value={data.nomor_urut} onChange={e => setData('nomor_urut', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" required />
                                     {errors.nomor_urut && <p className="text-red-500 text-xs mt-1">{errors.nomor_urut}</p>}
                                 </div>
                                 <div>
@@ -310,7 +310,7 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                                         value={data.jenis}
                                         disabled={!!editingKandidat}
                                         onChange={e => { setData('jenis', e.target.value as any); setData('rt_id', ''); setData('rw_id', ''); }}
-                                        className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                        className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm disabled:bg-gray-100 bg-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500"
                                     >
                                         <option value="RT">Ketua RT</option>
                                         <option value="RW">Ketua RW</option>
@@ -327,7 +327,7 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                                             value={data.rw_id}
                                             disabled={!!editingKandidat}
                                             onChange={e => { setData('rw_id', e.target.value); setData('rt_id', ''); }}
-                                            className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                            className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm disabled:bg-gray-100 bg-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500"
                                             required
                                         >
                                             <option value="">Pilih RW</option>
@@ -337,7 +337,7 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                                             value={data.rt_id}
                                             disabled={!!editingKandidat || !data.rw_id}
                                             onChange={e => setData('rt_id', e.target.value)}
-                                            className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                            className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm disabled:bg-gray-100 bg-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500"
                                             required
                                         >
                                             <option value="">Pilih RT</option>
@@ -351,7 +351,7 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
                                         value={data.rw_id}
                                         disabled={!!editingKandidat}
                                         onChange={e => setData('rw_id', e.target.value)}
-                                        className="w-full border-gray-300 rounded-md shadow-sm disabled:bg-gray-100"
+                                        className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm disabled:bg-gray-100 bg-white focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500"
                                         required
                                     >
                                         <option value="">Pilih RW</option>
@@ -364,13 +364,13 @@ export default function KandidatPage({ kandidat, rw_list, rt_list, filters }: Ka
 
                             <div>
                                 <label className="field-label">Visi (Opsional)</label>
-                                <textarea value={data.visi} onChange={e => setData('visi', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Visi kandidat..."></textarea>
+                                <textarea value={data.visi} onChange={e => setData('visi', e.target.value)} rows={2} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" placeholder="Visi kandidat..."></textarea>
                                 {errors.visi && <p className="text-red-500 text-xs mt-1">{errors.visi}</p>}
                             </div>
 
                             <div>
                                 <label className="field-label">Misi (Opsional)</label>
-                                <textarea value={data.misi} onChange={e => setData('misi', e.target.value)} rows={3} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Misi kandidat..."></textarea>
+                                <textarea value={data.misi} onChange={e => setData('misi', e.target.value)} rows={3} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" placeholder="Misi kandidat..."></textarea>
                                 {errors.misi && <p className="text-red-500 text-xs mt-1">{errors.misi}</p>}
                             </div>
 

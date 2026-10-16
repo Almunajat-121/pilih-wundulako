@@ -257,12 +257,12 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                         <form onSubmit={handleAdd} className="space-y-4">
                             <div>
                                 <label className="field-label">Nama Lengkap *</label>
-                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Nama lengkap petugas..." required />
+                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" placeholder="Nama lengkap petugas..." required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             <div>
                                 <label className="field-label">Username *</label>
-                                <input type="text" value={data.username} onChange={e => setData('username', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" placeholder="Username untuk login..." required />
+                                <input type="text" value={data.username} onChange={e => setData('username', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" placeholder="Username untuk login..." required />
                                 {errors.username && <p className="text-red-500 text-xs mt-1">{errors.username}</p>}
                             </div>
                             <div>
@@ -308,8 +308,8 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                                         type={showPassword ? "text" : "password"} 
                                         value={data.password} 
                                         onChange={e => setData('password', e.target.value)} 
-                                        className="w-full border-gray-300 rounded-md shadow-sm"
-                                        style={{ paddingRight: '40px' }}
+                                        className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"
+                                        style={{ paddingRight: '42px' }}
                                         placeholder="Masukkan kata sandi akun..."
                                         required 
                                     />
@@ -348,7 +348,7 @@ export default function Pengguna({ users, rt_list, auth }: PenggunaProps) {
                             </div>
                             <div>
                                 <label className="field-label">Peran (Role) *</label>
-                                <select value={data.role} onChange={e => setData('role', e.target.value as any)} className="w-full border-gray-300 rounded-md shadow-sm">
+                                <select value={data.role} onChange={e => setData('role', e.target.value as any)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white">
                                     <option value="petugas">Petugas Lapangan</option>
                                     <option value="saksi">Saksi (Read-only)</option>
                                     <option value="admin">Administrator</option>

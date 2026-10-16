@@ -117,7 +117,7 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
                         <label className="field-label">Nama lengkap (sesuai identitas)</label>
                         <input 
                             type="text" 
-                            className="w-full border-gray-300 rounded-md shadow-sm" 
+                            className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" 
                             placeholder="Nama lengkap..." 
                             value={data.nama}
                             onChange={e => setData('nama', e.target.value)}
@@ -129,7 +129,7 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
                         <label className="field-label">Alamat / Keterangan</label>
                         <input 
                             type="text" 
-                            className="w-full border-gray-300 rounded-md shadow-sm" 
+                            className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" 
                             placeholder="Detail alamat..." 
                             value={data.alamat}
                             onChange={e => setData('alamat', e.target.value)}
@@ -141,7 +141,7 @@ export default function TambahWarga({ rt }: { rt: Rt }) {
                         <label className="field-label">Wilayah</label>
                         <input 
                             type="text" 
-                            className="w-full border-gray-300 rounded-md shadow-sm bg-gray-50 text-gray-500" 
+                            className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm bg-gray-50 text-gray-500" 
                             value={`${rt.nama} / ${rt.rw?.nama}`} 
                             disabled 
                         />

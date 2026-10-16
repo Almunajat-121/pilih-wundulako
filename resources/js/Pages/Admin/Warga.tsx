@@ -287,25 +287,25 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                         <form onSubmit={handleEdit} className="space-y-4">
                             <div>
                                 <label className="field-label">Nama Lengkap *</label>
-                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required />
+                                <input type="text" value={data.nama} onChange={e => setData('nama', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" required />
                                 {errors.nama && <p className="text-red-500 text-xs mt-1">{errors.nama}</p>}
                             </div>
                             
                             <div>
                                 <label className="field-label">Tanggal Lahir</label>
-                                <input type="date" value={data.tanggal_lahir} onChange={e => setData('tanggal_lahir', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" />
+                                <input type="date" value={data.tanggal_lahir} onChange={e => setData('tanggal_lahir', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" />
                                 {errors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{errors.tanggal_lahir}</p>}
                             </div>
                             
                             <div>
                                 <label className="field-label">Alamat</label>
-                                <textarea value={data.alamat} onChange={e => setData('alamat', e.target.value)} rows={2} className="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+                                <textarea value={data.alamat} onChange={e => setData('alamat', e.target.value)} rows={2} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"></textarea>
                                 {errors.alamat && <p className="text-red-500 text-xs mt-1">{errors.alamat}</p>}
                             </div>
 
                             <div>
                                 <label className="field-label">Wilayah RT *</label>
-                                <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full border-gray-300 rounded-md shadow-sm" required>
+                                <select value={data.rt_id} onChange={e => setData('rt_id', e.target.value)} className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white" required>
                                     <option value="">Pilih RT</option>
                                     {rt_list.map(rt => <option key={rt.id} value={rt.id}>{rt.nama} / {rt.rw?.nama}</option>)}
                                 </select>
@@ -347,7 +347,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                     value={addData.nama}
                                     onChange={e => setAddData('nama', e.target.value)}
                                     placeholder="Nama sesuai KTP..."
-                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"
                                     required
                                 />
                                 {addErrors.nama && <p className="text-red-500 text-xs mt-1">{addErrors.nama}</p>}
@@ -358,7 +358,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                 <select
                                     value={addData.rt_id}
                                     onChange={e => setAddData('rt_id', e.target.value)}
-                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"
                                     required
                                 >
                                     <option value="">Pilih RT / RW</option>
@@ -374,7 +374,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                     onChange={e => setAddData('alamat', e.target.value)}
                                     placeholder="Contoh: Jl. Poros Wundulako No. 12"
                                     rows={2}
-                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"
                                 ></textarea>
                                 {addErrors.alamat && <p className="text-red-500 text-xs mt-1">{addErrors.alamat}</p>}
                             </div>
@@ -385,7 +385,7 @@ export default function WargaPage({ warga, rt_list, filters }: WargaProps) {
                                     type="date"
                                     value={addData.tanggal_lahir}
                                     onChange={e => setAddData('tanggal_lahir', e.target.value)}
-                                    className="w-full border-gray-300 rounded-md shadow-sm"
+                                    className="w-full px-3.5 py-2.5 text-sm border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-slate-500 focus:border-slate-500 bg-white"
                                 />
                                 {addErrors.tanggal_lahir && <p className="text-red-500 text-xs mt-1">{addErrors.tanggal_lahir}</p>}
                             </div>
