@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $query->where('role', 'petugas');
     }
 
+    public function scopeSaksi($query)
+    {
+        return $query->where('role', 'saksi');
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -61,6 +66,11 @@ class User extends Authenticatable
     public function isPetugas(): bool
     {
         return $this->role === 'petugas';
+    }
+
+    public function isSaksi(): bool
+    {
+        return $this->role === 'saksi';
     }
 
     public function isLocked(): bool

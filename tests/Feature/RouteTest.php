@@ -82,4 +82,50 @@ class RouteTest extends TestCase
 
         $response->assertRedirect(route('admin.dashboard'));
     }
+
+    public function test_petugas_login_redirects_to_petugas_dashboard()
+    {
+        VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]);
+
+        $petugas = User::create([
+            'nama' => 'Petugas Demo',
+            'username' => 'petugas_test',
+            'password' => bcrypt('password123'),
+            'role' => 'petugas'
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => 'petugas_test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('petugas.dashboard'));
+        $this->assertAuthenticatedAs($petugas);
+        $this->assertTrue($petugas->isPetugas());
+        $this->assertFalse($petugas->isAdmin());
+        $this->assertFalse($petugas->isSaksi());
+    }
+
+    public function test_saksi_login_redirects_to_admin_dashboard()
+    {
+        VotingConfig::create(['voting_aktif_global' => true, 'tampilkan_live_count' => true]);
+
+        $saksi = User::create([
+            'nama' => 'Saksi Demo',
+            'username' => 'saksi_test',
+            'password' => bcrypt('password123'),
+            'role' => 'saksi'
+        ]);
+
+        $response = $this->post('/login', [
+            'username' => 'saksi_test',
+            'password' => 'password123',
+        ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
+        $this->assertAuthenticatedAs($saksi);
+        $this->assertTrue($saksi->isSaksi());
+        $this->assertFalse($saksi->isAdmin());
+        $this->assertFalse($saksi->isPetugas());
+    }
 }

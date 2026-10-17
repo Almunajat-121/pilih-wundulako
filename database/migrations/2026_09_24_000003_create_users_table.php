@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('nama', 100);
             $table->string('username', 50)->unique();
             $table->string('password');
-            $table->enum('role', ['admin', 'petugas'])->default('petugas');
+            $table->enum('role', ['admin', 'petugas', 'saksi'])->default('petugas');
             $table->boolean('is_active')->default(true);
             $table->integer('failed_login_attempts')->default(0);
             $table->timestamp('locked_until')->nullable();
