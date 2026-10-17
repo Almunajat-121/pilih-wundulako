@@ -103,6 +103,18 @@ class PetugasEndpointTest extends TestCase
         $response->assertStatus(200);
     }
 
+    public function test_form_vote_page_redirects_if_warga_already_voted()
+    {
+        $this->warga->update([
+            'status_vote_rt' => 'sudah_memilih',
+            'status_vote_rw' => 'sudah_memilih'
+        ]);
+
+        $response = $this->actingAs($this->petugas)->get('/petugas/warga/' . $this->warga->id . '/vote');
+        $response->assertRedirect(route('petugas.wilayah.warga', $this->rt->id));
+        $response->assertSessionHas('error');
+    }
+
     public function test_submit_vote_endpoint()
     {
         $response = $this->actingAs($this->petugas)->post('/petugas/warga/' . $this->warga->id . '/vote', [

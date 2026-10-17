@@ -22,8 +22,19 @@ class VoteController extends Controller
             abort(403, 'Anda tidak memiliki akses ke wilayah ini.');
         }
 
-        $kandidat_rt = Kandidat::where('jenis', 'RT')->where('rt_id', $warga->rt_id)->get();
-        $kandidat_rw = Kandidat::where('jenis', 'RW')->where('rw_id', $warga->rt->rw_id)->get();
+        $needsRt = $warga->status_vote_rt === 'belum_dikunjungi';
+        $needsRw = $warga->status_vote_rw === 'belum_dikunjungi';
+
+        if (!$needsRt && !$needsRw) {
+            $pesan = ($warga->status_vote_rt === 'sudah_memilih' || $warga->status_vote_rw === 'sudah_memilih')
+                ? "Warga {$warga->nama} sudah menggunakan hak suaranya dan data suara telah terekam aman."
+                : "Warga {$warga->nama} berstatus '{$warga->status_vote_rt}' dan tidak memiliki agenda bilik suara aktif.";
+
+            return redirect()->route('petugas.wilayah.warga', $warga->rt_id)->with('error', $pesan);
+        }
+
+        $kandidat_rt = $needsRt ? Kandidat::where('jenis', 'RT')->where('rt_id', $warga->rt_id)->get() : collect();
+        $kandidat_rw = $needsRw ? Kandidat::where('jenis', 'RW')->where('rw_id', $warga->rt->rw_id)->get() : collect();
 
         return Inertia::render('Petugas/FormVote', [
             'warga' => $warga,

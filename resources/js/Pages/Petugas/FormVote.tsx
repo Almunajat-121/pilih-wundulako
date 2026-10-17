@@ -35,6 +35,7 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
 
     const needsRt = warga.status_vote_rt === 'belum_dikunjungi';
     const needsRw = warga.status_vote_rw === 'belum_dikunjungi';
+    const hasActiveVote = needsRt || needsRw;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -78,7 +79,50 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
         return kandidatList.find(k => k.id.toString() === selectedId)?.nama || 'Unknown';
     };
 
-    const content = (
+    const content = !hasActiveVote ? (
+        <div style={{ padding: isMobile ? '36px 18px' : '48px 32px', textAlign: 'center' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--moss-soft)', color: 'var(--moss)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+            </div>
+            <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: '21px', fontWeight: 600, color: 'var(--ink)', margin: '0 0 8px' }}>
+                Hak Suara Telah Selesai Digunakan
+            </h2>
+            <p style={{ fontSize: '13.5px', color: 'var(--text-soft)', lineHeight: 1.55, maxWidth: '420px', margin: '0 auto 20px' }}>
+                Warga <strong>{warga.nama}</strong> telah menggunakan seluruh hak suaranya. Seluruh pilihan telah terekam secara permanen dan terkunci demi integritas pemilihan.
+            </p>
+
+            <div className="voter-summary" style={{ maxWidth: '380px', margin: '0 auto 24px', textAlign: 'left' }}>
+                <div className="voter-summary-item">
+                    <span className="item-label">Nama Pemilih</span>
+                    <span className="item-value">{warga.nama}</span>
+                </div>
+                <div className="voter-summary-item">
+                    <span className="item-label">Alamat</span>
+                    <span className="item-value">{warga.alamat}</span>
+                </div>
+                <div className="voter-summary-item">
+                    <span className="item-label">Status Suara RT</span>
+                    <span className="item-value" style={{ color: warga.status_vote_rt === 'sudah_memilih' ? 'var(--moss)' : 'var(--slate)' }}>
+                        {warga.status_vote_rt === 'sudah_memilih' ? '✓ Sudah Memilih' : warga.status_vote_rt}
+                    </span>
+                </div>
+                <div className="voter-summary-item">
+                    <span className="item-label">Status Suara RW</span>
+                    <span className="item-value" style={{ color: warga.status_vote_rw === 'sudah_memilih' ? 'var(--moss)' : 'var(--slate)' }}>
+                        {warga.status_vote_rw === 'sudah_memilih' ? '✓ Sudah Memilih' : warga.status_vote_rw}
+                    </span>
+                </div>
+            </div>
+
+            <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '11px 22px' }}>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                <span>Kembali ke Daftar Pemilih</span>
+            </Link>
+        </div>
+    ) : (
         <>
             <div className="section-block">
                 <p className="eyebrow">Data pemilih</p>
@@ -426,58 +470,60 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                     </div>
                     <div className="card shadow-sm">
                         {content}
-                        <div className="card-footer" style={{
-                            padding: '18px 28px',
-                            background: '#FBFAF7',
-                            borderTop: '1px solid var(--line)',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            gap: '16px'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
-                                {isReady ? (
-                                    <span style={{ color: 'var(--moss)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                                        Semua data &amp; foto bukti lengkap
-                                    </span>
-                                ) : (
-                                    <span style={{ color: 'var(--text-soft)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                        {!verifikasi ? 'Centang kotak verifikasi identitas di atas' : 'Lengkapi pilihan calon dan foto bukti kehadiran'}
-                                    </span>
-                                )}
+                        {hasActiveVote && (
+                            <div className="card-footer" style={{
+                                padding: '18px 28px',
+                                background: '#FBFAF7',
+                                borderTop: '1px solid var(--line)',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                gap: '16px'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                                    {isReady ? (
+                                        <span style={{ color: 'var(--moss)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                            Semua data &amp; foto bukti lengkap
+                                        </span>
+                                    ) : (
+                                        <span style={{ color: 'var(--text-soft)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                            {!verifikasi ? 'Centang kotak verifikasi identitas di atas' : 'Lengkapi pilihan calon dan foto bukti kehadiran'}
+                                        </span>
+                                    )}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn btn-outline" style={{ padding: '9px 18px' }}>
+                                        Batal
+                                    </Link>
+                                    <button 
+                                        type="button" 
+                                        disabled={!isReady} 
+                                        onClick={() => setShowConfirm(true)}
+                                        className="btn btn-primary"
+                                        style={{ 
+                                            padding: '10px 24px', 
+                                            opacity: isReady ? 1 : 0.45,
+                                            cursor: isReady ? 'pointer' : 'not-allowed',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            fontSize: '13.5px',
+                                            fontWeight: 600
+                                        }}
+                                    >
+                                        <span>Konfirmasi Suara</span>
+                                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+                                    </button>
+                                </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <Link href={`/petugas/wilayah/${warga.rt_id}`} className="btn btn-outline" style={{ padding: '9px 18px' }}>
-                                    Batal
-                                </Link>
-                                <button 
-                                    type="button" 
-                                    disabled={!isReady} 
-                                    onClick={() => setShowConfirm(true)}
-                                    className="btn btn-primary"
-                                    style={{ 
-                                        padding: '10px 24px', 
-                                        opacity: isReady ? 1 : 0.45,
-                                        cursor: isReady ? 'pointer' : 'not-allowed',
-                                        display: 'inline-flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        fontSize: '13.5px',
-                                        fontWeight: 600
-                                    }}
-                                >
-                                    <span>Konfirmasi Suara</span>
-                                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="9 18 15 12 9 6"/></svg>
-                                </button>
-                            </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             )}
 
-            {isMobile && (
+            {isMobile && hasActiveVote && (
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[var(--line)] p-3.5 z-40 max-w-[480px] mx-auto shadow-lg">
                     <button 
                         type="button" 
@@ -505,7 +551,7 @@ export default function FormVote({ warga, kandidat_rt, kandidat_rw }: Props) {
                 </div>
             )}
 
-            {showConfirm && (
+            {hasActiveVote && showConfirm && (
                 <div className="modal-overlay" onClick={() => !processing && setShowConfirm(false)}>
                     <div className="modal-card" onClick={e => e.stopPropagation()}>
                         <div className="modal-badge">

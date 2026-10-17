@@ -152,14 +152,49 @@ export default function DaftarWarga({ warga, rt, filters }: Props) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {warga.data.map(w => {
                     const finalStatus = isSudah(w) ? 'sudah_memilih' : isBermasalah(w) ? w.status_vote_rt : w.status_vote_rt;
+                    const sudah = isSudah(w);
+
                     return (
-                        <div className="m-card" key={w.id} onClick={() => router.get(`/petugas/warga/${w.id}/vote`)}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div>
+                        <div 
+                            className="m-card" 
+                            key={w.id}
+                            style={{ 
+                                background: sudah ? '#FBFAF7' : '#fff',
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                                <div style={{ flex: 1, minWidth: 0 }}>
                                     <p className="m-card-name" style={{ fontSize: '15px' }}>{w.nama}</p>
                                     <p className="m-card-sub" style={{ fontSize: '12px', marginTop: '2px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{w.alamat}</p>
                                 </div>
                                 {getStatusBadge(finalStatus)}
+                            </div>
+
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid var(--line)', alignItems: 'center', justifyContent: 'space-between' }}>
+                                {sudah ? (
+                                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', color: 'var(--moss)', fontWeight: 600 }}>
+                                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <span>Suara Terekam</span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <Link 
+                                            href={`/petugas/warga/${w.id}/status`} 
+                                            className="btn btn-outline" 
+                                            style={{ padding: '6px 12px', fontSize: '12px', color: 'var(--text-soft)', borderColor: 'var(--line-2)' }}
+                                        >
+                                            Ubah Status
+                                        </Link>
+                                        <Link 
+                                            href={`/petugas/warga/${w.id}/vote`} 
+                                            className="btn btn-primary" 
+                                            style={{ padding: '6px 14px', fontSize: '12.5px', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                                        >
+                                            <span>Mulai Voting</span>
+                                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </div>
                     );
